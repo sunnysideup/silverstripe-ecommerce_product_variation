@@ -5,10 +5,10 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 	function extraStatics(){
 		return array(
-			"has_many" = array(
+			"has_many" => array(
 				'Variations' => 'ProductVariation'
 			),
-			"many_many" = array(
+			"many_many" => array(
 				'VariationAttributes' => 'ProductAttributeType'
 			)
 		);
@@ -16,13 +16,15 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 	function canPurchase($member = null) {
 		$allowpurchase = false;
-		if($this->Variations()->exists()){
-			foreach($this->Variations() as $variation){
+		if($this->owner->Variations()->exists()){
+			foreach($this->owner->Variations() as $variation){
 				if($variation->canPurchase()){
 					$allowpurchase = true;
 					break;
 				}
 			}
+		}else{
+			return null; //ignore this decorator function if there are no variations
 		}
 		return $allowpurchase;
 	}
@@ -91,7 +93,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 				//delete old variation, and create new ones - to prevent modification of exising variations
 				foreach($existingvariations as $oldvariation){
 					$oldvalues = $oldvariation->AttributeValues();
-					if($oldValues) {
+					if($oldvalues) {
 						foreach($avalues as $value){
 							$newvariation = $oldvariation->duplicate();
 							$newvariation->InternalItemID = $this->owner->InternalItemID.'-'.$newvariation->ID;

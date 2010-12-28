@@ -30,7 +30,8 @@ class ProductVariation extends DataObject {
 	);
 
 	public static $extensions = array(
-		"Versioned('Stage')"
+		"Versioned('Stage')",
+		"Buyable"
 	);
 
 	public static $indexes = array(
@@ -45,7 +46,7 @@ class ProductVariation extends DataObject {
 	public static $default_sort = "Sort ASC, InternalItemID ASC";
 
 	function getCMSFields() {
-		$fields = parent::getCMSFields();;
+		$fields = parent::getCMSFields();
 		//add attributes dropdowns
 		if($this->Product()->VariationAttributes()->exists() && $attributes = $this->Product()->VariationAttributes()){
 			foreach($attributes as $attribute){
@@ -59,7 +60,7 @@ class ProductVariation extends DataObject {
 			}
 		}
 		$this->extend('updateCMSFields', $fields);
-		return $set;
+		return $fields;
 	}
 
 	function onBeforeWrite(){
@@ -128,28 +129,10 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	static $db = array(
 		'KeepMeTwo' => 'Boolean'
 	);
-
-	/*
-	public function __construct($productVariation = null, $quantity = 1) {
-		// Case 1: Constructed by getting OrderItem from DB
-		parent::__construct($productVariation, $quantity);
-		if(is_array($productVariation)) {
-			$this->ItemID = $this->ItemID = $productVariation['ProductVariationID'];
-			$this->Version = $this->Version = $productVariation['ProductVariationVersion'];
-		}
-	}
-	*/
-
-
-	public function addItem($object, $quantity) {
-		parent::addItem($object, $quantity);
-	}
-
-
 	// ProductVariation Access Function
 
 	public function ProductVariation($current = false) {
-		$this->Item($current);
+		return $this->Buyable($current);
 	}
 
 
@@ -174,7 +157,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 
 	public function debug() {
 		$title = $this->TableTitle();
-		$productVariationID = $this->ItemID;
+		$productVariationID = $this->BuyableID;
 		$productVariationVersion = $this->Version;
 		return parent::debug() .<<<HTML
 			<h3>ProductVariation_OrderItem class details</h3>
@@ -207,7 +190,7 @@ HTML;
 			");
 			DB::query("
 				UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
-					SET \"OrderItem\".\"ItemID\" = \"ProductVariation_OrderItem\".\"ProductVariationID\"
+					SET \"OrderItem\".\"BuyableID\" = \"ProductVariation_OrderItem\".\"ProductVariationID\"
 				WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
 			");
  			DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationVersion\" \"_obsolete_ProductVariationVersion\" Integer(11)");
