@@ -146,7 +146,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	}
 
 	function TableTitle() {
-		$tabletitle = parent::TableTitle() . ' (' . $this->ProductVariation()->Title . ')';
+		$tabletitle = $this->ProductVariation()->Product()->Title . ' (' . $this->ProductVariation()->Title . ')';
 		$this->extend('updateTableTitle',$tabletitle);
 		return $tabletitle;
 	}
