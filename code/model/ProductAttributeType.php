@@ -4,8 +4,8 @@ class ProductAttributeType extends DataObject{
 	
 	static $db = array(
 		'Name' => 'Varchar', //for back-end use
-		'Label' => 'Varchar', //for front-end use
-		'Unit' => 'Varchar'
+		'Label' => 'Varchar' //for front-end use
+		//'Unit' => 'Varchar' //TODO: for future use
 	);
 	
 	static $has_one = array();
