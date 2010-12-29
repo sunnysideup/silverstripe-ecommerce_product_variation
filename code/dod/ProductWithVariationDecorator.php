@@ -23,7 +23,8 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					break;
 				}
 			}
-		}else{
+		}
+		else{
 			return null; //ignore this decorator function if there are no variations
 		}
 		return $allowpurchase;
@@ -34,7 +35,6 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		$fields->addFieldToTab('Root.Content.Variations',$this->owner->getVariationsTable());
 		$fields->addFieldToTab('Root.Content.Variations',new HeaderField("Variation Attribute Types"));
 		$fields->addFieldToTab('Root.Content.Variations',$this->owner->getVariationAttributesTable());
-
 		if($this->owner->Variations()->exists()){
 			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructinos','Price - Because you have one or more variations, the price can be set in the "Variations" tab.'),'Price');
 			$fields->removeFieldsFromTab('Root.Content.Main',array('Price','InternalItemID'));
@@ -73,7 +73,6 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 	function getVariationAttributesTable(){
 		$mmctf = new ManyManyComplexTableField($this->owner,'VariationAttributes','ProductAttributeType');
-
 		return $mmctf;
 	}
 
@@ -129,25 +128,26 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 
 	function getVariationByAttributes(array $attributes){
-
-		if(!is_array($attributes)) return null;
+		if(!is_array($attributes) || !count($attributes)) {
+			return null;
+		}
 		$keyattributes = array_keys($attributes);
 		$id = $keyattributes[0];
 		$where = "\"ProductID\" = ".$this->owner->ID;
 		$join = "";
 
 		foreach($attributes as $typeid => $valueid){
-			if(!is_numeric($typeid) || !is_numeric($valueid)) return null; //ids MUST be numeric
-
+			if(!is_numeric($typeid) || !is_numeric($valueid)) {
+				return null; //ids MUST be numeric
+			}
 			$alias = "A$typeid";
 			$where .= " AND $alias.ProductAttributeValueID = $valueid";
 			$join .= "INNER JOIN ProductVariation_AttributeValues AS $alias ON ProductVariation.ID = $alias.ProductVariationID ";
 		}
 		$variation = DataObject::get('ProductVariation',$where,"",$join);
-
-		if($variation)
+		if($variation) {
 			return $variation->First();
-
+		}
 		return null;
 
 	}
