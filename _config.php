@@ -4,7 +4,7 @@
 Object::add_extension("ProductVariation", "Buyable");
 Object::add_extension("Product", "ProductWithVariationDecorator");
 Object::add_extension("Product_Controller", "ProductWithVariationDecorator_Controller");
-Product_Controller::$allowed_actions[] = 'variationform';
+Product_Controller::$allowed_actions[] = 'VariationForm';
 Product_Controller::$allowed_actions[] = 'addvariation';
 
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
