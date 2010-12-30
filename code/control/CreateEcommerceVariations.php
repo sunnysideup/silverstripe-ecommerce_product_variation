@@ -27,7 +27,15 @@ class CreateEcommerceVariations extends Controller {
 	}
 	function jsonforform() {
 		//create dataobjectset here...
-		$dos = ;
+		$oldDos = DataObject::get("ProductAttributeValue");
+		$oldDos = new DataObjectSet();
+		foreach($oldDos as $oldDo) {
+			$newDo = new DataObject();
+			$newDo->ValueID = $oldDo->ID;
+			$newDo->TypeID = $oldDo->TypeID;
+			$newDo->ValueName = $oldDo->Value;
+			$newDo->TypeName = $oldDo->Type()->Name;
+		}
 		$fields = array();
 		$dataFormatter = new convertDataObjectSet();
 		echo $dataFormatter->convertDataObjectSet($dos, $fields = null);
@@ -61,5 +69,9 @@ class CreateEcommerceVariations extends Controller {
 
 
 class CreateEcommerceVariations_Field extends FormField() {
-
+ /* equirements:
+ - jquery
+ - livequery
+ - custom js
+ */
 }
