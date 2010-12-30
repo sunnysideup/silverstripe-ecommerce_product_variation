@@ -2,7 +2,7 @@
 class ProductAttributeValue extends DataObject{
 
 	static $db = array(
-		'Value' => 'Varchar',
+		'Value' => 'Varchar(255)',
 		'Sort' => 'Int'
 	);
 
