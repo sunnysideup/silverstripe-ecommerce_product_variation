@@ -1,5 +1,8 @@
 <?php
 
+Director::addRules(50, array(
+	'createecommercevariations/$Action/$ProductID' => 'CreateEcommerceVariations'
+));
 
 Object::add_extension("ProductVariation", "Buyable");
 Object::add_extension("Product", "ProductWithVariationDecorator");

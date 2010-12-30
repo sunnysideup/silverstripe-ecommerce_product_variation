@@ -135,21 +135,20 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		$id = $keyattributes[0];
 		$where = "\"ProductID\" = ".$this->owner->ID;
 		$join = "";
-
 		foreach($attributes as $typeid => $valueid){
 			if(!is_numeric($typeid) || !is_numeric($valueid)) {
 				return null; //ids MUST be numeric
 			}
 			$alias = "A$typeid";
-			$where .= " AND $alias.ProductAttributeValueID = $valueid";
-			$join .= "INNER JOIN ProductVariation_AttributeValues AS $alias ON ProductVariation.ID = $alias.ProductVariationID ";
+			$where .= " AND \"$alias\".\"ProductAttributeValueID\" = $valueid";
+			$join .= " INNER JOIN \"ProductVariation_AttributeValues\" AS \"$alias\" ON \"ProductVariation\".\"ID\" = \"$alias\".\"ProductVariationID\" ";
 		}
-		$variation = DataObject::get('ProductVariation',$where,"",$join);
-		if($variation) {
-			return $variation->First();
+		$variations = DataObject::get('ProductVariation',$where, $sort = null, $join);
+		if($variations) {
+			$variation = $variations->First();
+			return $variation;
 		}
 		return null;
-
 	}
 
 }
@@ -187,8 +186,12 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 	function addVariation($data,$form){
 		//TODO: save form data to session so selected values are not lost
+		$data['ProductAttributes'] = Convert::raw2sql($data['ProductAttributes']);
 		if(isset($data['ProductAttributes']) && $variation = $this->owner->getVariationByAttributes($data['ProductAttributes'])){
-			$quantity = (isset($data['Quantity']) && is_numeric($data['Quantity'])) ? (int) $data['Quantity'] : 1;
+			$quantity = intval($data['Quantity']);
+			if(!$quantity) {
+				$quantity = 1;
+			}
 			ShoppingCart::add_buyable($variation,$quantity);
 			$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
 		}
