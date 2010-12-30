@@ -9,9 +9,14 @@
 	);
 	var CreateEcommerceVariationsField = {
 
+		url: '',
+			set_url: function(v) {this.url = v;}
+
+		productID: 0,
+
 		getDataFromServer: function() {
 			jQuery.get(
-				url
+				CreateEcommerceVariationsField.url+'/jsonforform/'+productID+'/';
 				function(data) {
 					CreateEcommerceVariationsField.parseNodes(data);
 				}

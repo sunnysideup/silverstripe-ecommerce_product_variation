@@ -111,10 +111,11 @@ class CreateEcommerceVariations extends Controller {
 
 class CreateEcommerceVariations_Field extends LiteralField {
 
-	function __construct($name, $content) {
+	function __construct($name, $content = '') {
 		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 		Requirements::javascript("ecommerce_product_variation/jquery/CreateEcommerceVariationsField.js");
+		Requirements::customScript("CreateEcommerceVariationsField.set_url('/createecommercevariations/')");
 		parent::__construct($name, $content);
 	}
 
