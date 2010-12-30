@@ -21,10 +21,10 @@ class CreateEcommerceVariations extends Controller {
 
 	function init() {
 		parent::init();
-		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = intval($_GET["_typeorvalue"]);
-		if(isset($_GET["id"])) { $this->_id = intval($_GET["_id"]);
-		if(isset($_GET["name"])) { $this->_name = intval($_GET["name"]);
-		if(isset($_GET["position"])) { $this->_position = intval($_GET["_position"]);
+		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = intval($_GET["_typeorvalue"]);}
+		if(isset($_GET["id"])) { $this->_id = intval($_GET["_id"]);}
+		if(isset($_GET["name"])) { $this->_name = intval($_GET["name"]);}
+		if(isset($_GET["position"])) { $this->_position = intval($_GET["_position"]);}
 		if(!Permission::check("CMS_ACCESS_CMSMain")) {
 			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need administrator rights to access it. Enter your credentials below and we will send you right along.'));
 		}
@@ -36,22 +36,37 @@ class CreateEcommerceVariations extends Controller {
 	}
 	function jsonforform() {
 		//create dataobjectset here...
-		$oldDos = DataObject::get("Productvalue");
-		$newDos = new DataObjectSet();
-		foreach($oldDos as $oldDo) {
-			$newDo = new DataObject();
-			$newDo->ValueID = $oldDo->ID;
-			$newDo->TypeID = $oldDo->TypeID;
-			$newDo->ValueName = $oldDo->Value;
-			$newDo->TypeName = $oldDo->Type()->Name;
-			$newDo->ValueIsSelected = "to be completed";
-			$newDo->TypeIsSelected = "to be completed";
-			$newDos->push($newDo);
+		$jsonTypeArray = array();
+		$jsonValueArray = array();
+		$typeDos = DataObject::get("ProductAttributeType");
+		if($typeDos) {
+			$json = '{ "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
+			foreach($typeDos as $typeDo) {
+				$jsonTypeStringForArray = '{';
+				$typeDo->IsSelected = "to be coded";
+				$valueDos = $typeDo->Values();
+				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.$typeDo->Name.'", "TypeIsSelected": "'.$typeDo->IsSelected.'"';
+				if($valueDos) {
+					$jsonTypeStringForArray .= ', "ValueSize": '.$valueDos->count().', "ValueItems": [';
+					foreach($valueDos as $valueDo) {
+						$jsonValueStringForArray = '{';
+						$valueDo->IsSelected = "to be coded";
+						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.$valueDo->Value.'", "ValueIsSelected": "'.$valueDo->IsSelected.'"';
+						$jsonValueStringForArray .= '}';
+						$jsonValueArray[] = $jsonValueStringForArray;
+					}
+					$jsonTypeStringForArray .= implode(",", $jsonValueArray).']';
+				}
+				$jsonTypeStringForArray .=  "}";
+				$jsonTypeArray[] = $jsonTypeStringForArray;
+			}
+			$json .= implode(",", $jsonTypeArray);
+			$json .= '] ';
 		}
-		$fields = array();
-		$dataFormatter = new convertDataObjectSet();
-		echo $dataFormatter->convertDataObjectSet($dos, $fields = null);
+		$json .= '} ';
+		return $json;
 	}
+
 	function select() {
 		die("not completed yet");
 		return "ok";
@@ -72,7 +87,7 @@ class CreateEcommerceVariations extends Controller {
 }
 
 
-class CreateEcommerceVariations_Field extends LiteralField() {
+class CreateEcommerceVariations_Field extends LiteralField {
 
 	function __construct($name, $content) {
 		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
