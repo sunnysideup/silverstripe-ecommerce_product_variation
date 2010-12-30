@@ -111,11 +111,13 @@ class CreateEcommerceVariations extends Controller {
 
 class CreateEcommerceVariations_Field extends LiteralField {
 
-	function __construct($name, $content = '') {
+	function __construct($name, $additionalContent = '', $productID) {
 		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 		Requirements::javascript("ecommerce_product_variation/jquery/CreateEcommerceVariationsField.js");
-		Requirements::customScript("CreateEcommerceVariationsField.set_url('/createecommercevariations/')");
+		Requirements::customScript("CreateEcommerceVariationsField.set_url('/createecommercevariations/')", "CreateEcommerceVariationsField_set_url");
+		Requirements::customScript("CreateEcommerceVariationsField.set_productID(".$productID.")", "CreateEcommerceVariationsField_set_productID");
+		Requirements::customScript("CreateEcommerceVariationsField.set_fieldID(".$this->Name().")", "CreateEcommerceVariationsField_set_fieldID");
 		parent::__construct($name, $content);
 	}
 
