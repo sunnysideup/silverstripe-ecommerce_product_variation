@@ -19,6 +19,14 @@ class ProductAttributeType extends DataObject{
 		'Name' => 'Name'
 	);
 
+	static $indexes = array(
+		"Sort" => true
+	);
+
+	public static $singular_name = "Attribute Type";
+
+	public static $plural_name = "Attribute Types";
+
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
@@ -75,11 +83,24 @@ class ProductAttributeType extends DataObject{
 		return null;
 	}
 
-	function canDelete(){
-		return false;
-		//TODO: allow deleting if not in use.
-	}
 
+
+	public function canDelete($member = null) {
+		$objects = DataObject::get("ProductAttributeValue", "TypeID = ".$this->ID);
+		if(!$objects) {
+			return true;
+		}
+		else {
+			$canDelete = true;
+			foreach($objects as $obj) {
+				if($obj->canDelete()) {
+					$canDelete = false;
+				}
+			}
+			return $canDelete;
+		}
+		return false;
+	}
 }
 
-?>
+

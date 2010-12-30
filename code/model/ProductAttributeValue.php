@@ -25,5 +25,26 @@ class ProductAttributeValue extends DataObject{
 	);
 
 	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC";
+
+	public static $singular_name = "Attribute Value";
+
+	public static $plural_name = "Attribute Values";
+
+	public function canDelete($member = null) {
+		$alreadyUsed = DB::query("
+			SELECT COUNT(\"ProductAttributeValueID\")
+			FROM \"ProductVariation_AttributeValues\"
+				INNER JOIN \"OrderItem\" ON \"OrderItem\".\"BuyableID\" = \"ProductVariation_AttributeValues\" .\"ProductVariationID\"
+				INNER JOIN \"OrderAttribute\" ON \"OrderAttribute\".\"ID\" = \"OrderItem\" .\"ID\"
+			WHERE
+				\"ProductAttributeValueID\" = ".$this->ID."
+				AND \"OrderAttribute\".\"ClassName\" = 'ProductVariation_OrderItem'"
+		)->value();
+		if($alreadyUsed) {
+			return false;
+		}
+		return true;
+	}
+
 }
-?>
+
