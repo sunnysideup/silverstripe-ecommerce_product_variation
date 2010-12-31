@@ -23,11 +23,11 @@
 				<td>
 				<% if canPurchase %>
 					<% if IsInCart %>
-						<% control Item %>
+						<% control OrderItem %>
 							$QuantityField
 						<% end_control %>
 					<% else %>
-						<a class="button" href="$Item.addLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title.XML) %>"><% _t("ADDLINK","Add this item to cart") %></a>
+						<a class="button" href="$OrderItem.addLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title.XML) %>"><% _t("ADDLINK","Add this item to cart") %></a>
 					<% end_if %>
 				
 				<% end_if %>
