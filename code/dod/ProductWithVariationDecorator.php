@@ -157,14 +157,13 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 	function VariationForm(){
-		//TODO: cache this form so it doesn't need to be regenerated all the time?
 
 		$farray = array();
 		$requiredfields = array();
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
-				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")."$attribute->Label ...",$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label...",$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
 				$requiredfields[] = "ProductAttributes[$attribute->ID]";
 			}
 		}
