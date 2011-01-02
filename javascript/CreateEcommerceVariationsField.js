@@ -95,7 +95,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addAddLinkToggles: function() {
-		jQuery(".addLabelLink").click(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink").click(
 			function() {
 				jQuery(this).parent("label").next("div").slideToggle();
 			}
@@ -103,7 +103,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addEditLinkToggles: function() {
-		jQuery(".editNameLink").click(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editNameLink").click(
 			function() {
 				var rel = "#editFieldFor"+jQuery(this).attr("rel");
 				jQuery(rel).slideToggle();
@@ -112,7 +112,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	add:function() {
-		jQuery(".addInputHolder input").change(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input").change(
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("add", data);
@@ -122,9 +122,10 @@ var CreateEcommerceVariationsField = {
 
 	rename:function() {
 		//reset form
-		jQuery("#A").click(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input").change(
 			function() {
-				CreateEcommerceVariationsField.reset();
+				data = CreateEcommerceVariationsField.createGetVariables(this);
+				CreateEcommerceVariationsField.reset("rename", data);
 				return false;
 			}
 		);

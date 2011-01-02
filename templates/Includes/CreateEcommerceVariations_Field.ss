@@ -13,7 +13,7 @@
 						<a href="#" rel="ID" style="DELETE" class="deleteLink  dataForType">delete</a>
 					</label>
 				</div>
-				<div class="typeTextHolder textInputHolder fieldHolder" id="editFieldForTypeID">
+				<div class="typeTextHolder textInputHolder fieldHolder editFieldHolder" id="editFieldForTypeID">
 					<input type="text" class="text dataForType" id="typeTextID" value="NAME" name="typeTextID" rel="ID" />
 				</div>
 			</div>
@@ -38,8 +38,8 @@
 						<a href="#" rel="ID" style="DELETE" class="deleteLink dataForValue">delete</a>
 					</label>
 				</div>
-				<div class="valueTextHolder textInputHolder" id="editFieldForValueID">
-					<input type="text" class="text dataForValue" id="valueTextID" value="NAME" name="valueTextID" rel="ID" rel="ID" />
+				<div class="valueTextHolder textInputHolder fieldHolder editFieldHolder" id="editFieldForValueID">
+					<input type="text" class="text dataForValue" id="valueTextID" value="NAME" name="valueTextID" rel="ID" />
 				</div>
 			</div>
 		</li>
