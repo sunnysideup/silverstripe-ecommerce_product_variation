@@ -26,8 +26,13 @@ class ProductAttributeValue extends DataObject{
 	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC";
 
 	public static $singular_name = "Attribute Value";
+		static function set_singular_name($v) {self::$singular_name = $v;}
+		static function get_singular_name() {return self::$singular_name;}
+
 
 	public static $plural_name = "Attribute Values";
+		static function set_plural_name($v) {self::$plural_name = $v;}
+		static function get_plural_name() {return self::$plural_name;}
 
 	public function canDelete($member = null) {
 		$alreadyUsed = DB::query("
@@ -44,6 +49,18 @@ class ProductAttributeValue extends DataObject{
 		}
 		return true;
 	}
+
+	function onBeforeDelete() {
+		parent::onBeforeDelete();
+		if(!$this->Value) {
+			$this->Value = self::get_singular_name();
+			$i = 0;
+			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
+				$this->Value = self::get_singular_name()."_".$i;
+			}
+		}
+	}
+
 
 }
 

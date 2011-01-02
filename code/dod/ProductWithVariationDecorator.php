@@ -31,13 +31,13 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 
 	function updateCMSFields(FieldSet &$fields) {
-		$fields->addFieldToTab('Root.Content.Variations',new HeaderField("Variations"));
-		$fields->addFieldToTab('Root.Content.Variations',$this->owner->getVariationsTable());
-		$fields->addFieldToTab('Root.Content.Variations',new HeaderField("Variation Attribute Types"));
-		$fields->addFieldToTab('Root.Content.Variations',$this->owner->getVariationAttributesTable());
+		$tabName = 'Root.Content.'.ProductVariation::get_plural_name();
+		$fields->addFieldToTab($tabName, new CreateEcommerceVariations_Field("VariationMaker", "", $this->owner->ID));
+		$fields->addFieldToTab($tabName,new HeaderField(ProductVariation::get_plural_name().' for '.$this->owner->Title));
+		$fields->addFieldToTab($tabName,$this->owner->getVariationsTable());
 		if($this->owner->Variations()->exists()){
 			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructinos','Price - Because you have one or more variations, the price can be set in the "Variations" tab.'),'Price');
-			$fields->removeFieldsFromTab('Root.Content.Main',array('Price','InternalItemID'));
+			//$fields->removeFieldsFromTab('Root.Content.Main',array('Price','InternalItemID'));
 		}
 	}
 
@@ -69,11 +69,6 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 
 		return $tableField;
-	}
-
-	function getVariationAttributesTable(){
-		$mmctf = new ManyManyComplexTableField($this->owner,'VariationAttributes','ProductAttributeType');
-		return $mmctf;
 	}
 
 	/*
@@ -151,19 +146,44 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return null;
 	}
 
+
+  function addAttributeType($attributeTypeObject) {
+    $existingCategories = $this->owner->VariationAttributes();
+    // method 1: Add many by iteration
+    $existingCategories->add($attributeTypeObject);
+  }
+
+  function removeAttributeType($attributeTypeObject) {
+    $existingCategories = $this->owner->VariationAttributes();
+    // method 1: Add many by iteration
+    $existingCategories->remove($attributeTypeObject);
+  }
+
+	function getArrayOfLinkedProductAttributeIDs() {
+		$components = $this->owner->getManyManyComponents('VariationAttributes');
+		if($components && $components->count()) {
+			return $components->column("ID");
+		}
+		else {
+			return array();
+		}
+	}
+
+
 }
 
 
 class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 	function VariationForm(){
+		//TODO: cache this form so it doesn't need to be regenerated all the time?
 
 		$farray = array();
 		$requiredfields = array();
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
-				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label...",$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")."$attribute->Label ...",$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
 				$requiredfields[] = "ProductAttributes[$attribute->ID]";
 			}
 		}
@@ -218,6 +238,8 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 		return $vals;
 	}
+
+  static $many_many = array("Categories" => "Category");
 
 
 

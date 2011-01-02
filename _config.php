@@ -14,4 +14,11 @@ Product_Controller::$allowed_actions[] = 'addvariation';
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
 //MAY SET
 //ProductsAndGroupsModelAdmin::set_managed_models(array(("Product", "ProductGroup","ProductVariation"));
+ProductVariation::set_singular_name("Variation");
+ProductVariation::set_plural_name("Variations");
+ProductAttributeType::set_singular_name("Types");
+ProductAttributeType::set_plural_name("Types");
+ProductAttributeValue::set_singular_name("Values");
+ProductAttributeValue::set_plural_name("Values");
+
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
