@@ -121,6 +121,17 @@ class ProductAttributeType extends DataObject{
 		}
 	}
 
+	function onBeforeDelete() {
+		parent::onBeforeDelete();
+		$objects = DataObject::get("ProductAttributeValue", "TypeID = ".$this->ID);
+		if($objects) {
+			foreach($objects as $obj) {
+				$obj->delete();
+				$obj->destroy();
+			}
+		}
+	}
+
 }
 
 
