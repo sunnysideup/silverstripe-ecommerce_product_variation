@@ -3,17 +3,17 @@
 </div>
 <div id="CreateEcommerceVariationsTemplate" class="createEcommerceVariations">
 	<ul>
-		<li><span class="message GOODORBAD">MESSAGE</span></li>
+		<li class="messageHolder"><span class="message GOODORBAD">MESSAGE</span></li>
 		<li class="typeHolder">
 			<div class="typeCheckHolder">
 				<div class="checkboxInputHolder fieldHolder">
 					<input type="checkbox" class="checkbox dataForType" id="TypeCheckID"  name="typeCheckID" value="ID" checked="checked" rel="ID" />
 					<label>
-						<a href="#" rel="ID" class="editNameLink">NAME</a>
-						<a href="#" rel="ID" style="DELETE" class="deleteLink">delete</a>
+						<a href="#" rel="TypeID" class="editNameLink  dataForType">NAME</a>
+						<a href="#" rel="ID" style="DELETE" class="deleteLink  dataForType">delete</a>
 					</label>
 				</div>
-				<div class="typeTextHolder textInputHolder fieldHolder" class="addTypeForID">
+				<div class="typeTextHolder textInputHolder fieldHolder" id="editFieldForTypeID">
 					<input type="text" class="text dataForType" id="typeTextID" value="NAME" name="typeTextID" rel="ID" />
 				</div>
 			</div>
@@ -34,11 +34,11 @@
 				<div class="checkboxInputHolder fieldHolder">
 					<input type="checkbox" class="checkbox dataForValue" id="ValueCheckID"  name="valueCheckID" value="ID"  checked="checked" rel="ID" />
 					<label>
-						<a href="#" rel="ID" class="editNameLink">NAME</a>
-						<a href="#" rel="ID" style="DELETE" class="deleteLink">delete</a>
+						<a href="#" rel="ValueID" class="editNameLink dataForValue">NAME</a>
+						<a href="#" rel="ID" style="DELETE" class="deleteLink dataForValue">delete</a>
 					</label>
 				</div>
-				<div class="valueTextHolder textInputHolder" class="addValueForID">
+				<div class="valueTextHolder textInputHolder" id="editFieldForValueID">
 					<input type="text" class="text dataForValue" id="valueTextID" value="NAME" name="valueTextID" rel="ID" rel="ID" />
 				</div>
 			</div>

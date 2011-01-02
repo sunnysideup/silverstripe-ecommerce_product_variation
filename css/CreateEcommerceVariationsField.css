@@ -1,7 +1,12 @@
- .createEcommerceVariations ul ul {padding-left: 40px;}
+ .loading {background: url(/ecommerce_product_variation/images/loading.gif) no-repeat top right transparent;}
+.createEcommerceVariations li.messageHolder {margin-bottom: 20px;}
+.createEcommerceVariations li.createButtonHolder {margin-top: 20px;}
+.createEcommerceVariations ul ul {padding-left: 40px;}
  	.createEcommerceVariations div.fieldHolder{ margin-bottom: 7px;}
  	.createEcommerceVariations div.fieldHolder input.checkbox{ vertical-align: bottom; display: block; width: auto; float: left;}
  	.createEcommerceVariations div.fieldHolder label{ width: 400px; font-size: 14px;}
  	.createEcommerceVariations div.fieldHolder label a.deleteLink{color: red; font-size: 10px;}
  	.createEcommerceVariations div.textInputHolder{background-color: #E9E9E9; display: none; margin-bottom: 12px;}
  	 		.createEcommerceVariations input.text{ border:1px solid #A7A7A7; padding: 3px; margin: 3px 4px; }
+
+#CreateEcommerceVariationsTemplate{display: none;}
