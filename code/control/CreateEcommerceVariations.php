@@ -109,8 +109,17 @@ class CreateEcommerceVariations extends Controller {
 	}
 	function rename() {
 		//is it Type or Value?
-		//save new name
-		die("not completed yet");
+		$obj = DataObject::get_by_id($this->_classname, $this->_id);
+		if($obj) {
+			$name = $obj->{$this->_namefield};
+			$obj->{$this->_namefield} = $this->_value;
+			$obj->write();
+			$this->_message = _t("CreateEcommerceVariations.HASBEENRENAMED","$name has been renamed to ".$this->_value,".");
+		}
+		else {
+			$this->_message = _t("CreateEcommerceVariations.CANNOTBEFOUND","Entry can not be found.");
+			$this->_messageclass = "bad";
+		}
 		return $this->jsonforform();
 	}
 	function add() {
