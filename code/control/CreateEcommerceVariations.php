@@ -99,8 +99,8 @@ class CreateEcommerceVariations extends Controller {
 		// is it type of Value?
 		// if type is value -> create / delete Product Variation (if allowed)
 		// elseif type is type - > add / remove selection...
-		$this->_product->addAttributeType($obj)
-		$this->_product->removeAttributeType($obj)
+		$this->_product->addAttributeType($obj);
+		$this->_product->removeAttributeType($obj);
 		die("not completed yet");
 		return $this->jsonforform();
 	}
