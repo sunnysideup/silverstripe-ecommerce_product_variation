@@ -147,19 +147,30 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 
 
-  function addAttributeType($attributeTypeObject) {
-    $existingCategories = $this->owner->VariationAttributes();
-    // method 1: Add many by iteration
-    $existingCategories->add($attributeTypeObject);
+  function addAttributeValue($attributeValue) {
+		die("not completed");
+    $existingVariations = $this->owner->Variations();
+    $existingVariations->add($attributeTypeObject);
+  }
+
+  function removeAttributeValue($attributeValue) {
+    die("not completed");
+    $existingVariations = $this->owner->Variations();
+    $existingVariations->remove($attributeTypeObject);
+	}
+	function addAttributeType($attributeTypeObject) {
+    $existingTypes = $this->owner->VariationAttributes();
+    $existingTypes->add($attributeTypeObject);
   }
 
   function removeAttributeType($attributeTypeObject) {
-    $existingCategories = $this->owner->VariationAttributes();
-    // method 1: Add many by iteration
-    $existingCategories->remove($attributeTypeObject);
+    $existingTypes = $this->owner->VariationAttributes();
+    $existingTypes->remove($attributeTypeObject);
   }
 
-	function getArrayOfLinkedProductAttributeIDs() {
+	function getArrayOfLinkedProductAttributeTypeIDs() {
+		/*
+		PROPER WAY - SLOW
 		$components = $this->owner->getManyManyComponents('VariationAttributes');
 		if($components && $components->count()) {
 			return $components->column("ID");
@@ -167,6 +178,38 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		else {
 			return array();
 		}
+		*/
+		$sql = "
+			Select \"ProductAttributeTypeID\"
+			FROM \"Product_VariationAttributes\"
+			WHERE \"ProductID\" = ".$this->owner->ID;
+		$data = DB::query($sql);
+		$array = array();
+		if($data && count($data)) {
+			foreach($data as $key => $row) {
+				$id = $row["ProductAttributeTypeID"];
+				$array[$id] = $id;
+			}
+		}
+		return $array;
+	}
+
+	function getArrayOfLinkedProductAttributeValueIDs() {
+		$sql = "
+			Select \"ProductAttributeValueID\"
+			FROM \"ProductVariation\"
+				INNER JOIN \"ProductVariation_AttributeValues\"
+					ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+			WHERE \"ProductVariation\".\"ProductID\" = ".$this->owner->ID;
+		$data = DB::query($sql);
+		$array = array();
+		if($data && count($data)) {
+			foreach($data as $key => $row) {
+				$id = $row["ProductAttributeValueID"];
+				$array[$id] = $id;
+			}
+		}
+		return $array;
 	}
 
 

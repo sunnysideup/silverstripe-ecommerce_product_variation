@@ -187,8 +187,11 @@ var CreateEcommerceVariationsField = {
 		var html = CreateEcommerceVariationsField.typesHolderHTML;
 		html = html.replace(/ID/g, typeData.TypeID);
 		html = html.replace(/NAME/g, typeData.TypeName);
-		if(!typeData.TypeIsSelected) {
+		if(parseInt(typeData.TypeIsSelected) == 0) {
 			html = html.replace(' checked="checked"', "");
+		}
+		else {
+			alert(typeData.TypeIsSelected);
 		}
 		if(typeData.CanDeleteType) {
 			html = html.replace('DELETE', '');
@@ -213,7 +216,7 @@ var CreateEcommerceVariationsField = {
 		var html = CreateEcommerceVariationsField.valuesHolderHTML;
 		html = html.replace(/ID/g, valueData.ValueID);
 		html = html.replace(/NAME/g, valueData.ValueName);
-		if(!valueData.ValueIsSelected) {
+		if(parseInt(valueData.ValueIsSelected) == 0) {
 			html = html.replace(' checked="checked"', "");
 		}
 		if(valueData.CanDeleteType) {

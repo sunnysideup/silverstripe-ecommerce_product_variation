@@ -23,6 +23,11 @@ class CreateEcommerceVariations extends Controller {
 	protected $_position = -1; //use -1 to distinguish it from 0 (first in sorting order)
 	protected $_message = ""; //use -1 to distinguish it from 0 (first in sorting order)
 	protected $_messageclass = "good"; //use -1 to distinguish it from 0 (first in sorting order)
+	protected $_selectedtypeid = array(); //use -1 to distinguish it from 0 (first in sorting order)
+	protected $_selectedvalueid = array(); //use -1 to distinguish it from 0 (first in sorting order)
+
+	protected static $session_name_for_selected_values = "SelectecedValues";
+
 
 	function init() {
 		parent::init();
@@ -46,8 +51,8 @@ class CreateEcommerceVariations extends Controller {
 		if(!$this->_product) {
 			user_error("could not find product for ID: ".$this->_productID, E_USER_WARNING);
 		}
-		print_r($this->_product->getArrayOfLinkedProductAttributeIDs());
-		die();
+		$this->_selectedtypeid = $this->_product->getArrayOfLinkedProductAttributeTypeIDs();
+		$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
 	}
 
 	function createvariations() {
@@ -63,7 +68,7 @@ class CreateEcommerceVariations extends Controller {
 			$json = '{ "Message": "'.$this->_message.'","MessageClass": "'.$this->_messageclass.'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
 			foreach($typeDos as $typeDo) {
 				$jsonTypeStringForArray = '{';
-				$typeDo->IsSelected = "to be coded";
+				$typeDo->IsSelected = isset($this->_selectedtypeid[$typeDo->ID]) ? 1 : 0;
 				$typeDo->CanDeleteType = $typeDo->canDelete();
 				$valueDos = $typeDo->Values();
 				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.$typeDo->Name.'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDeleteType": "'.$typeDo->CanDeleteType.'"';
@@ -72,7 +77,7 @@ class CreateEcommerceVariations extends Controller {
 					$jsonValueArray = array();
 					foreach($valueDos as $valueDo) {
 						$jsonValueStringForArray = '{';
-						$valueDo->IsSelected = "to be coded";
+						$valueDo->IsSelected = isset($this->_selectedvalueid[$valueDo->ID]) ? 1 : 0;
 						$valueDo->CanDeleteValue = $valueDo->canDelete();
 						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.$valueDo->Value.'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDeleteValue": "'.$valueDo->CanDeleteValue.'"';
 						$jsonValueStringForArray .= '}';
@@ -91,11 +96,13 @@ class CreateEcommerceVariations extends Controller {
 	}
 
 	function select() {
-		//is it Type or Value?
-		//is it select or unselect
-		//save value
+		// is it type of Value?
+		// if type is value -> create / delete Product Variation (if allowed)
+		// elseif type is type - > add / remove selection...
+		$this->_product->addAttributeType($obj)
+		$this->_product->removeAttributeType($obj)
 		die("not completed yet");
-		return "ok";
+		return $this->jsonforform();
 	}
 	function rename() {
 		//is it Type or Value?
