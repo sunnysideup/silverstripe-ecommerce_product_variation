@@ -68,13 +68,13 @@ class CreateEcommerceVariations extends Controller {
 			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
 		}
 		if($typeDos) {
-			$json = '{ "Message": "'.$this->_message.'","MessageClass": "'.$this->_messageclass.'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
+			$json = '{ "Message": "'.Convert::raw2att($this->_message).'","MessageClass": "'.Convert::raw2att($this->_messageclass).'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
 			foreach($typeDos as $typeDo) {
 				$jsonTypeStringForArray = '{';
 				$typeDo->IsSelected = isset($this->_selectedtypeid[$typeDo->ID]) ? 1 : 0;
 				$typeDo->CanDeleteType = $typeDo->canDelete();
 				$valueDos = $typeDo->Values();
-				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.$typeDo->Name.'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDeleteType": "'.$typeDo->CanDeleteType.'"';
+				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.Convert::raw2att($typeDo->Name).'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDeleteType": "'.$typeDo->CanDeleteType.'"';
 				if($valueDos) {
 					$jsonTypeStringForArray .= ', "ValueSize": '.$valueDos->count().', "ValueItems": [';
 					$jsonValueArray = array();
@@ -82,7 +82,7 @@ class CreateEcommerceVariations extends Controller {
 						$jsonValueStringForArray = '{';
 						$valueDo->IsSelected = isset($this->_selectedvalueid[$valueDo->ID]) ? 1 : 0;
 						$valueDo->CanDeleteValue = $valueDo->canDelete();
-						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.$valueDo->Value.'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDeleteValue": "'.$valueDo->CanDeleteValue.'"';
+						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.Convert::raw2att($valueDo->Value).'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDeleteValue": "'.$valueDo->CanDeleteValue.'"';
 						$jsonValueStringForArray .= '}';
 						$jsonValueArray[] = $jsonValueStringForArray;
 					}
