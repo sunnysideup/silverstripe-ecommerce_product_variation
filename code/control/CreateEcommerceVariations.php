@@ -9,28 +9,45 @@ class CreateEcommerceVariations extends Controller {
 		"select",
 		"rename",
 		"add",
-		"delete",
+		"remove",
 		"move",
 	);
 
 	protected $_productID = 0;
+	protected $_product = null;
 	protected $_typeorvalue = "type"; // or value!
+	protected $_classname = "type"; // or value!
+	protected $_namefield = "Name"; // or value!
 	protected $_id = 0;
-	protected $_valueID = 0;
-	protected $_name = "";
+	protected $_value = "";
 	protected $_position = -1; //use -1 to distinguish it from 0 (first in sorting order)
-	protected $_select = -1;//use -1 to distinguish it from 0 (not selected)
+	protected $_message = ""; //use -1 to distinguish it from 0 (first in sorting order)
+	protected $_messageclass = "good"; //use -1 to distinguish it from 0 (first in sorting order)
 
 	function init() {
 		parent::init();
 		if(!Permission::check("CMS_ACCESS_CMSMain")) {
 			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
 		}
-		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = $_GET["_typeorvalue"];}
-		if(isset($_GET["id"])) { $this->_id = intval($_GET["_id"]);}
-		if(isset($_GET["name"])) { $this->_name = urldecode($_GET["name"]);}
+		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = $_GET["typeorvalue"];}
+		if(isset($_GET["id"])) { $this->_id = intval($_GET["id"]);}
+		if(isset($_GET["value"])) { $this->_value = urldecode($_GET["value"]);}
 		if(isset($_GET["position"])) { $this->_position = intval($_GET["_position"]);}
-		if(isset($_GET["select"])) { $this->_select = intval($_GET["select"]);}
+		if($this->_typeorvalue == "type") {
+			$this->_classname = 'ProductAttributeType';
+			$this->_namefield = 'Name';
+		}
+		else {
+			$this->_classname = 'ProductAttributeValue';
+			$this->_namefield = 'Value';
+		}
+		$this->_productID = $this->request->param("ProductID");
+		$this->_product = DataObject::get_by_id("Product", $this->_productID);
+		if(!$this->_product) {
+			user_error("could not find product for ID: ".$this->_productID, E_USER_WARNING);
+		}
+		print_r($this->_product->getArrayOfLinkedProductAttributeIDs());
+		die();
 	}
 
 	function createvariations() {
@@ -43,7 +60,7 @@ class CreateEcommerceVariations extends Controller {
 		$jsonValueArray = array();
 		$typeDos = DataObject::get("ProductAttributeType");
 		if($typeDos) {
-			$json = '{ "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
+			$json = '{ "Message": "'.$this->_message.'","MessageClass": "'.$this->_messageclass.'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
 			foreach($typeDos as $typeDo) {
 				$jsonTypeStringForArray = '{';
 				$typeDo->IsSelected = "to be coded";
@@ -52,6 +69,7 @@ class CreateEcommerceVariations extends Controller {
 				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.$typeDo->Name.'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDeleteType": "'.$typeDo->CanDeleteType.'"';
 				if($valueDos) {
 					$jsonTypeStringForArray .= ', "ValueSize": '.$valueDos->count().', "ValueItems": [';
+					$jsonValueArray = array();
 					foreach($valueDos as $valueDo) {
 						$jsonValueStringForArray = '{';
 						$valueDo->IsSelected = "to be coded";
@@ -83,22 +101,54 @@ class CreateEcommerceVariations extends Controller {
 		//is it Type or Value?
 		//save new name
 		die("not completed yet");
-		return jsonforform();
+		return $this->jsonforform();
 	}
 	function add() {
 		//is it Type or Value?
-		//can the item be added
-		// add item
-		die("not completed yet");
-		return jsonforform();
+		$obj = new $this->_classname();
+		$obj->{$this->_namefield} = $this->_value;
+		if($this->_id) {
+			$obj->TypeID = $this->_id;
+			$obj->write();
+		}
+		else {
+			$obj->write();
+			if($obj instanceOf ProductAttributeType) {
+				$this->_product->addAttributeType($obj);
+			}
+			else {
+				user_error($obj->Title ." should be an instance of ProductAttributeType", E_USER_WARNING);
+			}
+		}
+
+		$this->_message = $this->_value.' '._t("CreateEcommerceVariations.HASBEENADDED",'has been added.');
+		return $this->jsonforform();
 	}
-	function delete() {
+	function remove() {
 		//is it Type or Value?
-		//can the item be deleted
-		// delete item if it is allowed
-		die("not completed yet");
-		return jsonforform();
+		$obj = DataObject::get_by_id($this->_classname, $this->_id);
+		if($obj) {
+			$name = $obj->{$this->_namefield};
+			if($obj->canDelete()) {
+				if($this->_typeorvalue == "type") {
+					$this->_product->removeAttributeType($obj);
+				}
+				$obj->delete();
+				$obj->destroy();
+				$this->_message = _t("CreateEcommerceVariations.HASBEENDELETED","$name has been deleted.");
+			}
+			else {
+				$this->_message = _t("CreateEcommerceVariations.CANNOTBEDELETED","$name can not be delete (it is probably used in a sale).");
+				$this->_messageclass = "bad";
+			}
+		}
+		else {
+			$this->_message = _t("CreateEcommerceVariations.CANNOTBEFOUND","Entry can not be found.");
+			$this->_messageclass = "bad";
+		}
+		return $this->jsonforform();
 	}
+
 	function move() {
 		//is it Type or Value?
 		//move Item
@@ -114,11 +164,31 @@ class CreateEcommerceVariations_Field extends LiteralField {
 	function __construct($name, $additionalContent = '', $productID) {
 		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
-		Requirements::javascript("ecommerce_product_variation/jquery/CreateEcommerceVariationsField.js");
-		Requirements::customScript("CreateEcommerceVariationsField.set_url('/createecommercevariations/')", "CreateEcommerceVariationsField_set_url");
+		Requirements::javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
+		Requirements::customScript("CreateEcommerceVariationsField.set_url('createecommercevariations')", "CreateEcommerceVariationsField_set_url");
 		Requirements::customScript("CreateEcommerceVariationsField.set_productID(".$productID.")", "CreateEcommerceVariationsField_set_productID");
-		Requirements::customScript("CreateEcommerceVariationsField.set_fieldID(".$this->Name().")", "CreateEcommerceVariationsField_set_fieldID");
-		parent::__construct($name, $content);
+		Requirements::customScript("CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner')", "CreateEcommerceVariationsField_set_fieldID");
+		Requirements::themedCSS("CreateEcommerceVariationsField");
+		$additionalContent .= $this->renderWith("CreateEcommerceVariations_Field");
+		parent::__construct($name, $additionalContent);
+	}
+
+	function ProductVariationGetPluralName() {
+		return Convert::raw2att(ProductVariation::get_plural_name());
+	}
+
+	function ProductAttributeTypeGetPluralName() {
+		return Convert::raw2att(ProductAttributeType::get_plural_name());
+	}
+	function ProductAttributeValueGetPluralName() {
+		return Convert::raw2att(ProductAttributeValue::get_plural_name());
+	}
+
+	function CheckboxField($name, $title) {
+		return new CheckboxField($name, $title);
+	}
+	function TextField($name, $title) {
+		return new TextField($name, $title);
 	}
 
 }

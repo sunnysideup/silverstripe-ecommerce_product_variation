@@ -45,6 +45,16 @@ class ProductVariation extends DataObject {
 
 	public static $default_sort = "Sort ASC, InternalItemID ASC";
 
+
+	public static $singular_name = "Product Variation";
+		static function set_singular_name($v) {self::$singular_name = $v;}
+		static function get_singular_name() {return self::$singular_name;}
+
+	public static $plural_name = "Product Variations";
+		static function set_plural_name($v) {self::$plural_name = $v;}
+		static function get_plural_name() {return self::$plural_name;}
+
+
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		//add attributes dropdowns

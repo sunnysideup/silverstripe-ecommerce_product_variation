@@ -24,8 +24,13 @@ class ProductAttributeType extends DataObject{
 	);
 
 	public static $singular_name = "Attribute Type";
+		static function set_singular_name($v) {self::$singular_name = $v;}
+		static function get_singular_name() {return self::$singular_name;}
 
 	public static $plural_name = "Attribute Types";
+		static function set_plural_name($v) {self::$plural_name = $v;}
+		static function get_plural_name() {return self::$plural_name;}
+
 
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
@@ -101,6 +106,21 @@ class ProductAttributeType extends DataObject{
 		}
 		return false;
 	}
+
+	function onBeforeWrite() {
+		parent::onBeforeWrite();
+		if(!$this->Name) {
+			$this->Name = self::get_singular_name();
+			$i = 0;
+			while(DataObject::get_one($this->ClassName, "\"Name\" = '".$this->Name."'")) {
+				$this->Name = self::get_singular_name()."_".$i;
+			}
+		}
+		if(!$this->Label) {
+			$this->Label = $this->Name;
+		}
+	}
+
 }
 
 
