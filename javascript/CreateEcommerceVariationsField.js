@@ -190,9 +190,6 @@ var CreateEcommerceVariationsField = {
 		if(parseInt(typeData.TypeIsSelected) == 0) {
 			html = html.replace(' checked="checked"', "");
 		}
-		else {
-			alert(typeData.TypeIsSelected);
-		}
 		if(typeData.CanDeleteType) {
 			html = html.replace('DELETE', '');
 		}
