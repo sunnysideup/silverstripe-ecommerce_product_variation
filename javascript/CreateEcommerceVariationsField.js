@@ -38,12 +38,12 @@ var CreateEcommerceVariationsField = {
 	createButtonHolderHTML: "",
 
 	init: function() {
-		this.messageHTML = jQuery("#CreateEcommerceVariationsTemplate .message").html();
-		this.typeAddFirstHolderHTML = jQuery("#CreateEcommerceVariationsTemplate .typeAddFirstHolder").html();
-		this.typeAddHolderHTML = jQuery("#CreateEcommerceVariationsTemplate .typeAddHolder").html();
-		this.typesHolderHTML = jQuery("#CreateEcommerceVariationsTemplate .typeHolder").html();
-		this.valuesHolderHTML = jQuery("#CreateEcommerceVariationsTemplate .valueHolder").html();
-		this.createButtonHolderHTML = jQuery("#CreateEcommerceVariationsTemplate .createButtonHolder").html();
+		this.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
+		this.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
+		this.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
+		this.typesHolderHTML = '<li class="typeHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeHolder").html()+'</li>';
+		this.valuesHolderHTML = '<li class="valueHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.valueHolder").html()+'</li>';
+		this.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
 		jQuery("#CreateEcommerceVariationsTemplate").remove();
 		this.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
 		CreateEcommerceVariationsField.attachFunctions();
@@ -63,7 +63,6 @@ var CreateEcommerceVariationsField = {
 		if(!getVariables) {
 			getVariables = {};
 		}
-		this.removeOldStuff();
 		this.getDataFromServer(action, getVariables);
 	},
 
@@ -77,6 +76,7 @@ var CreateEcommerceVariationsField = {
 		}
 		else {
 			this.addAddLinkToggles();
+			this.addEditLinkToggles();
 			this.add();
 			this.rename();
 			this.move();
@@ -98,6 +98,15 @@ var CreateEcommerceVariationsField = {
 		jQuery(".addLabelLink").click(
 			function() {
 				jQuery(this).parent("label").next("div").slideToggle();
+			}
+		);
+	},
+
+	addEditLinkToggles: function() {
+		jQuery(".editNameLink").click(
+			function() {
+				var rel = "#editFieldFor"+jQuery(this).attr("rel");
+				jQuery(rel).slideToggle();
 			}
 		);
 	},
@@ -152,6 +161,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	getDataFromServer: function(action, getVariables) {
+		jQuery("#"+CreateEcommerceVariationsField.fieldID).addClass("loading");
 		jQuery.getJSON(
 			'/' + CreateEcommerceVariationsField.url+'/' + action + '/'+CreateEcommerceVariationsField.productID+'/',
 			getVariables,
@@ -160,7 +170,7 @@ var CreateEcommerceVariationsField = {
 					//do nothing
 				}
 				else {
-					html = '<div>';
+					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
 					var count = parseInt(data.TypeSize);
 					if(count) {
 						var typeHtml = '';
@@ -168,16 +178,18 @@ var CreateEcommerceVariationsField = {
 							typeData = data.TypeItems[i];
 							typeHtml += CreateEcommerceVariationsField.createTypeNode(typeData);
 						}
-						html += '<ul>'+CreateEcommerceVariationsField.messageHTML+typeHtml+CreateEcommerceVariationsField.typeAddHolderHTML+CreateEcommerceVariationsField.createButtonHolderHTML+'</ul>';
+						html += typeHtml+CreateEcommerceVariationsField.typeAddHolderHTML+CreateEcommerceVariationsField.createButtonHolderHTML;
 					}
 					else {
-						html += '<ul>'+CreateEcommerceVariationsField.messageHTML+CreateEcommerceVariationsField.typeAddFirstHolderHTML+'</ul>';
+						html += CreateEcommerceVariationsField.typeAddHolderHTML+CreateEcommerceVariationsField.typeAddFirstHolderHTML;
 					}
-					jQuery("#"+CreateEcommerceVariationsField.fieldID).html(html);
-					html += '</div>';
-					html = html.replace(/GOODORBAD/g, data.MessageClass);
+					html += '</ul></div>';
 					html = html.replace(/MESSAGE/g, data.Message);
+					html = html.replace(/GOODORBAD/g, data.MessageClass);
+					CreateEcommerceVariationsField.removeOldStuff();
+					jQuery("#"+CreateEcommerceVariationsField.fieldID).html(html);
 					CreateEcommerceVariationsField.attachFunctions();
+					jQuery("#"+CreateEcommerceVariationsField.fieldID).removeClass("loading");
 				}
 			}
 		);

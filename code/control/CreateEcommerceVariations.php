@@ -64,6 +64,9 @@ class CreateEcommerceVariations extends Controller {
 		$jsonTypeArray = array();
 		$jsonValueArray = array();
 		$typeDos = DataObject::get("ProductAttributeType");
+		if(!$this->_message) {
+			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
+		}
 		if($typeDos) {
 			$json = '{ "Message": "'.$this->_message.'","MessageClass": "'.$this->_messageclass.'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
 			foreach($typeDos as $typeDo) {
@@ -145,7 +148,7 @@ class CreateEcommerceVariations extends Controller {
 				$this->_message = _t("CreateEcommerceVariations.HASBEENDELETED","$name has been deleted.");
 			}
 			else {
-				$this->_message = _t("CreateEcommerceVariations.CANNOTBEDELETED","$name can not be delete (it is probably used in a sale).");
+				$this->_message = _t("CreateEcommerceVariations.CANNOTBEDELETED","$name can not be deleted (it is probably used in a sale).");
 				$this->_messageclass = "bad";
 			}
 		}
