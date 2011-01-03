@@ -57,6 +57,7 @@ class ProductVariation extends DataObject {
 
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
+		$fields->removeFieldFromTab("Root.Main", "Version");
 		//add attributes dropdowns
 		if($this->Product()->VariationAttributes()->exists() && $attributes = $this->Product()->VariationAttributes()){
 			foreach($attributes as $attribute){
@@ -64,7 +65,7 @@ class ProductVariation extends DataObject {
 					if($value = $this->AttributeValues()->find('TypeID',$attribute->ID)) {
 						$field->setValue($value->ID);
 					}
-					$fields->push($field);
+					$fields->addFieldToTab("Root.Specifications", $field);
 				}
 				//TODO: allow setting custom value, rather than visiting the products section
 			}
@@ -84,7 +85,7 @@ class ProductVariation extends DataObject {
 		}
 		unset($_POST['ProductAttributes']);
 		//not sure if this second write is required....
-		$this->write();
+		//$this->write();
 	}
 
 	function getTitle(){
