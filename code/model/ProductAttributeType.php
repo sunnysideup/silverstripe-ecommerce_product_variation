@@ -2,7 +2,7 @@
 
 class ProductAttributeType extends DataObject{
 
-	static $db = array(
+	public static $db = array(
 		'Name' => 'Varchar', //for back-end use
 		'Label' => 'Varchar', //for front-end use
 		'Sort' => 'Int' //for front-end use
@@ -109,12 +109,13 @@ class ProductAttributeType extends DataObject{
 
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
-		if(!$this->Name) {
+		$i = 0;
+		while(!$this->Name || DataObject::get_one($this->ClassName, "\"Name\" = '".$this->Name."' AND \"".$this->ClassName."\".\"ID\" <> ".intval($this->ID))) {
 			$this->Name = self::get_singular_name();
-			$i = 0;
-			while(DataObject::get_one($this->ClassName, "\"Name\" = '".$this->Name."'")) {
-				$this->Name = self::get_singular_name()."_".$i;
+			if($i) {
+				$this->Name .= "_".$i;
 			}
+			$i++;
 		}
 		if(!$this->Label) {
 			$this->Label = $this->Name;
