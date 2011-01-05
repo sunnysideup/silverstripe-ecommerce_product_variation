@@ -82,6 +82,7 @@ var CreateEcommerceVariationsField = {
 			this.move();
 			this.select();
 			this.remove();
+			this.createVariations();
 		}
 	},
 
@@ -160,7 +161,17 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 	},
-
+	
+	createVariations: function() {
+		jQuery('li.createButtonHolder input').click(
+			function() {
+				data = CreateEcommerceVariationsField.selectGetVariables();
+				CreateEcommerceVariationsField.reset('createvariations', data);
+				return false;
+			}
+		);
+	},
+	
 	getDataFromServer: function(action, getVariables) {
 		jQuery("#"+CreateEcommerceVariationsField.fieldID).addClass("loading");
 		jQuery.getJSON(
@@ -249,9 +260,28 @@ var CreateEcommerceVariationsField = {
 		a.value = escape(jQuery(inputElement).val());
 		a.id = jQuery(inputElement).attr("rel");
 		return a;
+	},
+
+	selectGetVariables: function() {
+		var types = jQuery('#' + CreateEcommerceVariationsField.fieldID + ' input.dataForType:checked');
+		var a = {};
+		jQuery(types).each(
+			function() {
+				var values = jQuery(this).parents('li.typeHolder').find('input.dataForValue:checked');
+				if(jQuery(values).length > 0) {
+					var ids = '';
+					jQuery(values).each(
+						function() {
+							if(ids.length > 0) ids += ',';
+							ids += jQuery(this).attr('rel');
+						}
+					);
+					a[jQuery(this).attr('rel')] = ids;
+				}
+			}
+		);
+		return a;
 	}
-
-
 }
 
 /*
