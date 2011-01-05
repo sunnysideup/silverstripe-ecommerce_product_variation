@@ -57,57 +57,30 @@ class CreateEcommerceVariations extends Controller {
 
 	function createvariations() {
 		$types = DataObject::get('ProductAttributeType');
-		$cpt = 0;
 		if($types) {
-			$variations = array();
+			$values = array();
 			foreach($types as $type) {
 				if(isset($_GET[$type->ID])) {
-					$this->_product->addAttributeType($type);
-					$values = explode(',', $_GET[$type->ID]);
-					$copyVariations = $variations;
-					$variations = array();
-					foreach($values as $value) {
-						$value = array($value);
-						if(count($copyVariations) > 0) {
-							foreach($copyVariations as $variation) {
-								$variations[] = array_merge($variation, $value);
-							}
-						}
-						else {
-							$variations[] = $value;
-						}
-					}
+					$values[$type->ID] = explode(',', $_GET[$type->ID]);
 				}
 			}
-			foreach($variations as $variation) {
-				sort($variation);
-				$str = implode(',', $variation);
-				$add = true;
-				$productVariationIDs = DB::query("SELECT `ID` FROM `ProductVariation` WHERE `ProductID` = '$this->_productID'")->column();
-				if(count($productVariationIDs) > 0) {
-					$productVariationIDs = implode(',', $productVariationIDs);
-					$variationValues = DB::query("SELECT GROUP_CONCAT(`ProductAttributeValueID` ORDER BY `ProductAttributeValueID` SEPARATOR ',') FROM `ProductVariation_AttributeValues` WHERE `ProductVariationID` IN ($productVariationIDs) GROUP BY `ProductVariationID`")->column();
-					if(in_array($str, $variationValues)) $add = false;
-				}
-				if($add) {
-					$cpt++;
-					$newVariation = new ProductVariation(array(
-						'ProductID' => $this->_productID,
-						'Price' => $this->_product->Price
-					));
-					$newVariation->write();
-					$newVariation->AttributeValues()->addMany($variation);
-				}
+			$cpt = 0;
+			if(count($values) > 0) {
+				$cpt = $this->_product->generateVariationsFromAttributeValues($values);
 			}
-		}
-		if($cpt > 0) {
-			$this->_message = ($cpt == 1 ? '1 new variation has' : "$cpt new variations have") . ' been created successfully';
+			if($cpt > 0) {
+				$this->_message = ($cpt == 1 ? '1 new variation has' : "$cpt new variations have") . ' been created successfully';
+			}
+			else {
+				$this->_message = 'No new variations created';
+			}
 		}
 		else {
-			$this->_message = 'No new variations created';
+			$this->_message = 'No attribute types';
 		}
 		return $this->jsonforform();
 	}
+		
 	function jsonforform() {
 		//create dataobjectset here...
 		$jsonTypeArray = array();

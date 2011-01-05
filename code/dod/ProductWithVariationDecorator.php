@@ -147,7 +147,48 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 	}
 
-
+	function generateVariationsFromAttributeValues(array $values) {
+		$cpt = 0;
+		$variations = array();
+		foreach($values as $typeID => $typeValues) {
+			$this->owner->addAttributeType($typeID);
+			$copyVariations = $variations;
+			$variations = array();
+			foreach($typeValues as $value) {
+				$value = array($value);
+				if(count($copyVariations) > 0) {
+					foreach($copyVariations as $variation) {
+						$variations[] = array_merge($variation, $value);
+					}
+				}
+				else {
+					$variations[] = $value;
+				}
+			}
+		}
+		foreach($variations as $variation) {
+			sort($variation);
+			$str = implode(',', $variation);
+			$add = true;
+			$productVariationIDs = DB::query("SELECT `ID` FROM `ProductVariation` WHERE `ProductID` = '{$this->owner->ID}'")->column();
+			if(count($productVariationIDs) > 0) {
+				$productVariationIDs = implode(',', $productVariationIDs);
+				$variationValues = DB::query("SELECT GROUP_CONCAT(`ProductAttributeValueID` ORDER BY `ProductAttributeValueID` SEPARATOR ',') FROM `ProductVariation_AttributeValues` WHERE `ProductVariationID` IN ($productVariationIDs) GROUP BY `ProductVariationID`")->column();
+				if(in_array($str, $variationValues)) $add = false;
+			}
+			if($add) {
+				$cpt++;
+				$newVariation = new ProductVariation(array(
+					'ProductID' => $this->owner->ID,
+					'Price' => $this->owner->Price
+				));
+				$newVariation->write();
+				$newVariation->AttributeValues()->addMany($variation);
+			}
+		}
+		return $cpt;
+	}
+	
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
 			return null;
