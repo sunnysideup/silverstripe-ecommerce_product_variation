@@ -81,6 +81,22 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return $tableField;
 	}
 
+	function VariationIsInCart() {
+		$variations = $this->owner->Variations();
+		if($variations) {
+			foreach($variations as $variation) {
+				if($variation->OrderItem() && $variation->OrderItem()->Quantity > 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	function VariationOrProductIsInCart() {
+		return ($this->owner->IsInCart() || $this->VariationIsInCart());
+	}
+
 	/*
 	 * Generates variations based on selected attributes.
 	 */
