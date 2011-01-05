@@ -30,6 +30,18 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return $allowpurchase;
 	}
 
+	function NumberOfVariations() {
+		$vars = $this->owner->Variations();
+		if($vars) {
+			return count($vars);
+		}
+		return 0;
+	}
+
+	function HasVariations() {
+		return $this->NumberOfVariations() ? true : false;
+	}
+
 	function updateCMSFields(FieldSet &$fields) {
 		$tabName = 'Root.Content.'.ProductVariation::get_plural_name();
 		$fields->addFieldToTab($tabName,new HeaderField(ProductVariation::get_plural_name().' for '.$this->owner->Title));
@@ -63,11 +75,9 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			null,
 			$filter
 		);
-
 		if(method_exists($tableField, 'setRelationAutoSetting')) {
 			$tableField->setRelationAutoSetting(true);
 		}
-
 		return $tableField;
 	}
 
@@ -226,7 +236,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
-				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")."$attribute->Label ...",$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
 				$requiredfields[] = "ProductAttributes[$attribute->ID]";
 			}
 		}
@@ -281,8 +291,6 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 		return $vals;
 	}
-
-  static $many_many = array("Categories" => "Category");
 
 
 
