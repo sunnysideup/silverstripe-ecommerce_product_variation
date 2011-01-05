@@ -56,8 +56,57 @@ class CreateEcommerceVariations extends Controller {
 	}
 
 	function createvariations() {
-		die("not completed yet");
-		LeftAndMain::forceReload();
+		$types = DataObject::get('ProductAttributeType');
+		$cpt = 0;
+		if($types) {
+			$variations = array();
+			foreach($types as $type) {
+				if(isset($_GET[$type->ID])) {
+					$this->_product->addAttributeType($type);
+					$values = explode(',', $_GET[$type->ID]);
+					$copyVariations = $variations;
+					$variations = array();
+					foreach($values as $value) {
+						$value = array($value);
+						if(count($copyVariations) > 0) {
+							foreach($copyVariations as $variation) {
+								$variations[] = array_merge($variation, $value);
+							}
+						}
+						else {
+							$variations[] = $value;
+						}
+					}
+				}
+			}
+			foreach($variations as $variation) {
+				sort($variation);
+				$str = implode(',', $variation);
+				$add = true;
+				$productVariationIDs = DB::query("SELECT `ID` FROM `ProductVariation` WHERE `ProductID` = '$this->_productID'")->column();
+				if(count($productVariationIDs) > 0) {
+					$productVariationIDs = implode(',', $productVariationIDs);
+					$variationValues = DB::query("SELECT GROUP_CONCAT(`ProductAttributeValueID` ORDER BY `ProductAttributeValueID` SEPARATOR ',') FROM `ProductVariation_AttributeValues` WHERE `ProductVariationID` IN ($productVariationIDs) GROUP BY `ProductVariationID`")->column();
+					if(in_array($str, $variationValues)) $add = false;
+				}
+				if($add) {
+					$cpt++;
+					$newVariation = new ProductVariation(array(
+						'ProductID' => $this->_productID,
+						'Price' => $this->_product->Price
+					));
+					$newVariation->write();
+					$newVariation->AttributeValues()->addMany($variation);
+				}
+			}
+		}
+		if($cpt > 0) {
+			$this->_message = ($cpt == 1 ? '1 new variation has' : "$cpt new variations have") . ' been created successfully';
+		}
+		else {
+			$this->_message = 'No new variations created';
+		}
+		return $this->jsonforform();
 	}
 	function jsonforform() {
 		//create dataobjectset here...
@@ -67,6 +116,7 @@ class CreateEcommerceVariations extends Controller {
 		if(!$this->_message) {
 			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
 		}
+		$json = '{';
 		if($typeDos) {
 			$json = '{ "Message": "'.Convert::raw2att($this->_message).'","MessageClass": "'.Convert::raw2att($this->_messageclass).'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
 			foreach($typeDos as $typeDo) {
