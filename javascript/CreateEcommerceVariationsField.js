@@ -176,7 +176,7 @@ var CreateEcommerceVariationsField = {
 	getDataFromServer: function(action, getVariables) {
 		jQuery("#"+CreateEcommerceVariationsField.fieldID).addClass("loading");
 		jQuery.getJSON(
-			'/' + CreateEcommerceVariationsField.url+'/' + action + '/'+CreateEcommerceVariationsField.productID+'/',
+			jQuery('base').attr("href")+'/' + CreateEcommerceVariationsField.url+'/' + action + '/'+CreateEcommerceVariationsField.productID+'/',
 			getVariables,
 			function(data) {
 				if(data == "ok") {
@@ -207,7 +207,7 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 	},
-	
+
 	createTypeNode: function(typeData) {
 		var html = CreateEcommerceVariationsField.typesHolderHTML;
 		html = html.replace(/ID/g, typeData.TypeID);
