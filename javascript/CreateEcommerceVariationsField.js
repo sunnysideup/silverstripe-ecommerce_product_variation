@@ -161,7 +161,7 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 	},
-	
+
 	createVariations: function() {
 		jQuery('li.createButtonHolder input').click(
 			function() {
@@ -173,7 +173,7 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 	},
-	
+
 	getDataFromServer: function(action, getVariables) {
 		jQuery("#"+CreateEcommerceVariationsField.fieldID).addClass("loading");
 		jQuery.getJSON(
@@ -232,6 +232,7 @@ var CreateEcommerceVariationsField = {
 			}
 		}
 		html = html.replace(/<li>VALUEHOLDER<\/li>/g, valueHtml);
+		html = html.replace(/ChangeToId/g, "ID");
 		return html;
 	},
 
@@ -248,6 +249,7 @@ var CreateEcommerceVariationsField = {
 		else {
 			html = html.replace("DELETE", 'display: none');
 		}
+		html = html.replace(/ChangeToId/g, "ID");
 		return html;
 	},
 

@@ -37,7 +37,8 @@ class ProductVariation extends DataObject {
 
 	public static $indexes = array(
 		"Sort" => true
-	)
+	);
+
 	public static $defaults = array(
 		"AllowPurchase" => 1
 	);
