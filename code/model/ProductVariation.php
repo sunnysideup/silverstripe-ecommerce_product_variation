@@ -9,6 +9,7 @@ class ProductVariation extends DataObject {
 	public static $db = array(
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
+		'AllowPurchase' => 'Boolean',
 		'Sort' => "Int"
 	);
 
