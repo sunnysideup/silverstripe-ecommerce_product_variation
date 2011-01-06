@@ -167,6 +167,8 @@ var CreateEcommerceVariationsField = {
 			function() {
 				data = CreateEcommerceVariationsField.selectGetVariables();
 				CreateEcommerceVariationsField.reset('createvariations', data);
+				jQuery('#Form_EditForm_action_save').click();
+				//jQuery('Form_EditForm').getPageFromServer(CreateEcommerceVariationsField.productID);
 				return false;
 			}
 		);
@@ -206,7 +208,7 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 	},
-
+	
 	createTypeNode: function(typeData) {
 		var html = CreateEcommerceVariationsField.typesHolderHTML;
 		html = html.replace(/ID/g, typeData.TypeID);
