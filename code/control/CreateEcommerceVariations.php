@@ -234,10 +234,14 @@ class CreateEcommerceVariations_Field extends LiteralField {
 	}
 
 	function AttributeSorterLink() {
-		return DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "sort types");
+		if(class_exists("DataObjectSorterController")) {
+			return DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
+		}
 	}
 	function ValueSorterLink() {
-		return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "sort values");
+		if(class_exists("DataObjectSorterController")) {
+			return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "sort values");
+		}
 	}
 
 }
