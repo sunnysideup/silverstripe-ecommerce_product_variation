@@ -71,8 +71,9 @@ class ProductAttributeValue extends DataObject{
 				$this->Value = self::get_singular_name()."_".$i;
 			}
 		}
+		// Remove Variations
+		$variations = $this->ProductVariation();
+		foreach($variations as $variation) $variation->delete();
 	}
-
-
 }
 

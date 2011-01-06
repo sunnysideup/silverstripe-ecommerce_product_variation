@@ -95,17 +95,17 @@ class CreateEcommerceVariations extends Controller {
 			foreach($typeDos as $typeDo) {
 				$jsonTypeStringForArray = '{';
 				$typeDo->IsSelected = isset($this->_selectedtypeid[$typeDo->ID]) ? 1 : 0;
-				$typeDo->CanDeleteType = $typeDo->canDelete();
+				$typeDo->CanDelete = $typeDo->canDelete() ? 1 : 0;
 				$valueDos = $typeDo->Values();
-				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.Convert::raw2att($typeDo->Name).'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDeleteType": "'.$typeDo->CanDeleteType.'"';
+				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.Convert::raw2att($typeDo->Name).'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDelete": "'.$typeDo->CanDelete.'"';
 				if($valueDos) {
 					$jsonTypeStringForArray .= ', "ValueSize": '.$valueDos->count().', "ValueItems": [';
 					$jsonValueArray = array();
 					foreach($valueDos as $valueDo) {
 						$jsonValueStringForArray = '{';
 						$valueDo->IsSelected = isset($this->_selectedvalueid[$valueDo->ID]) ? 1 : 0;
-						$valueDo->CanDeleteValue = $valueDo->canDelete();
-						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.Convert::raw2att($valueDo->Value).'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDeleteValue": "'.$valueDo->CanDeleteValue.'"';
+						$valueDo->CanDelete = $valueDo->canDelete() ? 0 : 1;
+						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.Convert::raw2att($valueDo->Value).'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDelete": "'.$valueDo->CanDelete.'"';
 						$jsonValueStringForArray .= '}';
 						$jsonValueArray[] = $jsonValueStringForArray;
 					}
@@ -120,7 +120,7 @@ class CreateEcommerceVariations extends Controller {
 		$json .= '} ';
 		return $json;
 	}
-
+	
 	function select() {
 		// is it type of Value?
 		// if type is value -> create / delete Product Variation (if allowed)
