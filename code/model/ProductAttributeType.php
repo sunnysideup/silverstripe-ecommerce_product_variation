@@ -93,20 +93,11 @@ class ProductAttributeType extends DataObject{
 
 
 	public function canDelete($member = null) {
-		$objects = DataObject::get("ProductAttributeValue", "TypeID = ".$this->ID);
-		if(!$objects) {
-			return true;
+		$values = $this->Values();
+		foreach($values as $value) {
+			if(! $value->canDelete()) return false;
 		}
-		else {
-			$canDelete = true;
-			foreach($objects as $obj) {
-				if($obj->canDelete()) {
-					$canDelete = false;
-				}
-			}
-			return $canDelete;
-		}
-		return false;
+		return true;
 	}
 
 	function onBeforeWrite() {
@@ -126,12 +117,10 @@ class ProductAttributeType extends DataObject{
 
 	function onBeforeDelete() {
 		parent::onBeforeDelete();
-		$objects = DataObject::get("ProductAttributeValue", "TypeID = ".$this->ID);
-		if($objects) {
-			foreach($objects as $obj) {
-				$obj->delete();
-				$obj->destroy();
-			}
+		$values = $this->Values();
+		foreach($values as $value) {
+			$value->delete();
+			$value->destroy();
 		}
 	}
 

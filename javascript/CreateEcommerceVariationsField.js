@@ -166,8 +166,24 @@ var CreateEcommerceVariationsField = {
 		jQuery('li.createButtonHolder input').click(
 			function() {
 				data = CreateEcommerceVariationsField.selectGetVariables();
-				CreateEcommerceVariationsField.reset('createvariations', data);
-				jQuery('#Form_EditForm_action_save').click();
+				var mandatoryTypes = jQuery('#' + CreateEcommerceVariationsField.fieldID + ' input.dataForType:disabled:checked');
+				var missingTypes = new Array();
+				jQuery(mandatoryTypes).each(
+					function() {
+						var rel = jQuery(this).attr('rel');
+						if(data[rel] == undefined) {
+							var type = '#' + CreateEcommerceVariationsField.fieldID + ' a[rel=Type' + rel + ']';
+							missingTypes.push(jQuery(type).text());
+						}
+					}
+				);
+				if(missingTypes.length > 0) {
+					alert('You need to select values for the types ' + missingTypes.join(', ') + '.');
+				}
+				else {
+					CreateEcommerceVariationsField.reset('createvariations', data);
+					jQuery('#Form_EditForm_action_save').click();
+				}
 				return false;
 			}
 		);
@@ -184,72 +200,72 @@ var CreateEcommerceVariationsField = {
 				}
 				else {
 					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
-					var count = parseInt(data.TypeSize);
-					if(count) {
-						var typeHtml = '';
-						for(var i = 0; i < count; i++ ) {
-							typeData = data.TypeItems[i];
-							typeHtml += CreateEcommerceVariationsField.createTypeNode(typeData);
-						}
-						html += typeHtml+CreateEcommerceVariationsField.typeAddHolderHTML+CreateEcommerceVariationsField.createButtonHolderHTML;
-					}
-					else {
-						html += CreateEcommerceVariationsField.typeAddHolderHTML+CreateEcommerceVariationsField.typeAddFirstHolderHTML;
-					}
-					html += '</ul></div>';
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
+					var types = data.Types;
+					if(types.length > 0) {
+						var typeHtml = '';
+						for(var i = 0; i < types.length; i++) {
+							typeHtml += CreateEcommerceVariationsField.createTypeNode(types[i]);
+						}
+						html += typeHtml + CreateEcommerceVariationsField.typeAddHolderHTML + CreateEcommerceVariationsField.createButtonHolderHTML;
+					}
+					else {
+						html += CreateEcommerceVariationsField.typeAddHolderHTML + CreateEcommerceVariationsField.typeAddFirstHolderHTML;
+					}
+					html += '</ul></div>';
 					CreateEcommerceVariationsField.removeOldStuff();
-					jQuery("#"+CreateEcommerceVariationsField.fieldID).html(html);
+					jQuery('#' + CreateEcommerceVariationsField.fieldID).html(html);
 					CreateEcommerceVariationsField.attachFunctions();
-					jQuery("#"+CreateEcommerceVariationsField.fieldID).removeClass("loading");
+					jQuery('#' + CreateEcommerceVariationsField.fieldID).removeClass('loading');
 				}
 			}
 		);
 	},
 
-	createTypeNode: function(typeData) {
+	createTypeNode: function(type) {
 		var html = CreateEcommerceVariationsField.typesHolderHTML;
-		html = html.replace(/ID/g, typeData.TypeID);
-		html = html.replace(/NAME/g, typeData.TypeName);
-		if(parseInt(typeData.TypeIsSelected) == 0) {
-			html = html.replace(' checked="checked"', "");
+		html = html.replace(/ID/g, type.ID);
+		html = html.replace(/NAME/g, type.Name);
+		if(! type.Checked) {
+			html = html.replace(' checked="checked"', '');
 		}
-		if(parseInt(typeData.CanDelete) == 1) {
+		if(! type.Disabled) {
+			html = html.replace(' disabled="disabled"', '');
+		}
+		if(type.CanDelete) {
 			html = html.replace('DELETE', '');
 		}
 		else {
 			html = html.replace('DELETE', 'display: none;');
 		}
-		//valueHolder
-		var count = parseInt(typeData.ValueSize);
+		var values = type.Values;
 		var valueHtml = '';
-		if(count) {
-			for(var i = 0; i < count; i++ ) {
-				var valueData = typeData.ValueItems[i];
-				valueHtml += CreateEcommerceVariationsField.createValueNode(valueData);
+		if(values.length > 0) {
+			for(var i = 0; i < values.length; i++) {
+				valueHtml += CreateEcommerceVariationsField.createValueNode(values[i]);
 			}
 		}
 		html = html.replace(/<li>VALUEHOLDER<\/li>/g, valueHtml);
-		html = html.replace(/ChangeToId/g, "ID");
+		html = html.replace(/ChangeToId/g, 'ID');
 		return html;
 	},
 
-	createValueNode: function(valueData) {
+	createValueNode: function(value) {
 		var html = CreateEcommerceVariationsField.valuesHolderHTML;
-		html = html.replace(/ID/g, valueData.ValueID);
-		html = html.replace(/NAME/g, valueData.ValueName);
-		if(parseInt(valueData.ValueIsSelected) == 0) {
-			html = html.replace(' checked="checked"', "");
+		html = html.replace(/ID/g, value.ID);
+		html = html.replace(/NAME/g, value.Name);
+		if(! value.Checked) {
+			html = html.replace(' checked="checked"', '');
 		}
-		if(parseInt(valueData.CanDelete) == 1) {
+		if(value.CanDelete) {
 			html = html.replace("DELETE", '');
 		}
 		else {
-			console.debug(valueData.ValueName + ' : Can Not Delete');
+			console.debug(value.Name + ' : Can Not Delete');
 			html = html.replace("DELETE", 'display: none;');
 		}
-		html = html.replace(/ChangeToId/g, "ID");
+		html = html.replace(/ChangeToId/g, 'ID');
 		return html;
 	},
 

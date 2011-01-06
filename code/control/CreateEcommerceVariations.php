@@ -82,43 +82,36 @@ class CreateEcommerceVariations extends Controller {
 	}
 
 	function jsonforform() {
-		//create dataobjectset here...
-		$jsonTypeArray = array();
-		$jsonValueArray = array();
-		$typeDos = DataObject::get("ProductAttributeType");
-		if(!$this->_message) {
+		if(! $this->_message) {
 			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
 		}
-		$json = '{';
-		if($typeDos) {
-			$json = '{ "Message": "'.Convert::raw2att($this->_message).'","MessageClass": "'.Convert::raw2att($this->_messageclass).'", "TypeSize": '.$typeDos->count().', "TypeItems": [ ';
-			foreach($typeDos as $typeDo) {
-				$jsonTypeStringForArray = '{';
-				$typeDo->IsSelected = isset($this->_selectedtypeid[$typeDo->ID]) ? 1 : 0;
-				$typeDo->CanDelete = $typeDo->canDelete() ? 1 : 0;
-				$valueDos = $typeDo->Values();
-				$jsonTypeStringForArray .= '"TypeID": "'.$typeDo->ID.'", "TypeName": "'.Convert::raw2att($typeDo->Name).'", "TypeIsSelected": "'.$typeDo->IsSelected.'", "CanDelete": "'.$typeDo->CanDelete.'"';
-				if($valueDos) {
-					$jsonTypeStringForArray .= ', "ValueSize": '.$valueDos->count().', "ValueItems": [';
-					$jsonValueArray = array();
-					foreach($valueDos as $valueDo) {
-						$jsonValueStringForArray = '{';
-						$valueDo->IsSelected = isset($this->_selectedvalueid[$valueDo->ID]) ? 1 : 0;
-						$valueDo->CanDelete = $valueDo->canDelete() ? 1 : 0;
-						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.Convert::raw2att($valueDo->Value).'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDelete": "'.$valueDo->CanDelete.'"';
-						$jsonValueStringForArray .= '}';
-						$jsonValueArray[] = $jsonValueStringForArray;
+		$result['Message'] = $this->_message;
+		$result['MessageClass'] = $this->_messageclass;
+		$types = DataObject::get('ProductAttributeType');
+		if($types) {
+			foreach($types as $type) {
+				$resultType = array(
+					'ID' => $type->ID,
+					'Name' => $type->Name,
+					'Checked' => isset($this->_selectedtypeid[$type->ID]),
+					'Disabled' => ! $this->_product->canRemoveAttributeType($type),
+					'CanDelete' => $type->canDelete()
+				);
+				$values = $type->Values();
+				if($values) {
+					foreach($values as $value) {
+						$resultType['Values'][] = array(
+							'ID' => $value->ID,
+							'Name' => $value->Value,
+							'Checked' => isset($this->_selectedvalueid[$value->ID]),
+							'CanDelete' => $value->canDelete()
+						);
 					}
-					$jsonTypeStringForArray .= implode(",", $jsonValueArray).']';
 				}
-				$jsonTypeStringForArray .=  "}";
-				$jsonTypeArray[] = $jsonTypeStringForArray;
+				$result['Types'][] = $resultType;
 			}
-			$json .= implode(",", $jsonTypeArray);
-			$json .= '] ';
 		}
-		$json .= '} ';
-		return $json;
+		return Convert::array2json($result);
 	}
 	
 	function select() {
