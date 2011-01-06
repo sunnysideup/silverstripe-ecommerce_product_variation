@@ -37,6 +37,9 @@ class ProductVariation extends DataObject {
 
 	public static $indexes = array(
 		"Sort" => true
+	)
+	public static $defaults = array(
+		"AllowPurchase" => 1
 	);
 
 	public static $summary_fields = array(
@@ -118,6 +121,9 @@ class ProductVariation extends DataObject {
 			return false;
 		}
 		$allowpurchase = false;
+		if(!$this->AllowPurchase) {
+			return false;
+		}
 		if($product = $this->Product()) {
 			$allowpurchase = ($this->Price > 0) && $product->AllowPurchase;
 		}
@@ -127,6 +133,11 @@ class ProductVariation extends DataObject {
 		}
 		return $allowpurchase;
 	}
+
+	function populateDefaults() {
+		$this->AllowPurchase = 1;
+	}
+
 }
 
 
