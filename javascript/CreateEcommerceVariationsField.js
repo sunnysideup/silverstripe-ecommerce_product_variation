@@ -168,7 +168,6 @@ var CreateEcommerceVariationsField = {
 				data = CreateEcommerceVariationsField.selectGetVariables();
 				CreateEcommerceVariationsField.reset('createvariations', data);
 				jQuery('#Form_EditForm_action_save').click();
-				//jQuery('Form_EditForm').getPageFromServer(CreateEcommerceVariationsField.productID);
 				return false;
 			}
 		);
@@ -216,11 +215,11 @@ var CreateEcommerceVariationsField = {
 		if(parseInt(typeData.TypeIsSelected) == 0) {
 			html = html.replace(' checked="checked"', "");
 		}
-		if(typeData.CanDeleteType) {
+		if(parseInt(typeData.CanDelete) == 1) {
 			html = html.replace('DELETE', '');
 		}
 		else {
-			html = html.replace('DELETE', 'display: none');
+			html = html.replace('DELETE', 'display: none;');
 		}
 		//valueHolder
 		var count = parseInt(typeData.ValueSize);
@@ -243,11 +242,11 @@ var CreateEcommerceVariationsField = {
 		if(parseInt(valueData.ValueIsSelected) == 0) {
 			html = html.replace(' checked="checked"', "");
 		}
-		if(valueData.CanDeleteType) {
+		if(parseInt(valueData.CanDelete) == 1) {
 			html = html.replace("DELETE", '');
 		}
 		else {
-			html = html.replace("DELETE", 'display: none');
+			html = html.replace("DELETE", 'display: none;');
 		}
 		html = html.replace(/ChangeToId/g, "ID");
 		return html;

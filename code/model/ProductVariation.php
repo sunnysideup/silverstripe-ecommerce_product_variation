@@ -92,7 +92,12 @@ class ProductVariation extends DataObject {
 		//not sure if this second write is required....
 		//$this->write();
 	}
-
+	
+	function onBeforeDelete() {
+		parent::onBeforeDelete();
+		$this->AttributeValues()->removeAll();
+	}
+	
 	function getTitle(){
 		$values = $this->AttributeValues();
 		if($values->exists()){
