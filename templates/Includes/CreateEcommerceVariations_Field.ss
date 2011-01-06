@@ -20,6 +20,7 @@
 			<ul class="valuesHolder">
 				<li>VALUEHOLDER</li>
 				<li class="valueAddHolder">
+					$ValueSorterLink
 					<label>
 						<a href="#" class="addLabelLink">Add NAME</a>
 					</label>
@@ -44,6 +45,7 @@
 			</div>
 		</li>
 		<li class="typeAddHolder">
+			$AttributeSorterLink
 			<label><a href="#" class="addLabelLink">Add $ProductAttributeTypeGetPluralName</a></label>
 			<div class="textInputHolder addInputHolder">
 				<input type="text" class="text dataForType" id="typeAdd" value="" name="typeAdd" rel="0" />

@@ -23,6 +23,8 @@ class ProductAttributeType extends DataObject{
 		"Sort" => true
 	);
 
+	static $default_sort = "\"Sort\" ASC";
+
 	public static $singular_name = "Attribute Type";
 		static function set_singular_name($v) {self::$singular_name = $v;}
 		static function get_singular_name() {return self::$singular_name;}

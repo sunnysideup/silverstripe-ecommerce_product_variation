@@ -23,6 +23,18 @@ class ProductAttributeValue extends DataObject{
 	static $summary_fields = array(
 		'Value' => 'Value',
 	);
+	static $casting = array(
+		'Title' => 'Text'
+	);
+
+	function getTitle() {
+		return $this->Value;
+	}
+
+	function Title() {
+		return $this->getTitle();
+	}
+
 	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC";
 
 	public static $singular_name = "Attribute Value";

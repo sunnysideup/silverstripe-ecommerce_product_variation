@@ -80,7 +80,7 @@ class CreateEcommerceVariations extends Controller {
 		}
 		return $this->jsonforform();
 	}
-		
+
 	function jsonforform() {
 		//create dataobjectset here...
 		$jsonTypeArray = array();
@@ -231,6 +231,13 @@ class CreateEcommerceVariations_Field extends LiteralField {
 	}
 	function TextField($name, $title) {
 		return new TextField($name, $title);
+	}
+
+	function AttributeSorterLink() {
+		return DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "sort types");
+	}
+	function ValueSorterLink() {
+		return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "sort values");
 	}
 
 }
