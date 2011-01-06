@@ -104,7 +104,7 @@ class CreateEcommerceVariations extends Controller {
 					foreach($valueDos as $valueDo) {
 						$jsonValueStringForArray = '{';
 						$valueDo->IsSelected = isset($this->_selectedvalueid[$valueDo->ID]) ? 1 : 0;
-						$valueDo->CanDelete = $valueDo->canDelete() ? 0 : 1;
+						$valueDo->CanDelete = $valueDo->canDelete() ? 1 : 0;
 						$jsonValueStringForArray .= '"ValueID": "'.$valueDo->ID.'", "ValueName": "'.Convert::raw2att($valueDo->Value).'", "ValueIsSelected": "'.$valueDo->IsSelected.'", "CanDelete": "'.$valueDo->CanDelete.'"';
 						$jsonValueStringForArray .= '}';
 						$jsonValueArray[] = $jsonValueStringForArray;
