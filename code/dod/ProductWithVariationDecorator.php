@@ -230,10 +230,15 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
     $existingTypes->add($attributeTypeObject);
   }
 
-  function removeAttributeType($attributeTypeObject) {
-    $existingTypes = $this->owner->VariationAttributes();
-    $existingTypes->remove($attributeTypeObject);
-  }
+	function canRemoveAttributeType($type) {
+		$variations = $this->owner->getComponents('Variations', "`TypeID` = '$type->ID'", '', "INNER JOIN `ProductVariation_AttributeValues` ON `ProductVariationID` = `ProductVariation`.`ID` INNER JOIN `ProductAttributeValue` ON `ProductAttributeValue`.`ID` = `ProductAttributeValueID`");
+		return $variations->Count() == 0;
+	}
+
+	function removeAttributeType($attributeTypeObject) {
+		$existingTypes = $this->owner->VariationAttributes();
+		$existingTypes->remove($attributeTypeObject);
+	}
 
 	function getArrayOfLinkedProductAttributeTypeIDs() {
 		/*
@@ -251,14 +256,15 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			FROM \"Product_VariationAttributes\"
 			WHERE \"ProductID\" = ".$this->owner->ID;
 		$data = DB::query($sql);
-		$array = array();
+		return $data->keyedColumn();
+		/*$array = array();
 		if($data && count($data)) {
 			foreach($data as $key => $row) {
 				$id = $row["ProductAttributeTypeID"];
 				$array[$id] = $id;
 			}
 		}
-		return $array;
+		return $array;*/
 	}
 
 	function getArrayOfLinkedProductAttributeValueIDs() {
