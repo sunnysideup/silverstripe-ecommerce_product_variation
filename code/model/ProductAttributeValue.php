@@ -47,7 +47,7 @@ class ProductAttributeValue extends DataObject{
 		static function get_plural_name() {return self::$plural_name;}
 
 	public function canDelete($member = null) {
-		$alreadyUsed = DB::query("
+		/*$alreadyUsed = DB::query("
 			SELECT COUNT(\"ProductAttributeValueID\")
 			FROM \"ProductVariation_AttributeValues\"
 				INNER JOIN \"OrderItem\" ON \"OrderItem\".\"BuyableID\" = \"ProductVariation_AttributeValues\" .\"ProductVariationID\"
@@ -59,7 +59,8 @@ class ProductAttributeValue extends DataObject{
 		if($alreadyUsed) {
 			return false;
 		}
-		return true;
+		return true;*/
+		return DB::query("SELECT COUNT(*) FROM `ProductVariation_AttributeValues` WHERE `ProductAttributeValueID` = '$this->ID'")->value() == 0;
 	}
 
 	function onBeforeDelete() {
@@ -71,9 +72,9 @@ class ProductAttributeValue extends DataObject{
 				$this->Value = self::get_singular_name()."_".$i;
 			}
 		}
-		// Remove Variations
-		$variations = $this->ProductVariation();
-		foreach($variations as $variation) $variation->delete();
+		// No Need To Remove Variations because of onBeforeDelete
+		/*$variations = $this->ProductVariation();
+		foreach($variations as $variation) $variation->delete();*/
 	}
 }
 

@@ -246,6 +246,7 @@ var CreateEcommerceVariationsField = {
 			html = html.replace("DELETE", '');
 		}
 		else {
+			console.debug(valueData.ValueName + ' : Can Not Delete');
 			html = html.replace("DELETE", 'display: none;');
 		}
 		html = html.replace(/ChangeToId/g, "ID");
