@@ -237,7 +237,7 @@ var CreateEcommerceVariationsField = {
 			html = html.replace(/DELETE/g, '');
 		}
 		else {
-			html = html.replace(/DELETE/g, 'display: none;');
+			html = html.replace(/DELETE/g, 'doNotShow');
 		}
 		var values = type.Values;
 		var valueHtml = '';
@@ -262,8 +262,7 @@ var CreateEcommerceVariationsField = {
 			html = html.replace(/DELETE/g, '');
 		}
 		else {
-			console.debug(value.Name + ' : Can Not Delete');
-			html = html.replace(/DELETE/g, 'display: none;');
+			html = html.replace(/DELETE/g, 'doNotShow');
 		}
 		html = html.replace(/ChangeToId/g, 'ID');
 		return html;
