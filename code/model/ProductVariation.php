@@ -131,7 +131,11 @@ class ProductVariation extends DataObject {
 		}
 		return $do;
 	}
-
+	
+	function canDelete() {
+		return $this->getPurchasedTotal() == 0;
+	}
+	
 	function canPurchase($member = null) {
 		if($this->ShopClosed()) {
 			return false;
