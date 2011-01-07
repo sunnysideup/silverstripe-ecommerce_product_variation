@@ -43,13 +43,13 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 
 	function updateCMSFields(FieldSet &$fields) {
-		$tabName = 'Root.Content.'.ereg_replace("[^A-Za-z0-9]", "", ProductVariation::get_plural_name()); //.
-		$fields->addFieldToTab($tabName,new HeaderField(ProductVariation::get_plural_name().' for '.$this->owner->Title));
-		$fields->addFieldToTab($tabName,$this->owner->getVariationsTable());
-		$fields->addFieldToTab($tabName, new CreateEcommerceVariations_Field("VariationMaker", "", $this->owner->ID));
+		$fields->addFieldToTab('Root.Content', new Tab(ProductVariation::get_plural_name(),
+			new HeaderField(ProductVariation::get_plural_name() . " for {$this->owner->Title}"),
+			$this->owner->getVariationsTable(),
+			new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
+		));
 		if($this->owner->Variations()->exists()){
-			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructinos','Price - Because you have one or more variations, the price can be set in the "Variations" tab.'),'Price');
-			//$fields->removeFieldsFromTab('Root.Content.Main',array('Price','InternalItemID'));
+			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructinos','Price - Because you have one or more variations, the price can be set in the "Variations" tab.'), 'Price');
 		}
 	}
 
