@@ -234,10 +234,10 @@ var CreateEcommerceVariationsField = {
 			html = html.replace(' disabled="disabled"', '');
 		}
 		if(type.CanDelete) {
-			html = html.replace('DELETE', '');
+			html = html.replace(/DELETE/g, '');
 		}
 		else {
-			html = html.replace('DELETE', 'display: none;');
+			html = html.replace(/DELETE/g, 'display: none;');
 		}
 		var values = type.Values;
 		var valueHtml = '';
@@ -259,11 +259,11 @@ var CreateEcommerceVariationsField = {
 			html = html.replace(' checked="checked"', '');
 		}
 		if(value.CanDelete) {
-			html = html.replace("DELETE", '');
+			html = html.replace(/DELETE/g, '');
 		}
 		else {
 			console.debug(value.Name + ' : Can Not Delete');
-			html = html.replace("DELETE", 'display: none;');
+			html = html.replace(/DELETE/g, 'display: none;');
 		}
 		html = html.replace(/ChangeToId/g, 'ID');
 		return html;
