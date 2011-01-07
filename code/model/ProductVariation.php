@@ -23,7 +23,9 @@ class ProductVariation extends DataObject {
 	);
 
 	public static $casting = array(
-		'Title' => 'Text'
+		'Title' => 'Text',
+		'AllowPuchaseText' => 'Text',
+		'PurchasedTotal' => 'Int'
 	);
 
 	public static $versioning = array(
@@ -44,8 +46,9 @@ class ProductVariation extends DataObject {
 	);
 
 	public static $summary_fields = array(
-		'InternalItemID' => 'Product Code',
-		'Price' => 'Price'
+		'Price' => 'Price',
+		'AllowPuchaseText' => 'Buyable',
+		'PurchasedTotal' => 'Purchased Total'
 	);
 
 	public static $default_sort = "Sort ASC, InternalItemID ASC";
@@ -59,9 +62,7 @@ class ProductVariation extends DataObject {
 	public static $plural_name = "Product Variations";
 		static function set_plural_name($v) {self::$plural_name = $v;}
 		static function get_plural_name() {return self::$plural_name;}
-
-
-
+	
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->removeFieldFromTab("Root.Main", "Version");
@@ -111,8 +112,15 @@ class ProductVariation extends DataObject {
 		}
 		return $this->InternalItemID;
 	}
-
-
+	
+	function getAllowPuchaseText() {
+		return $this->AllowPurchase ? 'Yes' : 'No';
+	}
+	
+	function getPurchasedTotal() {
+		return DB::query("SELECT COUNT(*) FROM `ProductVariation_OrderItem` WHERE `ProductVariationID` = '$this->ID'")->value();
+	}
+	
 	//this is used by TableListField to access attribute values.
 	function AttributeProxy(){
 		$do = new DataObject();

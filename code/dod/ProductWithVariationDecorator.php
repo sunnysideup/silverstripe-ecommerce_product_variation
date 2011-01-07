@@ -60,14 +60,16 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		$filter = $variations ? "\"ID\" IN ('" . implode("','", $variations->column('RecordID')) . "')" : "\"ID\" < '0'";
 		//$filter = "\"ProductID\" = '{$this->owner->ID}'";
 
-		$summaryfields= $singleton->summaryFields();
+		$summaryfields = array();
+		
+		$attributes = $this->owner->VariationAttributes();
+		foreach($attributes as $attribute){
+			$summaryfields["AttributeProxy.Val$attribute->Name"] = $attribute->Title;
+		}
+		
+		$summaryfields = array_merge($summaryfields, $singleton->summaryFields());
 
-		if($this->owner->VariationAttributes()->exists())
-			foreach($this->owner->VariationAttributes() as $attribute){
-				$summaryfields["AttributeProxy.Val".$attribute->Name] = $attribute->Title;
-			}
-
-		$tableField = new HasManyComplexTableField(
+		$tableField = new ComplexTableField(
 			$this->owner,
 			'Variations',
 			'ProductVariation',
