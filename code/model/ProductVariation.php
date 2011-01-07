@@ -54,10 +54,12 @@ class ProductVariation extends DataObject {
 	public static $singular_name = "Product Variation";
 		static function set_singular_name($v) {self::$singular_name = $v;}
 		static function get_singular_name() {return self::$singular_name;}
+		function i18n_singular_name() { return _t("Order.PRODUCTVARIATION", self::get_singular_name());}
 
 	public static $plural_name = "Product Variations";
 		static function set_plural_name($v) {self::$plural_name = $v;}
 		static function get_plural_name() {return self::$plural_name;}
+
 
 
 	function getCMSFields() {
@@ -92,12 +94,12 @@ class ProductVariation extends DataObject {
 		//not sure if this second write is required....
 		//$this->write();
 	}
-	
+
 	function onBeforeDelete() {
 		parent::onBeforeDelete();
 		$this->AttributeValues()->removeAll();
 	}
-	
+
 	function getTitle(){
 		$values = $this->AttributeValues();
 		if($values->exists()){
