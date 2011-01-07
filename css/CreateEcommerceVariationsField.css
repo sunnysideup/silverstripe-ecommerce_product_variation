@@ -9,4 +9,4 @@
  	.createEcommerceVariations div.textInputHolder{background-color: #E9E9E9; display: none; margin-bottom: 12px;}
  	 		.createEcommerceVariations input.text{ border:1px solid #A7A7A7; padding: 3px; margin: 3px 4px; }
 
-#CreateEcommerceVariationsTemplate{display: none;}
+#CreateEcommerceVariationsTemplate, .doNotShow{display: none!important;}

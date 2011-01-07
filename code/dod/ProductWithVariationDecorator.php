@@ -43,7 +43,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 
 	function updateCMSFields(FieldSet &$fields) {
-		$tabName = 'Root.Content.'.ProductVariation::get_plural_name();
+		$tabName = 'Root.Content.Hello'; //.ProductVariation::get_plural_name()
 		$fields->addFieldToTab($tabName,new HeaderField(ProductVariation::get_plural_name().' for '.$this->owner->Title));
 		$fields->addFieldToTab($tabName,$this->owner->getVariationsTable());
 		$fields->addFieldToTab($tabName, new CreateEcommerceVariations_Field("VariationMaker", "", $this->owner->ID));
@@ -188,7 +188,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 		return $cpt;
 	}
-	
+
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
 			return null;

@@ -10,7 +10,7 @@
 					<input type="checkbox" class="checkbox dataForType" id="TypeCheckID"  name="typeCheckID" value="ID" disabled="disabled" checked="checked" rel="ID" />
 					<label>
 						<a href="#" rel="TypeID" class="editNameLink  dataForType">NAME</a>
-						<a href="#" rel="ID" style="DELETE" class="deleteLink  dataForType">delete</a>
+						<a href="#" rel="ID" class="deleteLink  dataForType DELETE">delete</a>
 					</label>
 				</div>
 				<div class="typeTextHolder textInputHolder fieldHolder editFieldHolder" id="editFieldForTypeID">
@@ -36,7 +36,7 @@
 					<input type="checkbox" class="checkbox dataForValue" id="ValueCheckID"  name="valueCheckID" value="ID"  checked="checked" rel="ID" />
 					<label>
 						<a href="#" rel="ValueID" class="editNameLink dataForValue">NAME</a>
-						<a href="#" rel="ID" style="DELETE" class="deleteLink dataForValue">delete</a>
+						<a href="#" rel="ID" class="deleteLink dataForValue DELETE">delete</a>
 					</label>
 				</div>
 				<div class="valueTextHolder textInputHolder fieldHolder editFieldHolder" id="editFieldForValueID">
