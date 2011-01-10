@@ -56,6 +56,17 @@ class CreateEcommerceVariations extends Controller {
 	}
 
 	function createvariations() {
+		foreach($this->_selectedtypeid as $typeID) {
+			if(! isset($_GET[$typeID])) {
+				$type = DataObject::get_by_id('ProductAttributeType', $typeID);
+				$missingTypes[] = $type->Name;
+			}
+		}
+		if(isset($missingTypes)) {
+			$this->_message = 'No variations has been created because you\'ve not selected values for the type' . (count($missingTypes) > 1 ? 's ' : ' ') . implode(', ', $missingTypes) . '.';
+			$this->_messageclass = 'bad';
+			return $this->jsonforform();
+		}
 		$types = DataObject::get('ProductAttributeType');
 		if($types) {
 			$values = array();
@@ -67,6 +78,8 @@ class CreateEcommerceVariations extends Controller {
 			$cpt = 0;
 			if(count($values) > 0) {
 				$cpt = $this->_product->generateVariationsFromAttributeValues($values);
+				$this->_selectedtypeid = $this->_product->getArrayOfLinkedProductAttributeTypeIDs();
+				$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
 			}
 			if($cpt > 0) {
 				$this->_message = ($cpt == 1 ? '1 new variation has' : "$cpt new variations have") . ' been created successfully';
@@ -148,12 +161,12 @@ class CreateEcommerceVariations extends Controller {
 		}
 		else {
 			$obj->write();
-			if($obj instanceOf ProductAttributeType) {
+			/*if($obj instanceOf ProductAttributeType) {
 				$this->_product->addAttributeType($obj);
 			}
 			else {
 				user_error($obj->Title ." should be an instance of ProductAttributeType", E_USER_WARNING);
-			}
+			}*/
 		}
 
 		$this->_message = $this->_value.' '._t("CreateEcommerceVariations.HASBEENADDED",'has been added.');
@@ -170,6 +183,8 @@ class CreateEcommerceVariations extends Controller {
 				}
 				$obj->delete();
 				$obj->destroy();
+				$this->_selectedtypeid = $this->_product->getArrayOfLinkedProductAttributeTypeIDs();
+				$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
 				$this->_message = _t("CreateEcommerceVariations.HASBEENDELETED","$name has been deleted.");
 			}
 			else {
@@ -201,7 +216,6 @@ class CreateEcommerceVariations_Field extends LiteralField {
 		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 		Requirements::javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
 		Requirements::customScript("CreateEcommerceVariationsField.set_url('createecommercevariations')", "CreateEcommerceVariationsField_set_url");
-		Requirements::customScript("CreateEcommerceVariationsField.set_productID(".$productID.")", "CreateEcommerceVariationsField_set_productID");
 		Requirements::customScript("CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner')", "CreateEcommerceVariationsField_set_fieldID");
 		Requirements::themedCSS("CreateEcommerceVariationsField");
 		$additionalContent .= $this->renderWith("CreateEcommerceVariations_Field");
