@@ -23,7 +23,6 @@ var CreateEcommerceVariationsField = {
 		set_fieldID: function(v) {this.fieldID = v;},
 
 	starLinkSelector:"",
-		set_fieldID: function(v) {this.fieldID = v;},
 
 	messageHTML: "",
 
@@ -46,16 +45,16 @@ var CreateEcommerceVariationsField = {
 		this.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
 		jQuery("#CreateEcommerceVariationsTemplate").remove();
 		this.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
-		CreateEcommerceVariationsField.attachFunctions();
 		jQuery(this.startLinkSelector).livequery(
-			"click",
+			'click',
 			function() {
 				CreateEcommerceVariationsField.attachFunctions();
+				CreateEcommerceVariationsField.reset();
 				return false;
 			}
 		);
 	},
-
+	
 	reset: function (action, getVariables) {
 		if(!action) {
 			action = 'jsonforform';
@@ -71,30 +70,17 @@ var CreateEcommerceVariationsField = {
 	},
 
 	attachFunctions: function() {
-		if(jQuery(this.startLinkSelector).length) {
-			this.startLink();
-		}
-		else {
-			this.addAddLinkToggles();
-			this.addEditLinkToggles();
-			this.add();
-			this.rename();
-			this.move();
-			this.select();
-			this.remove();
-			this.createVariations();
-		}
+		this.productID = jQuery('#Form_EditForm_ID').val();
+		this.addAddLinkToggles();
+		this.addEditLinkToggles();
+		this.add();
+		this.rename();
+		this.move();
+		this.select();
+		this.remove();
+		this.createVariations();
 	},
-
-	startLink: function() {
-		jQuery(this.startLinkSelector).click(
-			function() {
-				CreateEcommerceVariationsField.reset();
-				return false;
-			}
-		);
-	},
-
+	
 	addAddLinkToggles: function() {
 		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink").click(
 			function() {
@@ -137,7 +123,22 @@ var CreateEcommerceVariationsField = {
 	},
 
 	select:function() {
-
+		jQuery('input:checkbox.dataForType:not(:checked)').each(
+			function() {
+				jQuery(this).parents('div.typeCheckHolder').next().hide();
+			}
+		);
+		jQuery('input:checkbox.dataForType').change(
+			function() {
+				var values = jQuery(this).parents('div.typeCheckHolder').next();
+				if(jQuery(this).is(':checked')) {
+					jQuery(values).show();
+				}
+				else {
+					jQuery(values).hide();
+				}
+			}
+		);
 	},
 
 	remove:function() {
@@ -241,7 +242,7 @@ var CreateEcommerceVariationsField = {
 		}
 		var values = type.Values;
 		var valueHtml = '';
-		if(values.length > 0) {
+		if(values && values.length > 0) {
 			for(var i = 0; i < values.length; i++) {
 				valueHtml += CreateEcommerceVariationsField.createValueNode(values[i]);
 			}
