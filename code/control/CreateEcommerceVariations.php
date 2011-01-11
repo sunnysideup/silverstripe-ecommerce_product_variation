@@ -11,6 +11,7 @@ class CreateEcommerceVariations extends Controller {
 		"add",
 		"remove",
 		"move",
+		'cansavevariation'
 	);
 
 	protected $_productID = 0;
@@ -205,7 +206,27 @@ class CreateEcommerceVariations extends Controller {
 		die("not completed yet");
 		return "ok";
 	}
-
+	
+	function cansavevariation() {
+		$variation = null;
+		if(isset($_GET['variation'])) {
+			$variation = DataObject::get_by_id('ProductVariation', $_GET['variation']);
+		}
+		foreach($this->_selectedtypeid as $typeID) {
+			if(isset($_GET[$typeID])) {
+				$value = $_GET[$typeID];
+				if(! $variation && ! $value) return false;
+				if($value) $values[$typeID] = $value;
+			}
+			else return false;
+		}
+		$variations = $this->_product->getComponents('Variations', $variation ? "`ProductVariation`.`ID` != '$variation->ID'" : '');
+		foreach($variations as $otherVariation) {
+			$otherValues = DB::query("SELECT `TypeID`,`ProductAttributeValueID` FROM `ProductVariation_AttributeValues` INNER JOIN `ProductAttributeValue` ON `ProductAttributeValue`.`ID` = `ProductAttributeValueID` WHERE `ProductVariationID` = '$otherVariation->ID' ORDER BY `TypeID`")->map();
+			if($otherValues == $values) return false;
+		}
+		return true;
+	}
 }
 
 

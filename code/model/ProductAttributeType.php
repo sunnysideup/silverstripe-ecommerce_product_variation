@@ -77,7 +77,7 @@ class ProductAttributeType extends DataObject{
 		return $set;
 	}
 
-	function getDropDownField($emptystring = null,$values = null){
+	function getDropDownField($emptystring = null, $values = null) {
 
 		$values = ($values) ? $values : $this->Values('','Sort ASC, Value ASC');
 
