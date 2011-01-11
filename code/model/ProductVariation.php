@@ -15,7 +15,7 @@ class ProductVariation extends DataObject {
 
 	public static $has_one = array(
 		'Product' => 'Product',
-		"Image" => "ProductVariation_Image"
+		'Image' => 'ProductVariation_Image'
 	);
 
 	static $many_many = array(
@@ -64,36 +64,88 @@ class ProductVariation extends DataObject {
 		static function get_plural_name() {return self::$plural_name;}
 	
 	function getCMSFields() {
-		$fields = parent::getCMSFields();
-		$fields->removeFieldFromTab("Root.Main", "Version");
-		//add attributes dropdowns
-		if($this->Product()->VariationAttributes()->exists() && $attributes = $this->Product()->VariationAttributes()){
-			foreach($attributes as $attribute){
-				if($field = $attribute->getDropDownField()){
-					if($value = $this->AttributeValues()->find('TypeID',$attribute->ID)) {
+		$product = $this->Product();
+		$fields = new FieldSet(new TabSet('Root',
+			new Tab('Main',
+				new NumericField('Price'),
+				new CheckboxField('AllowPurchase', 'Allow Purchase ?'),
+				new TextField('InternalItemID', 'Internal Item ID'),
+				new ImageField('Image')
+			)
+		));
+		$types = $product->VariationAttributes();
+		if($this->ID) {
+			$purchased = $this->getPurchasedTotal();
+			$values = $this->AttributeValues();
+			foreach($types as $type) {
+				$field = $type->getDropDownField();
+				if($field) {
+					$value = $values->find('TypeID', $type->ID);
+					if($value) {
 						$field->setValue($value->ID);
+						if($purchased) {
+							$field = $field->performReadonlyTransformation();
+							$field->setName("Type{$type->ID}");
+						}
 					}
-					$fields->addFieldToTab("Root.Specifications", $field);
+					else {
+						if($purchased) {
+							$field = new ReadonlyField("Type{$type->ID}", $type->Name, 'You can not select a value because it has already been purchased.');
+						}
+						else {
+							$field->setEmptyString('');
+						}
+					}
 				}
-				//TODO: allow setting custom value, rather than visiting the products section
+				else {
+					$field = new ReadonlyField("Type{$type->ID}", $type->Name, 'No values to select');
+				}
+				$fields->addFieldToTab('Root.Attributes', $field);
+			}
+			$fields->addFieldToTab('Root.Orders',
+				new ComplexTableField(
+					$this,
+					'OrderItems',
+					'ProductVariation_OrderItem',
+					array(
+						'Order.ID' => '#',
+						'Order.Created' => 'When',
+						'Order.Member.Name' => 'Member',
+						'Quantity' => 'Quantity',
+						'Total' => 'Total'
+					),
+					new FieldSet(),
+					"`ProductVariationID` = '$this->ID'",
+					"`Created` DESC"
+				)
+			);
+		}
+		else {
+			foreach($types as $type) {
+				$field = $type->getDropDownField();
+				$fields->addFieldToTab('Root.Attributes', $field);
 			}
 		}
 		$this->extend('updateCMSFields', $fields);
 		return $fields;
 	}
-
-	function onBeforeWrite(){
-		parent::onBeforeWrite();
+	
+	function getRequirementsForPopup() {
+		$purchased = $this->getPurchasedTotal();
+		if(! $this->ID || ! $purchased) {
+			Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+			Requirements::javascript('ecommerce_product_variation/javascript/productvariation.js');
+			Requirements::customScript("ProductVariation.set_url('createecommercevariations')", 'CreateEcommerceVariationsField_set_url');
+			Requirements::customCSS('#ComplexTableField_Popup_AddForm input.loading {background: url("cms/images/network-save.gif") no-repeat scroll left center #FFFFFF; padding-left: 16px;}');
+		}
 	}
-
+	
 	function onAfterWrite() {
 		parent::onAfterWrite();
 		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
 			$this->AttributeValues()->setByIDList(array_values($_POST['ProductAttributes']));
 		}
 		unset($_POST['ProductAttributes']);
-		//not sure if this second write is required....
-		//$this->write();
 	}
 
 	function onBeforeDelete() {
