@@ -61,12 +61,12 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		//$filter = "\"ProductID\" = '{$this->owner->ID}'";
 
 		$summaryfields = array();
-		
+
 		$attributes = $this->owner->VariationAttributes();
 		foreach($attributes as $attribute){
 			$summaryfields["AttributeProxy.Val$attribute->Name"] = $attribute->Title;
 		}
-		
+
 		$summaryfields = array_merge($summaryfields, $singleton->summaryFields());
 
 		$tableField = new ComplexTableField(
@@ -337,15 +337,20 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		//TODO: save form data to session so selected values are not lost
 		$data['ProductAttributes'] = Convert::raw2sql($data['ProductAttributes']);
 		if(isset($data['ProductAttributes']) && $variation = $this->owner->getVariationByAttributes($data['ProductAttributes'])){
-			$quantity = intval($data['Quantity']);
-			if(!$quantity) {
-				$quantity = 1;
+			if($variation->canPurchase()) {
+				$quantity = intval($data['Quantity']);
+				if(!$quantity) {
+					$quantity = 1;
+				}
+				ShoppingCart::add_buyable($variation,$quantity);
+				$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
 			}
-			ShoppingCart::add_buyable($variation,$quantity);
-			$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
+			else{
+				$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That variation combination is not available."),"bad");
+			}
 		}
-		else{
-			$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That variation combination is not available."),"bad");
+		else {
+			$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTFOUND","The product you are looking for is not found."),"bad");
 		}
 		if(!Director::is_ajax()){
 			Director::redirectBack();
