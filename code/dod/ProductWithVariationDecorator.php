@@ -308,6 +308,18 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		$fields = new FieldSet($farray);
 		$fields->push(new NumericField('Quantity','Quantity',1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
+		//variation options json generation
+		if(true){ //TODO: make javascript json inclusion optional
+			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+			$vararray = array();
+			if($vars = $this->owner->Variations()){
+				foreach($vars as $var){
+					$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
+				}
+			}
+			$fields->push(new HiddenField('VariationOptions','VariationOptions',json_encode($vararray)));
+		}
+
 		$actions = new FieldSet(
 			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add this item to cart"))
 		);
