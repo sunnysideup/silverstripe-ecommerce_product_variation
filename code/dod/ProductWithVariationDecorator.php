@@ -310,14 +310,22 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 		//variation options json generation
 		if(true){ //TODO: make javascript json inclusion optional
-			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+			
 			$vararray = array();
 			if($vars = $this->owner->Variations()){
 				foreach($vars as $var){
 					$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
 				}
 			}
-			$fields->push(new HiddenField('VariationOptions','VariationOptions',json_encode($vararray)));
+
+			$json = json_encode($vararray);
+			//$fields->push(new HiddenField('VariationOptions','VariationOptions',$json));
+			
+			$jsonscript = "var variationsjson = $json";
+			
+			Requirements::customScript($jsonscript,'variationsjson');
+			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+			Requirements::themedCSS('variationsform');
 		}
 
 		$actions = new FieldSet(

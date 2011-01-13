@@ -1,42 +1,102 @@
 (function($){
 	
-	var variations = $.parseJSON($("#Form_VariationForm_VariationOptions").val());
-	
 	$("#Form_VariationForm select").change(function(){
 		
-		//check if variation(s) with selection combination exist
+		$changed = $(this);
 		
-		//$('#Form_VariationForm select option').css('color','grey');
-		//$('#Form_VariationForm fieldset').appendTo("<p class=\"message bad\">not available</p>");
-		//$('#Form_VariationForm input.action').attr('disabled','disabled').addClass('disabled').hide();
+		if(!variationsjson)
+			return false;
+
+		//get all selected values
 		
-		var selected = new Array();
+		var selected = getSelectedValues();
+		var possible = findVariation(selected);
 		
-		$("#Form_VariationForm option:selected").each(function(el){
+		//break the impossibles by resetting other fields
+		if(!possible){
+			//TODO: display - you cannot have a x,y,z
 			
+			$("#Form_VariationForm select").each(function(){
+				if($changed[0] !== $(this)[0]){
+					$(this).val(''); 		// diable other selections based on impossible selection
+				}
+			});
+			selected = getSelectedValues(); //re-get selected
+		}
+		
+		
+		//find all possible attributes
+		$("#Form_VariationForm select").each(function(el){	
+			
+			if($(this).find(":selected[value!=\"\"]").length <= 0){
+				disableOption($(this).find("option[value!=\"\"]"));
+				var enableme = getAttributesNotJoinedWith(selected);
+				
+				for(var i = 0; i < enableme.length; i++){
+					if(enableme[i]){
+						enableOption($("#Form_VariationForm option[value=\""+enableme[i]+"\"]"));
+					}
+				}
+			}			
+		});
+
+		
+		//disable/enable submit button & supply error message
+		if(!possible){
+			$('#Form_VariationForm input.action').attr('disabled','disabled').addClass('disabled');
+			
+		}else{
+			$('#Form_VariationForm input.action').removeAttr('disabled').removeClass('disabled');
+		}
+		
+	});
+	
+	
+	function getSelectedValues(){
+		var selected = new Array();
+		$("#Form_VariationForm option:selected").each(function(el){
 			if($(this).val() && $(this).val() != ''){
 				selected.push($(this).val());
 			}
-			
 		});
+		return selected;
+	}
+	
+	function disableOption($o){
+		$o.addClass('disabled');
+	}
+	
+	function enableOption($o){
+		$o.removeClass('disabled');
+	}
+	
+	function getAttributesNotJoinedWith(selected){
 		
-		if(!findVariation(selected)){
-			$('#Form_VariationForm input.action').attr('disabled','disabled').addClass('disabled').hide();
-		}else{
-			$('#Form_VariationForm input.action').removeAttr('disabled').removeClass('disabled').show();
+		var attrs = new Array();
+		
+		vloop: for(variation in variationsjson){
+			for(var i = 0; i < selected.length; i++){
+				if(!variationsjson[variation][selected[i]])
+					continue vloop;
+			}
+				
+			for(a in variationsjson[variation]){
+				attrs.push(variationsjson[variation][a]);
+			}	
 		}
+		return attrs;
 		
-	});	
+	}
 
 	/* Finds the first variation it can with the selected attributes */
 	function findVariation(selections){
-		vloop: for(v in variations){
+		vloop: for(v in variationsjson){
 			for(var i = 0; i < selections.length; i++){
-				if(!variations[v][selections[i]]){ //check that all values are in a possible variation attribute
+				if(!variationsjson[v][selections[i]]){ //check that all values are in a possible variation attribute
 					continue vloop;
 				}
 			}
-			return variations[v];
+			return variationsjson[v];
 		}
 		return null;
 	}
