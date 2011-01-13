@@ -301,7 +301,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
-				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","&hellip;"),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
 				$requiredfields[] = "ProductAttributes[$attribute->ID]";
 			}
 		}
