@@ -1,6 +1,5 @@
 
 
-
 ;(function($) {
 	$(document).ready(
 		function() {
@@ -48,13 +47,17 @@ var CreateEcommerceVariationsField = {
 		jQuery(this.startLinkSelector).livequery(
 			'click',
 			function() {
-				CreateEcommerceVariationsField.attachFunctions();
-				CreateEcommerceVariationsField.reset();
-				return false;
+				return CreateEcommerceVariationsField.startup();
 			}
 		);
 	},
-	
+
+	startup: function() {
+		CreateEcommerceVariationsField.attachFunctions();
+		CreateEcommerceVariationsField.reset();
+		return false;
+	},
+
 	reset: function (action, getVariables) {
 		if(!action) {
 			action = 'jsonforform';
@@ -80,7 +83,7 @@ var CreateEcommerceVariationsField = {
 		this.remove();
 		this.createVariations();
 	},
-	
+
 	addAddLinkToggles: function() {
 		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink").click(
 			function() {
@@ -304,6 +307,15 @@ var CreateEcommerceVariationsField = {
 	}
 }
 
+
+
+/*
+CONFIG - CAN BE OVERRIDEN BY YOUR OWN JS FILE
+//LeftAndMain::require_javascript("mysite/javascript/CreateEcommerceVariationsField.js");
+*/
+CreateEcommerceVariationsField.set_url('createecommercevariations')
+CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner')
+
 /*
 {
 	"TypeSize": 2,
@@ -325,3 +337,4 @@ var CreateEcommerceVariationsField = {
 
 
 */
+
