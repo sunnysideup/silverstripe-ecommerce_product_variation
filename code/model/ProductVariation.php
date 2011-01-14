@@ -24,6 +24,7 @@ class ProductVariation extends DataObject {
 
 	public static $casting = array(
 		'Title' => 'Text',
+		'Link' => 'Text',
 		'AllowPuchaseText' => 'Text',
 		'PurchasedTotal' => 'Int'
 	);
@@ -62,7 +63,7 @@ class ProductVariation extends DataObject {
 	public static $plural_name = "Product Variations";
 		static function set_plural_name($v) {self::$plural_name = $v;}
 		static function get_plural_name() {return self::$plural_name;}
-	
+
 	function getCMSFields() {
 		$product = $this->Product();
 		$fields = new FieldSet(new TabSet('Root',
@@ -129,7 +130,7 @@ class ProductVariation extends DataObject {
 		$this->extend('updateCMSFields', $fields);
 		return $fields;
 	}
-	
+
 	function getRequirementsForPopup() {
 		$purchased = $this->getPurchasedTotal();
 		if(! $this->ID || ! $purchased) {
@@ -139,7 +140,7 @@ class ProductVariation extends DataObject {
 			Requirements::customCSS('#ComplexTableField_Popup_AddForm input.loading {background: url("cms/images/network-save.gif") no-repeat scroll left center #FFFFFF; padding-left: 16px;}');
 		}
 	}
-	
+
 	function onAfterWrite() {
 		parent::onAfterWrite();
 		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
@@ -153,6 +154,10 @@ class ProductVariation extends DataObject {
 		$this->AttributeValues()->removeAll();
 	}
 
+	function Link(){
+		return $this->Product()->Link();
+	}
+
 	function getTitle(){
 		$values = $this->AttributeValues();
 		if($values->exists()){
@@ -164,15 +169,15 @@ class ProductVariation extends DataObject {
 		}
 		return $this->InternalItemID;
 	}
-	
+
 	function getAllowPuchaseText() {
 		return $this->AllowPurchase ? 'Yes' : 'No';
 	}
-	
+
 	function getPurchasedTotal() {
 		return DB::query("SELECT COUNT(*) FROM `ProductVariation_OrderItem` WHERE `ProductVariationID` = '$this->ID'")->value();
 	}
-	
+
 	//this is used by TableListField to access attribute values.
 	function AttributeProxy(){
 		$do = new DataObject();
@@ -183,11 +188,11 @@ class ProductVariation extends DataObject {
 		}
 		return $do;
 	}
-	
+
 	function canDelete() {
 		return $this->getPurchasedTotal() == 0;
 	}
-	
+
 	function canPurchase($member = null) {
 		if($this->ShopClosed()) {
 			return false;

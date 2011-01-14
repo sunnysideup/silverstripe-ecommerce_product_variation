@@ -301,7 +301,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
-				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","&hellip;"),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
 				$requiredfields[] = "ProductAttributes[$attribute->ID]";
 			}
 		}
@@ -310,7 +310,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 		//variation options json generation
 		if(true){ //TODO: make javascript json inclusion optional
-			
+
 			$vararray = array();
 			if($vars = $this->owner->Variations()){
 				foreach($vars as $var){
@@ -320,9 +320,9 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 			$json = json_encode($vararray);
 			//$fields->push(new HiddenField('VariationOptions','VariationOptions',$json));
-			
+
 			$jsonscript = "var variationsjson = $json";
-			
+
 			Requirements::customScript($jsonscript,'variationsjson');
 			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
 			Requirements::themedCSS('variationsform');
