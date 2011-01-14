@@ -127,7 +127,7 @@ class CreateEcommerceVariations extends Controller {
 		}
 		return Convert::array2json($result);
 	}
-	
+
 	function select() {
 		// is it type of Value?
 		// if type is value -> create / delete Product Variation (if allowed)
@@ -206,7 +206,7 @@ class CreateEcommerceVariations extends Controller {
 		die("not completed yet");
 		return "ok";
 	}
-	
+
 	function cansavevariation() {
 		$variation = null;
 		if(isset($_GET['variation'])) {
@@ -233,11 +233,6 @@ class CreateEcommerceVariations extends Controller {
 class CreateEcommerceVariations_Field extends LiteralField {
 
 	function __construct($name, $additionalContent = '', $productID) {
-		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-		Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
-		Requirements::javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
-		Requirements::customScript("CreateEcommerceVariationsField.set_url('createecommercevariations')", "CreateEcommerceVariationsField_set_url");
-		Requirements::customScript("CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner')", "CreateEcommerceVariationsField_set_fieldID");
 		Requirements::themedCSS("CreateEcommerceVariationsField");
 		$additionalContent .= $this->renderWith("CreateEcommerceVariations_Field");
 		parent::__construct($name, $additionalContent);

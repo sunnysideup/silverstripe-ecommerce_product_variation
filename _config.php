@@ -9,6 +9,10 @@ Object::add_extension("Product", "ProductWithVariationDecorator");
 Object::add_extension("Product_Controller", "ProductWithVariationDecorator_Controller");
 Product_Controller::$allowed_actions[] = 'VariationForm';
 Product_Controller::$allowed_actions[] = 'addvariation';
+LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery/jquery.js");
+LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
+LeftAndMain::require_javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
+LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
@@ -22,4 +26,5 @@ Product_Controller::$allowed_actions[] = 'addvariation';
 //ProductAttributeValue::set_plural_name("Values");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeType");
+//LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
