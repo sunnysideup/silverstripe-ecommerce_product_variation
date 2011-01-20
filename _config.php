@@ -20,6 +20,7 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 //ProductsAndGroupsModelAdmin::set_managed_models(array("Product", "ProductGroup","ProductVariation"));
 //ProductVariation::set_singular_name("Variation");
 //ProductVariation::set_plural_name("Variations");
+//ProductVariation::add_title_style_option($code = "minimal", $preFix = "", $showType = true, $betweenTypeAndValue = ": ", $betweenVariations  =" / ", $postFix = "");
 //ProductAttributeType::set_singular_name("Types");
 //ProductAttributeType::set_plural_name("Types");
 //ProductAttributeValue::set_singular_name("Value");
