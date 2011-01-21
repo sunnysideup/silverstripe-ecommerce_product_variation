@@ -314,7 +314,9 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 			$vararray = array();
 			if($vars = $this->owner->Variations()){
 				foreach($vars as $var){
-					$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
+					if($var->canPurchase()) {
+						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
+					}
 				}
 			}
 
