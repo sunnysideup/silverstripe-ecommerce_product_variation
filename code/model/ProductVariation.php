@@ -6,41 +6,6 @@
  */
 class ProductVariation extends DataObject {
 
-	/**
-	*@param
-	**/
-	protected static $title_style_option = array(
-		"default" => array(
-			"PreFix" => " (",
-			"ShowType" => true,
-			"BetweenTypeAndValue" => ": ",
-			"BetweenVariations" => ", ",
-			"PostFix" => ")"
-		)
-	);
-		public static function add_title_style_option($code, $preFix, $showType, $betweenTypeAndValue, $betweenVariations, $postFix) {
-			self::$title_style_option[$code] = array(
-				"PreFix" => $preFix,
-				"ShowType" => $showType,
-				"BetweenTypeAndValue" => $betweenTypeAndValue,
-				"BetweenVariations" => $betweenVariations,
-				"PostFix" => $postFix
-			);
-			self::set_current_style_option_code($code);
-		}
-		public static function remove_title_style_option($code) {unset(self::$title_style_option[$code]);}
-
-	public static function get_prefix() {return self::$title_style_option[self::get_current_style_option_code()]["PreFix"];}
-	public static function get_postfix() {return self::$title_style_option[self::get_current_style_option_code()]["PostFix"];}
-
-	protected static $current_style_option_code = "default";
-		public static function set_current_style_option_code($v) {self::$current_style_option_code = $v;}
-		public static function get_current_style_option_code() {return self::$current_style_option_code;}
-
-	public static function get_current_style_option_array() {
-		return self::$title_style_option[self::get_current_style_option_code()];
-	}
-
 	public static $db = array(
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
@@ -98,6 +63,34 @@ class ProductVariation extends DataObject {
 	public static $plural_name = "Product Variations";
 		static function set_plural_name($v) {self::$plural_name = $v;}
 		static function get_plural_name() {return self::$plural_name;}
+
+	/**
+	*@param
+	**/
+	protected static $title_style_option = array(
+		"default" => array(
+			"ShowType" => true,
+			"BetweenTypeAndValue" => ": ",
+			"BetweenVariations" => ", "
+		)
+	);
+		public static function add_title_style_option($code, $showType, $betweenTypeAndValue, $betweenVariations) {
+			self::$title_style_option[$code] = array(
+				"ShowType" => $showType,
+				"BetweenTypeAndValue" => $betweenTypeAndValue,
+				"BetweenVariations" => $betweenVariations
+			);
+			self::set_current_style_option_code($code);
+		}
+		public static function remove_title_style_option($code) {unset(self::$title_style_option[$code]);}
+
+	protected static $current_style_option_code = "default";
+		public static function set_current_style_option_code($v) {self::$current_style_option_code = $v;}
+		public static function get_current_style_option_code() {return self::$current_style_option_code;}
+
+	public static function get_current_style_option_array() {
+		return self::$title_style_option[self::get_current_style_option_code()];
+	}
 
 	function getCMSFields() {
 		$product = $this->Product();
@@ -193,19 +186,24 @@ class ProductVariation extends DataObject {
 		return $this->Product()->Link();
 	}
 
-	function getTitle(){
+	function getTitle($withSpan = false){
 		$styleArray = self::get_current_style_option_array();
 		$values = $this->AttributeValues();
 		if($values->exists()){
 			$labelvalues = array();
 			if(count($values)) {
 				foreach($values as $value){
-					$v = '<span>';
+					$v = '';
+					if($withSpan) {
+						$v = '<span>';
+					}
 					if($styleArray["ShowType"]) {
 						$v .= $value->Type()->Label.$styleArray["BetweenTypeAndValue"];
 					}
 					$v .= $value->Value;
-					$v .= '</span>';
+					if($withSpan) {
+						$v .= '</span>';
+					}
 					$labelvalues[] = $v;
 				}
 			}
@@ -247,7 +245,7 @@ class ProductVariation extends DataObject {
 			return false;
 		}
 		if($product = $this->Product()) {
-			$allowpurchase = ($this->Price > 0) && $product->AllowPurchase;
+			$allowpurchase = $this->Price > 0;
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($allowpurchase && $extended !== null) {
@@ -280,7 +278,6 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $this->Buyable($current);
 	}
 
-
 	function hasSameContent($orderItem) {
 		$parentIsTheSame = parent::hasSameContent($orderItem);
 		return $parentIsTheSame && $orderItem instanceof ProductVariation_OrderItem;
@@ -291,9 +288,15 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	}
 
 	function TableTitle() {
-		$tabletitle = $this->ProductVariation()->Product()->Title . ProductVariation::get_prefix() . $this->ProductVariation()->Title . ProductVariation::get_postfix();
+		$tabletitle = $this->ProductVariation()->Product()->Title;
 		$this->extend('updateTableTitle',$tabletitle);
 		return $tabletitle;
+	}
+
+	function TableSubTitle() {
+		$tablesubtitle = $this->ProductVariation()->getTitle(true);
+		$this->extend('updateTableSubTitle',$tablesubtitle);
+		return $tablesubtitle;
 	}
 
 	function onBeforeWrite() {
