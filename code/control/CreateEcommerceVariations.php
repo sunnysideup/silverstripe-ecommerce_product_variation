@@ -227,6 +227,8 @@ class CreateEcommerceVariations extends Controller {
 		}
 		return true;
 	}
+
+
 }
 
 
@@ -265,6 +267,35 @@ class CreateEcommerceVariations_Field extends LiteralField {
 		if(class_exists("DataObjectSorterController")) {
 			return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "sort values");
 		}
+	}
+}
+
+class CreateEcommerceVariations_Batch extends Controller {
+
+	static $allowed_actions = array(
+		'updatepriceofvariationsfromparentproduct'
+	);
+
+	function init() {
+		parent::init();
+		if(!Permission::check("CMS_ACCESS_CMSMain")) {
+			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
+		}
+	}
+
+
+	/**
+	*ADMIN ONLY SUPERTRICK
+	* http://www.mysite.com/createecommercevariationsbatch/updateallpricevariationsfromparentproduct/
+	* sets all variation prices to the parent product price...
+	**/
+	function updatepriceofvariationsfromparentproduct() {
+		DB::query("
+			UPDATE \"ProductVariation\"
+			INNER JOIN \"Product\" ON \"Product\".\"ID\" = \"ProductVariation\".\"ProductID\"
+			SET \"ProductVariation\".\"Price\" = \"Product\".\"Price\"
+		");
+		DB::alteration_message("all variation prices have been reset to their parent product price", "created");
 	}
 
 }
