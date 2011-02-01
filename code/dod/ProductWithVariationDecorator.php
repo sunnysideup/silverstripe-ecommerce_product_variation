@@ -48,9 +48,8 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			$this->owner->getVariationsTable(),
 			new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
 		));
-		if($this->owner->Variations()->exists()){
-			$fields->addFieldToTab('Root.Content.Details', new LabelField('variationspriceinstructinos', 'Price - Because you have one or more variations, you can vary the price "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
-			$fields->addFieldToTab('Root.Content.Details', new LiteralField('UpdateVariations', "<p class=\"message good\">Click <a href=\"{$this->owner->Link('updatevariationpricefromproduct')}\">here</a> to update all the variations with the price above.</p>"), 'InternalItemID');
+		if($this->owner->Variations() && $this->owner->Variations()->count()){
+			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
 		}
 	}
 
@@ -384,15 +383,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 		return $vals;
 	}
-	
-	public static $allowed_actions = array('updatevariationpricefromproduct');
-	
-	function updatevariationpricefromproduct() {
-		$variations = $this->owner->Variations();
-		foreach($variations as $variation) {	
-			$variation->Price = $this->owner->Price;
-			$variation->writeToStage('Stage');
-		}
-		return Director::redirectBack();
-	}
+
+
+
 }
