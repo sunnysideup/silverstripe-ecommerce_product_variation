@@ -390,7 +390,6 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 	function updatevariationpricefromproduct() {
 		$variations = $this->owner->Variations();
 		foreach($variations as $variation) {
-			var_dump($this->owner->Price);
 			$variation->Price = $this->owner->Price;
 			$variation->write();
 		}
