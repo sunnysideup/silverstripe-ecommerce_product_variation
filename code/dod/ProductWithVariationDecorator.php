@@ -389,9 +389,9 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 	
 	function updatevariationpricefromproduct() {
 		$variations = $this->owner->Variations();
-		foreach($variations as $variation) {
+		foreach($variations as $variation) {	
 			$variation->Price = $this->owner->Price;
-			$variation->write();
+			$variation->writeToStage('Stage');
 		}
 		return Director::redirectBack();
 	}
