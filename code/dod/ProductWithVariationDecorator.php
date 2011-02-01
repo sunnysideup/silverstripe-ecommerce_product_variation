@@ -384,7 +384,9 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 		return $vals;
 	}
-
+	
+	public static $allowed_actions = array('updatevariationpricefromproduct');
+	
 	function updatevariationpricefromproduct() {
 		$variations = $this->owner->Variations();
 		foreach($variations as $variation) {
