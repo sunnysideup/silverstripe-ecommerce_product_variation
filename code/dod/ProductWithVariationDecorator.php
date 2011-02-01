@@ -50,7 +50,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		));
 		if($this->owner->Variations()->exists()){
 			$fields->addFieldToTab('Root.Content.Details', new LabelField('variationspriceinstructinos', 'Price - Because you have one or more variations, you can vary the price "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
-			$fields->addFieldToTab('Root.Content.Details', new LiteralField('UpdateVariations', "<p class=\"message good\">Click <a href=\"{$this->owner->Link('updatevariationpricefromproduct')}\">here</a> to update all the variations with the price above.</p>"), 'ProductCode');
+			$fields->addFieldToTab('Root.Content.Details', new LiteralField('UpdateVariations', "<p class=\"message good\">Click <a href=\"{$this->owner->Link('updatevariationpricefromproduct')}\">here</a> to update all the variations with the price above.</p>"), 'InternalItemID');
 		}
 	}
 
