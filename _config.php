@@ -1,7 +1,7 @@
 <?php
 
 Director::addRules(50, array(
-	'createecommercevariations/$Action/$ProductID/' => 'CreateEcommerceVariations',
+	'createecommercevariations/$Action/$ProductID' => 'CreateEcommerceVariations',
 	'createecommercevariationsbatch/$Action' => 'CreateEcommerceVariations_Batch'
 ));
 
