@@ -29,4 +29,6 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeType");
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
+//Object::add_extension("ProductAttributeValue", "ProductAttributeValueDecoratorColour")
+//ProductAttributeValueDecoratorColour::set_colour_name_in_attribute("colour");
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
