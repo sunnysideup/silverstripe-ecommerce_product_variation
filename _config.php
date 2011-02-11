@@ -29,6 +29,8 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeType");
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
-//Object::add_extension("ProductAttributeValue", "ProductAttributeValueDecoratorColour")
-//ProductAttributeValueDecoratorColour::set_colour_name_in_attribute("colour");
+//Object::add_extension("ProductAttributeValue", "ProductAttributeDecoratorColour_Value");
+//Object::add_extension("ProductAttributeType", "ProductAttributeDecoratorColour_Type");
+//ProductAttributeDecoratorColour_Value::set_default_contrast_colour("FFFFFF");
+//ProductAttributeDecoratorColour_Value::set_default_colour("000000");
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________

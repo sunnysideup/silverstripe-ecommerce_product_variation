@@ -23,7 +23,7 @@ class ProductAttributeType extends DataObject{
 		"Sort" => true
 	);
 
-	static $default_sort = "\"Sort\" ASC";
+	static $default_sort = "\"Sort\" ASC, \"Name\"";
 
 	public static $singular_name = "Attribute Type";
 		static function set_singular_name($v) {self::$singular_name = $v;}
@@ -38,6 +38,8 @@ class ProductAttributeType extends DataObject{
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
+		$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
+		$fields->addFieldToTab("Root.Sort", new LiteralField("SortTypes", $sortLink));
 		return $fields;
 	}
 
@@ -80,11 +82,11 @@ class ProductAttributeType extends DataObject{
 	function getDropDownField($emptystring = null, $values = null) {
 
 		$values = ($values) ? $values : $this->Values('','Sort ASC, Value ASC');
-
-		if($values->exists()){
-			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','Value'));
-			if($emptystring)
+		if($values->exists() && $values->count() > 0){
+			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown'));
+			if($emptystring && $values->count() > 1) {
 				$field->setEmptyString($emptystring);
+			}
 			return $field;
 		}
 		return null;

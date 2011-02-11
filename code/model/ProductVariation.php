@@ -144,8 +144,8 @@ class ProductVariation extends DataObject {
 						'Total' => 'Total'
 					),
 					new FieldSet(),
-					"`ProductVariationID` = '$this->ID'",
-					"`Created` DESC"
+					"\"ProductVariationID\" = '$this->ID'",
+					"\"Created\" DESC"
 				)
 			);
 		}
@@ -218,7 +218,7 @@ class ProductVariation extends DataObject {
 	}
 
 	function getPurchasedTotal() {
-		return DB::query("SELECT COUNT(*) FROM `ProductVariation_OrderItem` WHERE `ProductVariationID` = '$this->ID'")->value();
+		return DB::query("SELECT COUNT(*) FROM \"OrderItem\" WHERE \"BuyableID\" = '$this->ID'")->value();
 	}
 
 	//this is used by TableListField to access attribute values.
