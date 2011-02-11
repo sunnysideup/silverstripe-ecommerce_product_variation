@@ -24,7 +24,8 @@ class ProductAttributeValue extends DataObject{
 		'Value' => 'Value',
 	);
 	static $casting = array(
-		'Title' => 'Text'
+		'Title' => 'Text',
+		'ValueForDropdown' => "HTMLText"
 	);
 
 	function getTitle() {
@@ -35,7 +36,7 @@ class ProductAttributeValue extends DataObject{
 		return $this->getTitle();
 	}
 
-	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC";
+	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 
 	public static $singular_name = "Attribute Value";
 		static function set_singular_name($v) {self::$singular_name = $v;}
@@ -60,7 +61,28 @@ class ProductAttributeValue extends DataObject{
 			return false;
 		}
 		return true;*/
-		return DB::query("SELECT COUNT(*) FROM `ProductVariation_AttributeValues` WHERE `ProductAttributeValueID` = '$this->ID'")->value() == 0;
+		return DB::query("SELECT COUNT(*) FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = '$this->ID'")->value() == 0;
+	}
+
+
+
+	function getCMSFields(){
+		$fields = parent::getCMSFields();
+		//TODO: make this a really fast editing interface. Table list field??
+		//$fields->removeFieldFromTab('Root.Values','Values');
+		$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeID", $filterValue = $this->TypeID, $linkText = "Sort Values");
+		$fields->addFieldToTab("Root.Sort", new LiteralField("SortValues", $sortLink));
+		return $fields;
+	}
+
+
+	function ValueForDropdown() {
+		$v = $this->Value;
+		$update = $this->extend("updateValueForDropdown", $v);
+		if(is_array($update) && count($update) == 1) {
+			$v = $update[0];
+		}
+		return $v;
 	}
 
 	function onBeforeDelete() {

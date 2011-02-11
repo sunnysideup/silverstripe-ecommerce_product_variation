@@ -173,10 +173,10 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			sort($variation);
 			$str = implode(',', $variation);
 			$add = true;
-			$productVariationIDs = DB::query("SELECT `ID` FROM `ProductVariation` WHERE `ProductID` = '{$this->owner->ID}'")->column();
+			$productVariationIDs = DB::query("SELECT \"ID\" FROM \"ProductVariation\" WHERE \"ProductID\" = '{$this->owner->ID}'")->column();
 			if(count($productVariationIDs) > 0) {
 				$productVariationIDs = implode(',', $productVariationIDs);
-				$variationValues = DB::query("SELECT GROUP_CONCAT(`ProductAttributeValueID` ORDER BY `ProductAttributeValueID` SEPARATOR ',') FROM `ProductVariation_AttributeValues` WHERE `ProductVariationID` IN ($productVariationIDs) GROUP BY `ProductVariationID`")->column();
+				$variationValues = DB::query("SELECT GROUP_CONCAT(\"ProductAttributeValueID\" ORDER BY \"ProductAttributeValueID\" SEPARATOR ',') FROM \"ProductVariation_AttributeValues\" WHERE \"ProductVariationID\" IN ($productVariationIDs) GROUP BY \"ProductVariationID\"")->column();
 				if(in_array($str, $variationValues)) $add = false;
 			}
 			if($add) {
@@ -234,7 +234,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
   }
 
 	function canRemoveAttributeType($type) {
-		$variations = $this->owner->getComponents('Variations', "`TypeID` = '$type->ID'", '', "INNER JOIN `ProductVariation_AttributeValues` ON `ProductVariationID` = `ProductVariation`.`ID` INNER JOIN `ProductAttributeValue` ON `ProductAttributeValue`.`ID` = `ProductAttributeValueID`");
+		$variations = $this->owner->getComponents('Variations', "\"TypeID\" = '$type->ID'", '', "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductVariationID\" = \"ProductVariation\".\"ID\" INNER JOIN \"ProductAttributeValue\" ON \"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"");
 		return $variations->Count() == 0;
 	}
 
@@ -386,10 +386,10 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 	}
 
 	public static $allowed_actions = array('updatevariationpricefromproduct');
-	
+
 	function updatevariationpricefromproduct() {
 		$variations = $this->owner->Variations();
-		foreach($variations as $variation) {	
+		foreach($variations as $variation) {
 			$variation->Price = $this->owner->Price;
 			$variation->writeToStage('Stage');
 		}
