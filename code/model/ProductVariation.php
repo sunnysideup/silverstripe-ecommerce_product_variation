@@ -144,7 +144,7 @@ class ProductVariation extends DataObject {
 						'Total' => 'Total'
 					),
 					new FieldSet(),
-					"\"ProductVariationID\" = '$this->ID'",
+					"\"BuyableID\" = '$this->ID'",
 					"\"Created\" DESC"
 				)
 			);
