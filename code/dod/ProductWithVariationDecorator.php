@@ -346,22 +346,28 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 	function addVariation($data,$form){
 		//TODO: save form data to session so selected values are not lost
-		$data['ProductAttributes'] = Convert::raw2sql($data['ProductAttributes']);
-		if(isset($data['ProductAttributes']) && $variation = $this->owner->getVariationByAttributes($data['ProductAttributes'])){
-			if($variation->canPurchase()) {
-				$quantity = intval($data['Quantity']);
-				if(!$quantity) {
-					$quantity = 1;
+		if(isset($data['ProductAttributes'])){
+			$data['ProductAttributes'] = Convert::raw2sql($data['ProductAttributes']);
+			$variation = $this->owner->getVariationByAttributes($data['ProductAttributes']);
+			if($variation) {
+				if($variation->canPurchase()) {
+					$quantity = intval($data['Quantity']);
+					if(!$quantity) {
+						$quantity = 1;
+					}
+					ShoppingCart::add_buyable($variation,$quantity);
+					$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
 				}
-				ShoppingCart::add_buyable($variation,$quantity);
-				$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
+				else{
+					$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That option is not available."),"bad");
+				}
 			}
-			else{
-				$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That variation combination is not available."),"bad");
+			else {
+				$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That option is not available."),"bad");
 			}
 		}
 		else {
-			$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTFOUND","The product you are looking for is not found."),"bad");
+			$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTFOUND","The items you are looking for is not found."),"bad");
 		}
 		if(!Director::is_ajax()){
 			Director::redirectBack();

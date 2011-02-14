@@ -284,7 +284,11 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	}
 
 	function UnitPrice() {
-		return $this->ProductVariation()->Price;
+		$price = $this->ProductVariation()->Price;
+		if(!$price) {
+			$price = $this->ProductVariation()->Product()->Price;
+		}
+		return $price;
 	}
 
 	function TableTitle() {
