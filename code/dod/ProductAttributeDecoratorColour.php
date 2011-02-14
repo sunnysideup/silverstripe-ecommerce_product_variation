@@ -60,8 +60,10 @@ class ProductAttributeDecoratorColour_Value extends DataObjectDecorator {
 	}
 
 	function updateValueForDropdown(&$v) {
-		$style = 'color: #'.$this->ComputedRGBCode().'; background-color: #'.$this->ComputedContrastRGBCode().';';
-		$v = '<span style="'.$style.'">'.$v.'</span>';
+		if($this->hasColour()) {
+			$style = 'color: #'.$this->ComputedRGBCode().'; background-color: #'.$this->ComputedContrastRGBCode().';';
+			$v = '<span style="'.$style.'">'.$v.'</span>';
+		}
 		return $v;
 	}
 
