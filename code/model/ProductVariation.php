@@ -269,13 +269,12 @@ class ProductVariation_Image extends Image {
 
 class ProductVariation_OrderItem extends Product_OrderItem {
 
-	static $db = array(
-		'KeepMeTwo' => 'Boolean'
-	);
 	// ProductVariation Access Function
-
 	public function ProductVariation($current = false) {
-		return $this->Buyable($current);
+		//TO DO: the line below does not work because it does NOT get the right version
+		return $this->Buyable(true);
+		//THIS WORKS
+		return DataObject::get_by_id("ProductVariation", $this->BuyableID);
 	}
 
 	function hasSameContent($orderItem) {
@@ -284,11 +283,9 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	}
 
 	function UnitPrice() {
-		$price = $this->ProductVariation()->Price;
-		if(!$price) {
-			$price = $this->ProductVariation()->Product()->Price;
-		}
-		return $price;
+		$unitPrice = $this->ProductVariation()->Price;
+		$this->extend('updateUnitPrice',$unitPrice);
+		return $unitPrice;
 	}
 
 	function TableTitle() {
