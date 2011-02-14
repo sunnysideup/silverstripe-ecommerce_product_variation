@@ -18,7 +18,6 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
 //MAY SET
-//ProductsAndGroupsModelAdmin::set_managed_models(array("Product", "ProductGroup","ProductVariation"));
 //ProductVariation::set_singular_name("Variation");
 //ProductVariation::set_plural_name("Variations");
 //ProductVariation::add_title_style_option($code = "minimal", $showType = true, $betweenTypeAndValue = ": ", $betweenVariations  =" / ");
