@@ -1,4 +1,4 @@
-/*
+
 (function($){
 
 	$("#Form_VariationForm select").change(function(){
@@ -43,13 +43,15 @@
 
 
 		//disable/enable submit button & supply error message
+		// THIS CAUSES THE FORM NOT TO WORK IN SOME CASES
+		/*
 		if(!possible){
 			$('#Form_VariationForm input.action').attr('disabled','disabled').addClass('disabled');
-
 		}
 		else{
 			$('#Form_VariationForm input.action').removeAttr('disabled').removeClass('disabled');
 		}
+		*/
 
 	});
 
@@ -104,4 +106,4 @@
 	}
 
 })(jQuery);
-*/
+

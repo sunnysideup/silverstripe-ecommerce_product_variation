@@ -278,7 +278,8 @@ class CreateEcommerceVariations_Field extends LiteralField {
 class CreateEcommerceVariations_Batch extends Controller {
 
 	static $allowed_actions = array(
-		'updatepriceofvariationsfromparentproduct'
+		'updatepriceofvariationsfromparentproduct' => "CMS_ACCESS_CMSMain",
+		'deleteallvariationswithoutprice' => "CMS_ACCESS_CMSMain"
 	);
 
 	function init() {
@@ -301,6 +302,15 @@ class CreateEcommerceVariations_Batch extends Controller {
 			SET \"ProductVariation\".\"Price\" = \"Product\".\"Price\"
 		");
 		DB::alteration_message("all variation prices have been reset to their parent product price", "created");
+	}
+
+	function deleteallvariationswithoutprice() {
+		DB::query("
+			DELETE
+			FROM \"ProductVariation\"
+			WHERE \"ProductVariation\".\"Price\" = 0
+		");
+		DB::alteration_message("all variation without price has been deleted...", "created");
 	}
 
 }
