@@ -203,6 +203,7 @@ var CreateEcommerceVariationsField = {
 					//do nothing
 				}
 				else {
+					CreateEcommerceVariationsField.init();
 					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
