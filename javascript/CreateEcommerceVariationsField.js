@@ -65,7 +65,7 @@ var CreateEcommerceVariationsField = {
 		if(!getVariables) {
 			getVariables = {};
 		}
-		this.getDataFromServer(action, getVariables);
+		CreateEcommerceVariationsField.getDataFromServer(action, getVariables);
 	},
 
 	removeOldStuff: function() {
