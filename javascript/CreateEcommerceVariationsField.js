@@ -39,15 +39,15 @@ var CreateEcommerceVariationsField = {
 
 	init: function() {
 		if(!CreateEcommerceVariationsField.initHasRun) {
-			this.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
-			this.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
-			this.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
-			this.typesHolderHTML = '<li class="typeHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeHolder").html()+'</li>';
-			this.valuesHolderHTML = '<li class="valueHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.valueHolder").html()+'</li>';
-			this.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
+			CreateEcommerceVariationsField.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
+			CreateEcommerceVariationsField.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
+			CreateEcommerceVariationsField.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
+			CreateEcommerceVariationsField.typesHolderHTML = '<li class="typeHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeHolder").html()+'</li>';
+			CreateEcommerceVariationsField.valuesHolderHTML = '<li class="valueHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.valueHolder").html()+'</li>';
+			CreateEcommerceVariationsField.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
 			jQuery("#CreateEcommerceVariationsTemplate").remove();
-			this.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
-			jQuery(this.startLinkSelector).livequery(
+			CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
+			jQuery(CreateEcommerceVariationsField.startLinkSelector).livequery(
 				'click',
 				function() {
 					return CreateEcommerceVariationsField.startup();
@@ -208,7 +208,7 @@ var CreateEcommerceVariationsField = {
 					//do nothing
 				}
 				else {
-					CreateEcommerceVariationsField.init();
+					//CreateEcommerceVariationsField.init();
 					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
