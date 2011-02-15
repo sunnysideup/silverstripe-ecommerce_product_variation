@@ -35,6 +35,8 @@ var CreateEcommerceVariationsField = {
 
 	createButtonHolderHTML: "",
 
+	initHasRun: false,
+
 	init: function() {
 		this.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
 		this.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
@@ -203,7 +205,10 @@ var CreateEcommerceVariationsField = {
 					//do nothing
 				}
 				else {
-					CreateEcommerceVariationsField.init();
+					if(!CreateEcommerceVariationsField.initHasRun) {
+						CreateEcommerceVariationsField.init();
+						CreateEcommerceVariationsField.initHasRun = true;
+					}
 					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
