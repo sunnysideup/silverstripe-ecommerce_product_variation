@@ -73,15 +73,15 @@ var CreateEcommerceVariationsField = {
 	},
 
 	attachFunctions: function() {
-		this.productID = jQuery('#Form_EditForm_ID').val();
-		this.addAddLinkToggles();
-		this.addEditLinkToggles();
-		this.add();
-		this.rename();
-		this.move();
-		this.select();
-		this.remove();
-		this.createVariations();
+		CreateEcommerceVariationsField.productID = jQuery('#Form_EditForm_ID').val();
+		CreateEcommerceVariationsField.addAddLinkToggles();
+		CreateEcommerceVariationsField.addEditLinkToggles();
+		CreateEcommerceVariationsField.add();
+		CreateEcommerceVariationsField.rename();
+		CreateEcommerceVariationsField.move();
+		CreateEcommerceVariationsField.select();
+		CreateEcommerceVariationsField.remove();
+		CreateEcommerceVariationsField.createVariations();
 	},
 
 	addAddLinkToggles: function() {
