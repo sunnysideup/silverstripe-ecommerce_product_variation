@@ -1,3 +1,4 @@
+/*
 (function($){
 
 	$("#Form_VariationForm select").change(function(){
@@ -89,7 +90,7 @@
 
 	}
 
-	/* Finds the first variation it can with the selected attributes */
+	// Finds the first variation it can with the selected attributes
 	function findVariation(selections){
 		vloop: for(v in variationsjson){
 			for(var i = 0; i < selections.length; i++){
@@ -103,3 +104,4 @@
 	}
 
 })(jQuery);
+*/
