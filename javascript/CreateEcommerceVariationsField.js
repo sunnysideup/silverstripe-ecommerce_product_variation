@@ -38,20 +38,23 @@ var CreateEcommerceVariationsField = {
 	initHasRun: false,
 
 	init: function() {
-		this.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
-		this.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
-		this.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
-		this.typesHolderHTML = '<li class="typeHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeHolder").html()+'</li>';
-		this.valuesHolderHTML = '<li class="valueHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.valueHolder").html()+'</li>';
-		this.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
-		jQuery("#CreateEcommerceVariationsTemplate").remove();
-		this.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
-		jQuery(this.startLinkSelector).livequery(
-			'click',
-			function() {
-				return CreateEcommerceVariationsField.startup();
-			}
-		);
+		if(!CreateEcommerceVariationsField.initHasRun) {
+			this.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
+			this.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
+			this.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
+			this.typesHolderHTML = '<li class="typeHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeHolder").html()+'</li>';
+			this.valuesHolderHTML = '<li class="valueHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.valueHolder").html()+'</li>';
+			this.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
+			jQuery("#CreateEcommerceVariationsTemplate").remove();
+			this.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
+			jQuery(this.startLinkSelector).livequery(
+				'click',
+				function() {
+					return CreateEcommerceVariationsField.startup();
+				}
+			);
+			CreateEcommerceVariationsField.initHasRun = true;
+		}
 	},
 
 	startup: function() {
@@ -205,10 +208,7 @@ var CreateEcommerceVariationsField = {
 					//do nothing
 				}
 				else {
-					if(!CreateEcommerceVariationsField.initHasRun) {
-						CreateEcommerceVariationsField.init();
-						CreateEcommerceVariationsField.initHasRun = true;
-					}
+					CreateEcommerceVariationsField.init();
 					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
