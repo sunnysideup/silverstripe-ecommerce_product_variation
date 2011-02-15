@@ -291,19 +291,29 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 }
 
-
 class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
+
+	protected static $use_js_validation = true;
+		static function set_use_js_validation($b) {self::$use_js_validation = $b;}
+		static function get_use_js_validation() {return self::$use_js_validation;}
+
+	protected static $alternative_validator_class_name = "";
+		static function set_alternative_validator_class_name($s) {self::$alternative_validator_class_name = $s;}
+		static function get_alternative_validator_class_name() {return self::$alternative_validator_class_name;}
 
 	function VariationForm(){
 		//TODO: cache this form so it doesn't need to be regenerated all the time?
 
 		$farray = array();
+
 		$requiredfields = array();
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
 				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
-				$requiredfields[] = "ProductAttributes[$attribute->ID]";
+				if(self::get_use_js_validation()) {
+					$requiredfields[] = "ProductAttributes[$attribute->ID]";
+				}
 			}
 		}
 		$fields = new FieldSet($farray);
@@ -328,6 +338,9 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 			Requirements::customScript($jsonscript,'variationsjson');
 			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+			if(self::get_alternative_validator_class_name()) {
+				Requirements::javascript(self::get_alternative_validator_class_name());
+			}
 			Requirements::themedCSS('variationsform');
 		}
 
@@ -337,8 +350,13 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 
 
 		$requiredfields[] = 'Quantity';
-		$validator = new RequiredFields($requiredfields);
-
+		if(self::get_alternative_validator_class_name()) {
+			$requiredFieldsClass = self::get_alternative_validator_class_name();
+		}
+		else {
+			$requiredFieldsClass = "RequiredFields";
+		}
+		$validator = new $requiredFieldsClass($requiredfields);
 		$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
 		return $form;
 
