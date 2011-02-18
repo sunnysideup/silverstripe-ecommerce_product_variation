@@ -324,29 +324,30 @@ HTML;
 		// we must check for individual database types here because each deals with schema in a none standard way
 		//can we use Table::has_field ???
 		$db = DB::getConn();
-		if( $db instanceof PostgreSQLDatabase ){
-      $exist = DB::query("SELECT column_name FROM information_schema.columns WHERE table_name ='Product_OrderItem' AND column_name = 'ProductVariationVersion'")->numRecords();
+		if($db->hasTable("Product_OrderItem")) {
+			if( $db instanceof PostgreSQLDatabase ){
+				$exist = DB::query("SELECT column_name FROM information_schema.columns WHERE table_name ='Product_OrderItem' AND column_name = 'ProductVariationVersion'")->numRecords();
+			}
+			else{
+				// default is MySQL - broken for others, each database conn type supported must be checked for!
+				$exist = DB::query("SHOW COLUMNS FROM \"Product_OrderItem\" LIKE 'ProductVariationVersion'")->numRecords();
+			}
+			if($exist > 0) {
+				DB::query("
+					UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
+						SET \"OrderItem\".\"Version\" = \"ProductVariation_OrderItem\".\"ProductVariationVersion\"
+					WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
+				");
+				DB::query("
+					UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
+						SET \"OrderItem\".\"BuyableID\" = \"ProductVariation_OrderItem\".\"ProductVariationID\"
+					WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
+				");
+				DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationVersion\" \"_obsolete_ProductVariationVersion\" Integer(11)");
+				DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationID\" \"_obsolete_ProductVariationID\" Integer(11)");
+				DB::alteration_message('made ProductVariationVersion and ProductVariationID obsolete in ProductVariation_OrderItem', 'obsolete');
+			}
 		}
-		else{
-			// default is MySQL - broken for others, each database conn type supported must be checked for!
-      $exist = DB::query("SHOW COLUMNS FROM \"Product_OrderItem\" LIKE 'ProductVariationVersion'")->numRecords();
-		}
- 		if($exist > 0) {
-			DB::query("
-				UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
-					SET \"OrderItem\".\"Version\" = \"ProductVariation_OrderItem\".\"ProductVariationVersion\"
-				WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
-			");
-			DB::query("
-				UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
-					SET \"OrderItem\".\"BuyableID\" = \"ProductVariation_OrderItem\".\"ProductVariationID\"
-				WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
-			");
- 			DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationVersion\" \"_obsolete_ProductVariationVersion\" Integer(11)");
- 			DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationID\" \"_obsolete_ProductVariationID\" Integer(11)");
- 			DB::alteration_message('made ProductVariationVersion and ProductVariationID obsolete in ProductVariation_OrderItem', 'obsolete');
-		}
-
 	}
 
 
