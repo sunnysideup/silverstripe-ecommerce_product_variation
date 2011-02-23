@@ -34,5 +34,4 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 //ProductAttributeDecoratorColour_Value::set_default_colour("000000");
 //ProductWithVariationDecorator_Controller::set_use_js_validation(false);
 //ProductWithVariationDecorator_Controller::set_alternative_validator_class_name("MyValidatorClass");
-
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
