@@ -54,7 +54,6 @@ var ProductVariation = {
 				jQuery(ProductVariation.button).removeClass('loading');
 				var message = '';
 				if(result) {
-					console.debug(result);
 					message = '<p class="message good">You can save this variation with these attributes.</p>';
 					jQuery(ProductVariation.button).removeAttr('disabled');
 				}
