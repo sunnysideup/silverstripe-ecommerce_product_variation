@@ -10,7 +10,8 @@ class ProductVariation extends DataObject {
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
 		'AllowPurchase' => 'Boolean',
-		'Sort' => "Int"
+		'Sort' => "Int",
+		'Description' => "Varchar(255)"
 	);
 
 	public static $has_one = array(
@@ -44,6 +45,10 @@ class ProductVariation extends DataObject {
 
 	public static $defaults = array(
 		"AllowPurchase" => 1
+	);
+
+	public static $field_labels = array(
+		"Description" => "Title (optional)"
 	);
 
 	public static $summary_fields = array(
@@ -187,6 +192,13 @@ class ProductVariation extends DataObject {
 	}
 
 	function getTitle($withSpan = false){
+		if($this->Description) {
+			$title = $this->Description;
+			if($withSpan) {
+				$title = "<span>".$title."</span>";
+			}
+			return $title;
+		}
 		$styleArray = self::get_current_style_option_array();
 		$values = $this->AttributeValues();
 		if($values->exists()){
