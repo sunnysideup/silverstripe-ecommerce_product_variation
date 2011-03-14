@@ -14,7 +14,7 @@ var ProductVariation = {
 	variationID: 0,
 	types: null,
 	button: null,
-	
+
 	init: function() {
 		this.productID = jQuery('#ComplexTableField_Popup_DetailForm_ProductID').val();
 		if(this.productID) {
@@ -31,11 +31,11 @@ var ProductVariation = {
 			this.checkPermission();
 		}
 	},
-	
+
 	attachFunctions: function() {
 		jQuery(this.types).change(this.checkPermission);
 	},
-	
+
 	checkPermission: function() {
 		jQuery(ProductVariation.button).attr('disabled', 'disabled').addClass('loading').attr('value', 'Validation checking in progress...');
 		var data = {'variation' : ProductVariation.variationID};

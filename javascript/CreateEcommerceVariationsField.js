@@ -213,7 +213,7 @@ var CreateEcommerceVariationsField = {
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
 					var types = data.Types;
-					if(types.length > 0) {
+					if(types && types != "undefined" && types.length > 0) {
 						var typeHtml = '';
 						for(var i = 0; i < types.length; i++) {
 							typeHtml += CreateEcommerceVariationsField.createTypeNode(types[i]);
