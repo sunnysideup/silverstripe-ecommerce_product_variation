@@ -38,8 +38,10 @@ class ProductAttributeType extends DataObject{
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
-		$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
-		$fields->addFieldToTab("Root.Sort", new LiteralField("SortTypes", $sortLink));
+		if(class_exists("DataObjectSorterController")) {
+			$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
+			$fields->addFieldToTab("Root.Sort", new LiteralField("SortTypes", $sortLink));
+		}
 		return $fields;
 	}
 
