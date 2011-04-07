@@ -8,12 +8,16 @@ Director::addRules(50, array(
 Object::add_extension("ProductVariation", "Buyable");
 Object::add_extension("Product", "ProductWithVariationDecorator");
 Object::add_extension("Product_Controller", "ProductWithVariationDecorator_Controller");
+Object::add_extension("ProductBulkLoader","ProductVariationBulkLoader");
+
 Product_Controller::$allowed_actions[] = 'VariationForm';
 Product_Controller::$allowed_actions[] = 'addvariation';
 LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 LeftAndMain::require_javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
 LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
+
+ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________

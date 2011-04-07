@@ -248,6 +248,8 @@ class ProductVariation extends DataObject {
 		return $this->getPurchasedTotal() == 0;
 	}
 
+
+	//TODO: provide human-understandable reasons variation can't be purcahsed
 	function canPurchase($member = null) {
 		if($this->ShopClosed()) {
 			return false;
@@ -272,12 +274,9 @@ class ProductVariation extends DataObject {
 
 }
 
-
-
 class ProductVariation_Image extends Image {
 
 }
-
 
 class ProductVariation_OrderItem extends Product_OrderItem {
 
