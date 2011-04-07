@@ -5,7 +5,7 @@
 
 		$changed = $(this);
 
-		if(!variationsjson)
+		if(!variationsjson || variationsjson.length <= 0)
 			return false;
 
 		//get all selected values
@@ -41,17 +41,14 @@
 			}
 		});
 
-
-		//disable/enable submit button & supply error message
-		// THIS CAUSES THE FORM NOT TO WORK IN SOME CASES
-		/*
+		//TODO: supply appropriate error message
 		if(!possible){
-			$('#Form_VariationForm input.action').attr('disabled','disabled').addClass('disabled');
+			$('#Form_VariationForm input.action').addClass('disabled');
 		}
 		else{
-			$('#Form_VariationForm input.action').removeAttr('disabled').removeClass('disabled');
+			$('#Form_VariationForm input.action').removeClass('disabled');
 		}
-		*/
+
 
 	});
 

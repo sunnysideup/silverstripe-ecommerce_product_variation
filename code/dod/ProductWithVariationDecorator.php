@@ -302,7 +302,6 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		static function get_alternative_validator_class_name() {return self::$alternative_validator_class_name;}
 
 	function VariationForm(){
-		//TODO: cache this form so it doesn't need to be regenerated all the time?
 
 		$farray = array();
 
@@ -326,13 +325,13 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 			if($vars = $this->owner->Variations()){
 				foreach($vars as $var){
 					if($var->canPurchase()) {
-						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
+						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');	
 					}
 				}
+				
 			}
 
 			$json = json_encode($vararray);
-			//$fields->push(new HiddenField('VariationOptions','VariationOptions',$json));
 
 			$jsonscript = "var variationsjson = $json";
 
