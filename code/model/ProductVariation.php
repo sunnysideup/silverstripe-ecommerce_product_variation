@@ -102,8 +102,9 @@ class ProductVariation extends DataObject {
 		$fields = new FieldSet(new TabSet('Root',
 			new Tab('Main',
 				new NumericField('Price'),
-				new CheckboxField('AllowPurchase', 'Allow Purchase ?'),
-				new TextField('InternalItemID', 'Internal Item ID'),
+				new CheckboxField('AllowPurchase', _t("ProductVariation.ALLOWPURCHASE", 'Allow Purchase ?')),
+				new TextField('InternalItemID', _t("ProductVariation.INTERNALITEMID", 'Internal Item ID')),
+				new TextField('Description', _t("ProductVariation.DESCRIPTION", "Description (optional)")),
 				new ImageField('Image')
 			)
 		));
@@ -124,7 +125,7 @@ class ProductVariation extends DataObject {
 					}
 					else {
 						if($purchased) {
-							$field = new ReadonlyField("Type{$type->ID}", $type->Name, 'You can not select a value because it has already been purchased.');
+							$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.ALREADYPURCHASED", 'You can not select a value because it has already been purchased.'));
 						}
 						else {
 							$field->setEmptyString('');
@@ -132,7 +133,7 @@ class ProductVariation extends DataObject {
 					}
 				}
 				else {
-					$field = new ReadonlyField("Type{$type->ID}", $type->Name, 'No values to select');
+					$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.NOVALUESTOSELECT", 'No values to select'));
 				}
 				$fields->addFieldToTab('Root.Attributes', $field);
 			}
