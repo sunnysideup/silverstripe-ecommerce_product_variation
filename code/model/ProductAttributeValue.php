@@ -39,13 +39,14 @@ class ProductAttributeValue extends DataObject{
 	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 
 	public static $singular_name = "Attribute Value";
-		static function set_singular_name($v) {self::$singular_name = $v;}
-		static function get_singular_name() {return self::$singular_name;}
-
+		function i18n_single_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Attribute Value");}
 
 	public static $plural_name = "Attribute Values";
-		static function set_plural_name($v) {self::$plural_name = $v;}
-		static function get_plural_name() {return self::$plural_name;}
+		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Attribute Values");}
+		public static function get_plural_name(){
+			$obj = Singleton("ProductAttributeValue");
+			return $obj->i18n_plural_name();
+		}
 
 	public function canDelete($member = null) {
 		/*$alreadyUsed = DB::query("
@@ -90,10 +91,27 @@ class ProductAttributeValue extends DataObject{
 	function onBeforeDelete() {
 		parent::onBeforeDelete();
 		if(!$this->Value) {
-			$this->Value = self::get_singular_name();
+			$this->Value = $this->i18n_single_name();
 			$i = 0;
 			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
-				$this->Value = self::get_singular_name()."_".$i;
+				if($i) {
+					$this->Value = $this->i18n_single_name()."_".$i;
+				}
+				$i++;
+			}
+		}
+		// No Need To Remove Variations because of onBeforeDelete
+		/*$variations = $this->ProductVariation();
+		foreach($variations as $variation) $variation->delete();*/
+	}
+	function onBeforeWrite() {
+		parent::onBeforeWrite();
+		if(!$this->Value) {
+			$this->Value = $this->i18n_single_name();
+			$i = 0;
+			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
+				$this->Value = $this->i18n_single_name()."_".$i;
+				$i++;
 			}
 		}
 		// No Need To Remove Variations because of onBeforeDelete

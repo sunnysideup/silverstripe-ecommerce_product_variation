@@ -61,17 +61,19 @@ class ProductVariation extends DataObject {
 
 
 	public static $singular_name = "Product Variation";
-		static function set_singular_name($v) {self::$singular_name = $v;}
-		static function get_singular_name() {return self::$singular_name;}
-		function i18n_singular_name() { return _t("Order.PRODUCTVARIATION", self::get_singular_name());}
+		function i18n_singular_name() { return _t("ProductVariation.PRODUCTVARIATION", "Product Variation");}
+
 
 	public static $plural_name = "Product Variations";
-		static function set_plural_name($v) {self::$plural_name = $v;}
-		static function get_plural_name() {return self::$plural_name;}
+		function i18n_plural_name() { return _t("ProductVariation.PRODUCTVARIATIONS", "Product Variations");}
+		public static function get_plural_name(){
+			$obj = Singleton("ProductVariation");
+			return $obj->i18n_plural_name();
+		}
 
 	/**
-	*@param
-	**/
+ 	 *@param
+    **/
 	protected static $title_style_option = array(
 		"default" => array(
 			"ShowType" => true,
@@ -252,15 +254,12 @@ class ProductVariation extends DataObject {
 
 	//TODO: provide human-understandable reasons variation can't be purcahsed
 	function canPurchase($member = null) {
-		if($this->ShopClosed()) {
-			return false;
-		}
 		$allowpurchase = false;
 		if(!$this->AllowPurchase) {
 			return false;
 		}
 		if($product = $this->Product()) {
-			$allowpurchase = $this->Price > 0;
+			$allowpurchase = $product->Price > 0;
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($allowpurchase && $extended !== null) {
