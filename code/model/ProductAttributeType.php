@@ -26,13 +26,14 @@ class ProductAttributeType extends DataObject{
 	static $default_sort = "\"Sort\" ASC, \"Name\"";
 
 	public static $singular_name = "Attribute Type";
-		static function set_singular_name($v) {self::$singular_name = $v;}
-		static function get_singular_name() {return self::$singular_name;}
+		function i18n_single_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Attribute Type");}
 
 	public static $plural_name = "Attribute Types";
-		static function set_plural_name($v) {self::$plural_name = $v;}
-		static function get_plural_name() {return self::$plural_name;}
-
+		function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Attribute Types");}
+		public static function get_plural_name(){
+			$obj = Singleton("ProductAttributeType");
+			return $obj->i18n_plural_name();
+		}
 
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
@@ -108,7 +109,7 @@ class ProductAttributeType extends DataObject{
 		parent::onBeforeWrite();
 		$i = 0;
 		while(!$this->Name || DataObject::get_one($this->ClassName, "\"Name\" = '".$this->Name."' AND \"".$this->ClassName."\".\"ID\" <> ".intval($this->ID))) {
-			$this->Name = self::get_singular_name();
+			$this->Name = $this->i18n_single_name();
 			if($i) {
 				$this->Name .= "_".$i;
 			}
