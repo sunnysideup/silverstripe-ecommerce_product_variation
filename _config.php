@@ -32,4 +32,11 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 //ProductAttributeDecoratorColour_Value::set_default_colour("000000");
 //ProductWithVariationDecorator_Controller::set_use_js_validation(false);
 //ProductWithVariationDecorator_Controller::set_alternative_validator_class_name("MyValidatorClass");
+// IMPORTANT NAME CHANGES....
+//$lang['en_US']['ProductVariation']['PRODUCTVARIATION']  = "Product Variation";
+//$lang['en_US']['ProductVariation']['PRODUCTVARIATIONS']  = "Product Variations";
+//$lang['en_US']['ProductAttributeValue']['ATTRIBUTEVALUE']  = "Product Attribute";
+//$lang['en_US']['ProductAttributeValue']['ATTRIBUTEVALUES']  = "Product Attributes";
+//$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPE']  = "Product Attribute Type";
+//$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPES']  = "Product Attribute Types";
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
