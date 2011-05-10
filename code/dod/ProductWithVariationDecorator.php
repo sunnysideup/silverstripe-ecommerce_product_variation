@@ -194,6 +194,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
+			user_error("attributes must be provided as an array of numeric keys and values IDs...", E_USER_NOTICE);
 			return null;
 		}
 		$keyattributes = array_keys($attributes);
@@ -202,13 +203,14 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		$join = "";
 		foreach($attributes as $typeid => $valueid){
 			if(!is_numeric($typeid) || !is_numeric($valueid)) {
-				return null; //ids MUST be numeric
+				user_error("key and value ID must be numeric", E_USER_NOTICE);
+				return null;
 			}
 			$alias = "A$typeid";
 			$where .= " AND \"$alias\".\"ProductAttributeValueID\" = $valueid";
 			$join .= " INNER JOIN \"ProductVariation_AttributeValues\" AS \"$alias\" ON \"ProductVariation\".\"ID\" = \"$alias\".\"ProductVariationID\" ";
 		}
-		$variations = DataObject::get('ProductVariation',$where, $sort = null, $join);
+		$variations = DataObject::get('ProductVariation',$where, $sort = null, $join, $limit = "1");
 		if($variations) {
 			$variation = $variations->First();
 			return $variation;
@@ -325,10 +327,10 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 			if($vars = $this->owner->Variations()){
 				foreach($vars as $var){
 					if($var->canPurchase()) {
-						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');	
+						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
 					}
 				}
-				
+
 			}
 
 			$json = json_encode($vararray);
