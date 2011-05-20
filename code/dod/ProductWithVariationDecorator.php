@@ -400,7 +400,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		if(!$type) {
 			return null;
 		}
-		$where = "\"TypeID\" = $type AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID;
+		$where = "\"TypeID\" = $type AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID."  AND \"ProductVariation\".\"AllowPurchase\" = 1";
 		//TODO: is there a better place to obtain these joins?
 		$join = "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductAttributeValue\".\"ID\" = \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\"" .
 				" INNER JOIN \"ProductVariation\" ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"";
