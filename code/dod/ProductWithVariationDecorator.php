@@ -102,6 +102,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 	/*
 	 * Generates variations based on selected attributes.
+	 * TODO: work out how it works!
 	 */
 	function generateVariationsFromAttributes(ProductAttributeType $attributetype, array $values){
 
@@ -150,6 +151,11 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 	}
 
+	/**
+	 * TO DO: work out how it works...
+	 *
+	 */ 
+
 	function generateVariationsFromAttributeValues(array $values) {
 		$cpt = 0;
 		$variations = array();
@@ -191,7 +197,11 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 		return $cpt;
 	}
-
+	
+	/**
+	 * TO DO: work out how it works...
+	 *
+	 */ 
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
 			user_error("attributes must be provided as an array of numeric keys and values IDs...", E_USER_NOTICE);
@@ -290,6 +300,10 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return $array;
 	}
 
+	function onBeforeWrite(){
+		//check for the attributes used so that they can be added to VariationAttributes
+		parent::onBeforeWrite();
+	}
 
 }
 
