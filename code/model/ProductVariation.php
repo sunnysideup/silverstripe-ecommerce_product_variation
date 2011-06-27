@@ -305,6 +305,10 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $tabletitle;
 	}
 
+	function getTableSubTitle() {
+		return $this->TableSubTitle();
+	}
+
 	function TableSubTitle() {
 		$tablesubtitle = $this->ProductVariation()->getTitle(true);
 		$this->extend('updateTableSubTitle',$tablesubtitle);

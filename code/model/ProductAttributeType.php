@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * This class contains list items such as "size", "colour"
+ * Not XL, Red, etc..., but the lists that contain the
+ * ProductAttributeValues.
+ * For a clothing store you will have two entries:
+ * - Size
+ * - Colour
+ *
+ *
+ */
+ 
 class ProductAttributeType extends DataObject{
 
 	public static $db = array(

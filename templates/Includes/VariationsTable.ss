@@ -1,5 +1,6 @@
 <table class="quantityTable">
 	<tr>
+		
 		<% if VariationAttributes %>
 		<% control VariationAttributes %>
 			<th>$Label</th>
@@ -16,18 +17,16 @@
 					<td>$Value</td>
 				<% end_control %>
 				<% else %>
-					<td>$Title.XML</td>
+					<td>$Title.XML $Description</td>
 				<% end_if %>
 				
 				<td>$Price.Nice $Currency $TaxInfo.PriceSuffix</td>
 				<td>
 				<% if canPurchase %>
 					<% if IsInCart %>
-						<% control OrderItem %>
-							$QuantityField
-						<% end_control %>
+						<a class="button" href="$OrderItem.RemoveAllLink" title="<% sprintf(_t("REMOVE","Remove &quot;%s&quot; from your cart"),$Title.XML) %>"><% _t("REMOVELINK","Remove from cart") %></a>					
 					<% else %>
-						<a class="button" href="$OrderItem.addLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title.XML) %>"><% _t("ADDLINK","Add this item to cart") %></a>
+						<a class="button" href="$OrderItem.AddLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title.XML) %>"><% _t("ADDLINK","Add this item to cart") %></a>
 					<% end_if %>
 				
 				<% end_if %>

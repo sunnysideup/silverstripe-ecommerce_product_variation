@@ -5,7 +5,7 @@ Director::addRules(50, array(
 	'createecommercevariationsbatch/$Action' => 'CreateEcommerceVariations_Batch'
 ));
 
-Object::add_extension("ProductVariation", "Buyable");
+Buyable::add_class("ProductVariation");
 Object::add_extension("Product", "ProductWithVariationDecorator");
 Object::add_extension("Product_Controller", "ProductWithVariationDecorator_Controller");
 Object::add_extension("ProductBulkLoader","ProductVariationBulkLoader");
@@ -22,7 +22,6 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
 //MAY SET
-//ProductVariation::add_title_style_option($code = "minimal", $showType = true, $betweenTypeAndValue = ": ", $betweenVariations  =" / ");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeType");
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
