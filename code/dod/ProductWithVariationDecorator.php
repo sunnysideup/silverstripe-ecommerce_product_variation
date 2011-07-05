@@ -388,7 +388,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 					if(!$quantity) {
 						$quantity = 1;
 					}
-					ShoppingCart::add_buyable($variation,$quantity);
+					ShoppingCart::singleton()->addBuyable($variation,$quantity);
 					$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
 				}
 				else{
