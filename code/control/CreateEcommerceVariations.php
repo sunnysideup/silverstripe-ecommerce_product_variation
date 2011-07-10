@@ -29,7 +29,6 @@ class CreateEcommerceVariations extends Controller {
 
 	protected static $session_name_for_selected_values = "SelectecedValues";
 
-
 	function init() {
 		parent::init();
 		if(!Permission::check("CMS_ACCESS_CMSMain")) {
@@ -270,7 +269,7 @@ class CreateEcommerceVariations_Field extends LiteralField {
 	}
 	function ValueSorterLink() {
 		if(class_exists("DataObjectSorterController")) {
-			return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "sort values");
+			return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
 		}
 	}
 }

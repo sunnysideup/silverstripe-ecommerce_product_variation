@@ -12,12 +12,15 @@
 
 var CreateEcommerceVariationsField = {
 
+	//URL to access controller
 	url: '',
 		set_url: function(v) {this.url = v;},
 
+	//product we are dealing with
 	productID: 0,
 		set_productID: function(v) {this.productID = v;},
 
+	//id of field that has link to controller
 	fieldID:"CreateEcommerceVariationsInner",
 		set_fieldID: function(v) {this.fieldID = v;},
 
@@ -35,10 +38,19 @@ var CreateEcommerceVariationsField = {
 
 	createButtonHolderHTML: "",
 
-	initHasRun: false,
-
 	init: function() {
-		if(!CreateEcommerceVariationsField.initHasRun) {
+		CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";		
+		jQuery(CreateEcommerceVariationsField.startLinkSelector).live(
+			'click',
+			function() {
+				return CreateEcommerceVariationsField.startup();
+			}
+		);
+		CreateEcommerceVariationsField.attachFunctions();
+	},
+
+	startup: function() {
+		if(jQuery("#CreateEcommerceVariationsTemplate").length) {
 			CreateEcommerceVariationsField.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
 			CreateEcommerceVariationsField.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
 			CreateEcommerceVariationsField.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
@@ -46,20 +58,8 @@ var CreateEcommerceVariationsField = {
 			CreateEcommerceVariationsField.valuesHolderHTML = '<li class="valueHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.valueHolder").html()+'</li>';
 			CreateEcommerceVariationsField.createButtonHolderHTML = '<li class="createButtonHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.createButtonHolder").html()+'</li>';
 			jQuery("#CreateEcommerceVariationsTemplate").remove();
-			CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
-			jQuery(CreateEcommerceVariationsField.startLinkSelector).livequery(
-				'click',
-				function() {
-					return CreateEcommerceVariationsField.startup();
-				}
-			);
-			CreateEcommerceVariationsField.initHasRun = true;
+			CreateEcommerceVariationsField.reset();
 		}
-	},
-
-	startup: function() {
-		CreateEcommerceVariationsField.attachFunctions();
-		CreateEcommerceVariationsField.reset();
 		return false;
 	},
 
@@ -90,7 +90,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addAddLinkToggles: function() {
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink").click(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink").live(
+			"click",
 			function() {
 				jQuery(this).parent("label").next("div").slideToggle();
 			}
@@ -98,7 +99,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addEditLinkToggles: function() {
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editNameLink").click(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editNameLink").live(
+			"click",
 			function() {
 				var rel = "#editFieldFor"+jQuery(this).attr("rel");
 				jQuery(rel).slideToggle();
@@ -107,7 +109,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	add:function() {
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input").change(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input").live(
+			"change",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("add", data);
@@ -117,7 +120,8 @@ var CreateEcommerceVariationsField = {
 
 	rename:function() {
 		//reset form
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input").change(
+		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input").live(
+			"change",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("rename", data);
@@ -151,7 +155,8 @@ var CreateEcommerceVariationsField = {
 
 	remove:function() {
 		//reset form
-		jQuery("a.deleteLink").click(
+		jQuery("a.deleteLink").live(
+			"click",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("remove", data);
@@ -163,7 +168,8 @@ var CreateEcommerceVariationsField = {
 	deleteValue:function() {
 
 		//reset form
-		jQuery("#A").click(
+		jQuery("#A").live(
+			"click",
 			function() {
 				CreateEcommerceVariationsField.reset();
 				return false;
@@ -172,7 +178,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	createVariations: function() {
-		jQuery('li.createButtonHolder input').click(
+		jQuery('li.createButtonHolder input').live(
+			"click",
 			function() {
 				data = CreateEcommerceVariationsField.selectGetVariables();
 				var mandatoryTypes = jQuery('#' + CreateEcommerceVariationsField.fieldID + ' input.dataForType:disabled:checked');
@@ -201,14 +208,14 @@ var CreateEcommerceVariationsField = {
 	getDataFromServer: function(action, getVariables) {
 		jQuery("#"+CreateEcommerceVariationsField.fieldID).addClass("loading");
 		jQuery.getJSON(
-			jQuery('base').attr("href")+'/' + CreateEcommerceVariationsField.url+'/' + action + '/'+CreateEcommerceVariationsField.productID+'/',
+			jQuery('base').attr("href") + CreateEcommerceVariationsField.url +'/' + action + '/'+CreateEcommerceVariationsField.productID+'/',
 			getVariables,
 			function(data) {
 				if(data == "ok") {
 					//do nothing
 				}
 				else {
-					//CreateEcommerceVariationsField.init();
+					CreateEcommerceVariationsField.startup();
 					html = '<div><ul>'+CreateEcommerceVariationsField.messageHTML;
 					html = html.replace(/MESSAGE/g, data.Message);
 					html = html.replace(/GOODORBAD/g, data.MessageClass);
@@ -226,7 +233,7 @@ var CreateEcommerceVariationsField = {
 					html += '</ul></div>';
 					CreateEcommerceVariationsField.removeOldStuff();
 					jQuery('#' + CreateEcommerceVariationsField.fieldID).html(html);
-					CreateEcommerceVariationsField.attachFunctions();
+					//CreateEcommerceVariationsField.attachFunctions();
 					jQuery('#' + CreateEcommerceVariationsField.fieldID).removeClass('loading');
 				}
 			}
@@ -234,6 +241,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	createTypeNode: function(type) {
+		
 		var html = CreateEcommerceVariationsField.typesHolderHTML;
 		html = html.replace(/ID/g, type.ID);
 		html = html.replace(/NAME/g, type.Name);
