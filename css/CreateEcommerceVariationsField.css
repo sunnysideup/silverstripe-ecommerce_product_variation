@@ -5,15 +5,21 @@
  	.createEcommerceVariations div.fieldHolder{ margin-bottom: 7px;}
  	.createEcommerceVariations div.fieldHolder input.checkbox{ vertical-align: bottom; display: block; width: auto; float: left;}
  	.createEcommerceVariations div.fieldHolder label{ width: 400px; font-size: 14px;}
- 	.createEcommerceVariations div.fieldHolder label a.deleteLink{color: red; font-size: 10px;}
+
  	.createEcommerceVariations div.textInputHolder{background-color: #E9E9E9; display: none; margin-bottom: 12px;}
  	 		.createEcommerceVariations input.text{ border:1px solid #A7A7A7; padding: 3px; margin: 3px 4px; }
 
 /* SORT AND ADD FORMAT */
-.valueAddHolder a, .typeAddHolder a {display: block; height: 16px; width: 16px; color: transparent; float: left; }
-.valueAddHolder > a, .typeAddHolder > a {background-image: url(/ecommerce_product_variation/images/icons/sort.png); }
-.valueAddHolder label a , .typeAddHolder label a {background-image: url(/ecommerce_product_variation/images/icons/add.png); }
-.typeHolder, .typeAddHolder {clear: left;}
+.createEcommerceVariations .valueAddHolder a, .createEcommerceVariations .typeAddHolder a
+	{display: block; height: 16px; width: 16px; color: transparent; float: left; }
+.createEcommerceVariations .valueAddHolder > a, .createEcommerceVariations .typeAddHolder > a
+	{background-image: url(/ecommerce_product_variation/images/icons/sort.png); }
+.createEcommerceVariations .valueAddHolder label a , .createEcommerceVariations .typeAddHolder label a
+	{background-image: url(/ecommerce_product_variation/images/icons/add.png); }
+.createEcommerceVariations .typeHolder, .createEcommerceVariations .typeAddHolder {clear: left;}
 
+/* DELETE LINK */
+ 	.createEcommerceVariations div.fieldHolder label a.deleteLink
+		{color: transparent; display: block; height: 16px; width: 16px; color: transparent; float: left; background-image: url(/ecommerce_product_variation/images/icons/delete.png); }
 
 #CreateEcommerceVariationsTemplate, .doNotShow{display: none!important;}
