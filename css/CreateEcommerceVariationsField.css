@@ -16,7 +16,7 @@
 	{background-image: url(/ecommerce_product_variation/images/icons/sort.png); }
 .createEcommerceVariations .valueAddHolder label a , .createEcommerceVariations .typeAddHolder label a
 	{background-image: url(/ecommerce_product_variation/images/icons/add.png); }
-.createEcommerceVariations .typeHolder, .createEcommerceVariations .typeAddHolder {clear: left;}
+.createEcommerceVariations .typeHolder, .createEcommerceVariations .typeAddHolder {clear: left; padding-top: 20px;}
 
 /* DELETE LINK */
  	.createEcommerceVariations div.fieldHolder label a.deleteLink
