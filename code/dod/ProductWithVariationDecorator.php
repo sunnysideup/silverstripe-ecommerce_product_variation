@@ -317,10 +317,20 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		static function set_alternative_validator_class_name($s) {self::$alternative_validator_class_name = $s;}
 		static function get_alternative_validator_class_name() {return self::$alternative_validator_class_name;}
 
+
+	public static $allowed_actions = array('updatevariationpricefromproduct');
+
+	function updatevariationpricefromproduct() {
+		$variations = $this->owner->Variations();
+		foreach($variations as $variation) {
+			$variation->Price = $this->owner->Price;
+			$variation->writeToStage('Stage');
+		}
+		return Director::redirectBack();
+	}
+
 	function VariationForm(){
-
 		$farray = array();
-
 		$requiredfields = array();
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
@@ -407,14 +417,28 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		}
 	}
 
-	function possibleValuesForAttributeType($type){
-		if(!is_numeric($type)) {
-			$type = $type->ID;
+	function VariationsPerVariationType() {
+		$types = $this->owner->VariationAttributes();
+		if($types) {
+			foreach($types as $type) {
+				$type->Variations = $this->possibleValuesForAttributeType($type);
+			}
 		}
-		if(!$type) {
+		return $types;
+	}
+
+
+	function possibleValuesForAttributeType($type){
+		if($type instanceOf ProductAttributeType) {
+			$typeID = $type->ID;
+		}
+		elseif($type = DataObject::get_by_id("ProductAttributeType", intval($type))) {
+			$typeID = $type->ID;
+		}
+		else {
 			return null;
 		}
-		$where = "\"TypeID\" = $type AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID."  AND \"ProductVariation\".\"AllowPurchase\" = 1";
+		$where = "\"TypeID\" = $typeID AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID."  AND \"ProductVariation\".\"AllowPurchase\" = 1";
 		//TODO: is there a better place to obtain these joins?
 		$join = "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductAttributeValue\".\"ID\" = \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\"" .
 				" INNER JOIN \"ProductVariation\" ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"";
@@ -424,14 +448,5 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		return $vals;
 	}
 
-	public static $allowed_actions = array('updatevariationpricefromproduct');
-
-	function updatevariationpricefromproduct() {
-		$variations = $this->owner->Variations();
-		foreach($variations as $variation) {
-			$variation->Price = $this->owner->Price;
-			$variation->writeToStage('Stage');
-		}
-		return Director::redirectBack();
-	}
+	
 }

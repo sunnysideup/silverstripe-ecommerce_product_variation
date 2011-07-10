@@ -30,11 +30,15 @@ class ProductAttributeType extends DataObject{
 		'Name' => 'Name'
 	);
 
+
 	static $indexes = array(
 		"Sort" => true
 	);
 
 	static $default_sort = "\"Sort\" ASC, \"Name\"";
+
+	//We need this to make certain templates work (see ProductWithVariationDecorator::VariationsPerVariationType)
+	public $Variations = null;
 
 	public static $singular_name = "Attribute Type";
 		function i18n_single_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Attribute Type");}
@@ -71,15 +75,12 @@ class ProductAttributeType extends DataObject{
 	}
 
 	function addValues(array $values){
-
 		$avalues = $this->convertArrayToValues($values);
 		$this->Values()->addMany($avalues);
-
 	}
 
 	function convertArrayToValues(array $values){
 		$set = new DataObjectSet();
-
 		foreach($values as $value){
 			$val = $this->Values()->find('Value',$value);
 			if(!$val){  //TODO: ignore case, if possible
@@ -89,12 +90,10 @@ class ProductAttributeType extends DataObject{
 			}
 			$set->push($val);
 		}
-
 		return $set;
 	}
 
 	function getDropDownField($emptystring = null, $values = null) {
-
 		$values = ($values) ? $values : $this->Values('',"\"Sort\" ASC, \"Value\" ASC");
 		if($values->exists() && $values->count() > 0){
 			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown'));
@@ -135,11 +134,12 @@ class ProductAttributeType extends DataObject{
 		parent::onBeforeDelete();
 		$values = $this->Values();
 		foreach($values as $value) {
-			$value->delete();
-			$value->destroy();
+			if($value->canDelete()) {
+				$value->delete();
+				$value->destroy();
+			}
 		}
 	}
-
 }
 
 

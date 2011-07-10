@@ -8,7 +8,8 @@
 		<% else %>
 			<th>Variation</th>
 		<% end_if %>
-		<th>Price</th><th><% _t("QUANTITYCART","Quantity in cart") %></th>
+		<th><% _t("PRICE","Price") %></th>
+		<th><% _t("INCART","In Cart?") %></th>
 	</tr>
 	<% control Variations %>
 			<tr>
