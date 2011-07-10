@@ -75,6 +75,13 @@ class ProductAttributeValue extends DataObject{
 			$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeID", $filterValue = $this->TypeID, $linkText = "Sort Values");
 			$fields->addFieldToTab("Root.Sort", new LiteralField("SortValues", $sortLink));
 		}
+		// TO DO: the code below does not work...
+		//$fields->removeFieldFromTab("Root.Product Variation", "ProductVariation");
+		//$fields->removeFieldFromTab("Root", "Product Variation");
+		$table = $fields->fieldByName("ProductVariation");
+		if($table) {
+			$table->setPermissions("edit", "view");
+		}
 		return $fields;
 	}
 
