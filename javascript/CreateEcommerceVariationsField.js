@@ -50,7 +50,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	startup: function() {
-		if(jQuery("#CreateEcommerceVariationsTemplate").length) {
+		if(jQuery("#CreateEcommerceVariationsTemplate").length > 0) {
 			CreateEcommerceVariationsField.messageHTML = '<li class="messageHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.messageHolder").html()+'</li>';
 			CreateEcommerceVariationsField.typeAddFirstHolderHTML = '<li class="typeAddFirstHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddFirstHolder").html()+'</li>';
 			CreateEcommerceVariationsField.typeAddHolderHTML = '<li class="typeAddHolder">'+jQuery("#CreateEcommerceVariationsTemplate li.typeAddHolder").html()+'</li>';
@@ -206,6 +206,9 @@ var CreateEcommerceVariationsField = {
 	},
 
 	getDataFromServer: function(action, getVariables) {
+		if(jQuery("#Form_EditForm_ID").length > 0) {
+			CreateEcommerceVariationsField.productID = jQuery("#Form_EditForm_ID").val();
+		}
 		jQuery("#"+CreateEcommerceVariationsField.fieldID).addClass("loading");
 		jQuery.getJSON(
 			jQuery('base').attr("href") + CreateEcommerceVariationsField.url +'/' + action + '/'+CreateEcommerceVariationsField.productID+'/',
