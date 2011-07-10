@@ -20,6 +20,6 @@
 
 /* DELETE LINK */
  	.createEcommerceVariations div.fieldHolder label a.deleteLink
-		{color: transparent; display: block; height: 16px; width: 16px; color: transparent; float: left; background-image: url(/ecommerce_product_variation/images/icons/delete.png); }
+		{color: transparent; display: inline-block; height: 16px; width: 16px; color: transparent; background-image: url(/ecommerce_product_variation/images/icons/delete.png); }
 
 #CreateEcommerceVariationsTemplate, .doNotShow{display: none!important;}
