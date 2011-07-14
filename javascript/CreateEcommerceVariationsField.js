@@ -19,6 +19,7 @@ var CreateEcommerceVariationsField = {
 	//product we are dealing with
 	productID: 0,
 		set_productID: function(v) {this.productID = v;},
+		getProductIDSelector: '#Form_EditForm_ID',		
 
 	//id of field that has link to controller
 	fieldID:"CreateEcommerceVariationsInner",
@@ -78,7 +79,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 	attachFunctions: function() {
-		CreateEcommerceVariationsField.productID = jQuery('#Form_EditForm_ID').val();
+		CreateEcommerceVariationsField.productID = jQuery(CreateEcommerceVariationsField.getProductIDSelector).val();
 		CreateEcommerceVariationsField.addAddLinkToggles();
 		CreateEcommerceVariationsField.addEditLinkToggles();
 		CreateEcommerceVariationsField.add();
@@ -199,6 +200,16 @@ var CreateEcommerceVariationsField = {
 				else {
 					CreateEcommerceVariationsField.reset('createvariations', data);
 					jQuery('#Form_EditForm_action_save').click();
+					/*
+					this might be better in SS 3.0+!
+					jQuery.ajax({
+						url: "/admin/getitem",
+						data: {ID: CreateEcommerceVariationsField.productID, ajax: 1},
+						success: function(response){jQuery("#Form_EditForm").html(response);},
+						dataType: "html"
+					});
+					*/
+					
 				}
 				return false;
 			}
@@ -321,7 +332,10 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 		return a;
-	}
+	},
+
+
+	
 }
 
 
