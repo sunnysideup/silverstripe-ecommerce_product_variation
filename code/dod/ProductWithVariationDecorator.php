@@ -81,6 +81,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		if(method_exists($tableField, 'setRelationAutoSetting')) {
 			$tableField->setRelationAutoSetting(true);
 		}
+		$tableField->setPermissions(array('edit', 'delete', 'export', 'show'));
 		return $tableField;
 	}
 
