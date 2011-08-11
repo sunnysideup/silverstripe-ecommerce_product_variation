@@ -30,7 +30,6 @@ class ProductAttributeType extends DataObject{
 		'Name' => 'Name'
 	);
 
-
 	static $indexes = array(
 		"Sort" => true
 	);

@@ -1,4 +1,5 @@
 <?php
+
 class ProductAttributeValue extends DataObject{
 
 	static $db = array(

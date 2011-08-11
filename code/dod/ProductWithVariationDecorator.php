@@ -14,6 +14,10 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		);
 	}
 
+	function canDelete($member  = null) {
+		return (bool)!$this->Variations();
+	}
+
 	function canPurchase($member = null) {
 		$allowpurchase = false;
 		if($this->owner->Variations()->exists()){
@@ -272,7 +276,16 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			FROM \"Product_VariationAttributes\"
 			WHERE \"ProductID\" = ".$this->owner->ID;
 		$data = DB::query($sql);
-		return $data->keyedColumn();
+		$array = $data->keyedColumn();
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $id) {
+				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
+					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $id");
+					unset($array[$key]);					
+				}
+			}
+		}
+		return $array;
 		/*$array = array();
 		if($data && count($data)) {
 			foreach($data as $key => $row) {
@@ -291,15 +304,19 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
 			WHERE \"ProductVariation\".\"ProductID\" = ".$this->owner->ID;
 		$data = DB::query($sql);
-		$array = array();
-		if($data && count($data)) {
-			foreach($data as $key => $row) {
-				$id = $row["ProductAttributeValueID"];
-				$array[$id] = $id;
+		$array = $data->keyedColumn();
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $id) {
+				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
+					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeValueID\" = $id");
+					unset($array[$key]);					
+				}
 			}
 		}
 		return $array;
 	}
+
+
 
 	function onBeforeWrite(){
 		//check for the attributes used so that they can be added to VariationAttributes
@@ -443,8 +460,8 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		//TODO: is there a better place to obtain these joins?
 		$join = "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductAttributeValue\".\"ID\" = \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\"" .
 				" INNER JOIN \"ProductVariation\" ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"";
-
-		$vals = DataObject::get('ProductAttributeValue',$where,$sort = "\"ProductAttributeValue\".\"Sort\",\"ProductAttributeValue\".\"Value\"",$join);
+		//die("Select * FROM ProductAttributeValue $join WHERE $where");
+		$vals = DataObject::get('ProductAttributeValue', $where, $sort = "\"ProductAttributeValue\".\"Sort\",\"ProductAttributeValue\".\"Value\"", $join);
 
 		return $vals;
 	}
