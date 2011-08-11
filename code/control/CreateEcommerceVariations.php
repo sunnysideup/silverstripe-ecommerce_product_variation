@@ -56,18 +56,23 @@ class CreateEcommerceVariations extends Controller {
 	}
 
 	function createvariations() {
+		$missingTypesID = array(-1 => -1);
 		foreach($this->_selectedtypeid as $typeID) {
 			if(! isset($_GET[$typeID])) {
 				$type = DataObject::get_by_id('ProductAttributeType', $typeID);
 				$missingTypes[] = $type->Name;
+				$missingTypesID[] = $typeID;
 			}
 		}
+		/*
 		if(isset($missingTypes)) {
 			$this->_message = 'No variations has been created because you\'ve not selected values for the type' . (count($missingTypes) > 1 ? 's ' : ' ') . implode(', ', $missingTypes) . '.';
 			$this->_messageclass = 'bad';
 			return $this->jsonforform();
 		}
-		$types = DataObject::get('ProductAttributeType');
+		*/
+		$missingTypes = array();
+		$types = DataObject::get('ProductAttributeType', "\"ProductAttributeType\".\"ID\" NOT IN (".implode(",", $missingTypesID).")");
 		if($types) {
 			$values = array();
 			foreach($types as $type) {

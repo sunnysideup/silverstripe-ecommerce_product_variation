@@ -272,6 +272,8 @@ class ProductVariation extends DataObject {
 		$this->AllowPurchase = 1;
 	}
 
+
+
 }
 
 class ProductVariation_Image extends Image {
