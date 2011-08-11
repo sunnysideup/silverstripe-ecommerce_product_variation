@@ -60,7 +60,9 @@ class CreateEcommerceVariations extends Controller {
 		foreach($this->_selectedtypeid as $typeID) {
 			if(! isset($_GET[$typeID])) {
 				$type = DataObject::get_by_id('ProductAttributeType', $typeID);
-				$missingTypes[] = $type->Name;
+				if($type) {
+					$missingTypes[] = $type->Name;
+				}
 				$missingTypesID[] = $typeID;
 			}
 		}
