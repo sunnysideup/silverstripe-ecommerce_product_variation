@@ -280,7 +280,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		if(is_array($array) && count($array) ) {
 			foreach($array as $key => $id) {
 				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
-					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $id");
+					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $id");
 					unset($array[$key]);					
 				}
 			}
@@ -308,7 +308,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		if(is_array($array) && count($array) ) {
 			foreach($array as $key => $id) {
 				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
-					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeValueID\" = $id");
+					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $id");
 					unset($array[$key]);					
 				}
 			}
