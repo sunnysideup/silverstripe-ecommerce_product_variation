@@ -21,9 +21,10 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
-//MAY SET
+//____________HIGHLY RECOMMENDED
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeType");
+//____________ADVANCED OPTIONS
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
 //Object::add_extension("ProductAttributeValue", "ProductAttributeDecoratorColour_Value");
 //Object::add_extension("ProductAttributeType", "ProductAttributeDecoratorColour_Type");
@@ -31,7 +32,7 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 //ProductAttributeDecoratorColour_Value::set_default_colour("000000");
 //ProductWithVariationDecorator_Controller::set_use_js_validation(false);
 //ProductWithVariationDecorator_Controller::set_alternative_validator_class_name("MyValidatorClass");
-// IMPORTANT NAME CHANGES....
+// ____________ IMPORTANT NAME CHANGES....
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATION']  = "Product Variation";
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATIONS']  = "Product Variations";
 //$lang['en_US']['ProductAttributeValue']['ATTRIBUTEVALUE']  = "Product Attribute";
