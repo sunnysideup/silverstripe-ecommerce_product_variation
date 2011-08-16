@@ -24,6 +24,7 @@ class ProductVariation extends DataObject {
 	);
 
 	public static $casting = array(
+		'Parent' => 'Product',
 		'Title' => 'HTMLText',
 		'Link' => 'Text',
 		'AllowPuchaseText' => 'Text',
@@ -52,6 +53,8 @@ class ProductVariation extends DataObject {
 	);
 
 	public static $summary_fields = array(
+		'Product.Title' => 'Product',
+		'Title' => 'Title',
 		'Price' => 'Price',
 		'AllowPuchaseText' => 'Buyable',
 		'PurchasedTotal' => 'Purchased Total'
@@ -59,10 +62,8 @@ class ProductVariation extends DataObject {
 
 	public static $default_sort = "Sort ASC, InternalItemID ASC";
 
-
 	public static $singular_name = "Product Variation";
 		function i18n_singular_name() { return _t("ProductVariation.PRODUCTVARIATION", "Product Variation");}
-
 
 	public static $plural_name = "Product Variations";
 		function i18n_plural_name() { return _t("ProductVariation.PRODUCTVARIATIONS", "Product Variations");}
@@ -127,7 +128,7 @@ class ProductVariation extends DataObject {
 					}
 					else {
 						if($purchased) {
-							$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.ALREADYPURCHASED", 'You can not select a value because it has already been purchased.'));
+							$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.ALREADYPURCHASED", 'NOT SET (you can not select a value now because it has already been purchased).'));
 						}
 						else {
 							$field->setEmptyString('');
@@ -192,6 +193,15 @@ class ProductVariation extends DataObject {
 
 	function Link(){
 		return $this->Product()->Link();
+	}
+
+	/**
+	 * We use this function to make it more universal.
+	 * For a buyable, a parent could refer to a ProductGroup OR a Product
+	 * @return DataObject | Null
+	 **/ 
+	function Parent(){
+		return $this->Product();
 	}
 
 	function getTitle($withSpan = false){

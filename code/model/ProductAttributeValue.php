@@ -126,5 +126,16 @@ class ProductAttributeValue extends DataObject{
 		/*$variations = $this->ProductVariation();
 		foreach($variations as $variation) $variation->delete();*/
 	}
+
+
+	function dodataobjectsort() {
+		if(!class_exists("DataObjectSorterDOD")) {
+			USER_ERROR("you have not installed the dataobjectsorter module - either hide the sort option OR install it: http://sunny.svnrepository.com/svn/sunny-side-up-general/dataobjectsorter");
+		}
+		else {
+			$this->extend("dodataobjectsort");
+		}
+	}
+	
 }
 

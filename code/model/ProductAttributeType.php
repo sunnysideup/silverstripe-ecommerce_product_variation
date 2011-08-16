@@ -93,6 +93,7 @@ class ProductAttributeType extends DataObject{
 	}
 
 	function getDropDownField($emptystring = null, $values = null) {
+		//to do, why do switch to "all" the options if there are no values?
 		$values = ($values) ? $values : $this->Values('',"\"Sort\" ASC, \"Value\" ASC");
 		if($values->exists() && $values->count() > 0){
 			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown'));
@@ -139,6 +140,17 @@ class ProductAttributeType extends DataObject{
 			}
 		}
 	}
+
+	function dodataobjectsort() {
+		if(!class_exists("DataObjectSorterDOD")) {
+			USER_ERROR("you have not installed the dataobjectsorter module - either hide the sort option OR install it: http://sunny.svnrepository.com/svn/sunny-side-up-general/dataobjectsorter");
+		}
+		else {
+			$this->extend("dodataobjectsort");
+		}
+	}
+
+
 }
 
 
