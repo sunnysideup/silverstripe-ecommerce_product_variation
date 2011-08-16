@@ -62,7 +62,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		$singleton = singleton('ProductVariation');
 		$query = $singleton->buildVersionSQL("\"ProductID\" = '{$this->owner->ID}'");
 		$variations = $singleton->buildDataObjectSet($query->execute());
-		$filter = $variations ? "\"ID\" IN ('" . implode("','", $variations->column('RecordID')) . "')" : "\"ID\" < '0'";
+		$filter = $variations ? "\"ID\" IN ('" . implode("','", $variations->column('RecordID')) . "') " : "\"ID\" < '0'";
 		//$filter = "\"ProductID\" = '{$this->owner->ID}'";
 
 		$summaryfields = array();
@@ -73,6 +73,8 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 
 		$summaryfields = array_merge($summaryfields, $singleton->summaryFields());
+		unset($summaryfields["Product.Title"]);
+		unset($summaryfields["Title"]);
 
 		$tableField = new ComplexTableField(
 			$this->owner,
@@ -277,20 +279,20 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			WHERE \"ProductID\" = ".$this->owner->ID;
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
-		if(is_array($array) && count($array) ) {
-			foreach($array as $key => $id) {
-				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
-					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $id");
-					unset($array[$key]);					
-				}
-			}
-		}
 		return $array;
 		/*$array = array();
 		if($data && count($data)) {
 			foreach($data as $key => $row) {
 				$id = $row["ProductAttributeTypeID"];
 				$array[$id] = $id;
+			}
+		}
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $id) {
+				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
+					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $id");
+					//unset($array[$key]);					
+				}
 			}
 		}
 		return $array;*/
@@ -305,24 +307,87 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			WHERE \"ProductVariation\".\"ProductID\" = ".$this->owner->ID;
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
+		return $array;
 		if(is_array($array) && count($array) ) {
 			foreach($array as $key => $id) {
 				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
-					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $id");
-					unset($array[$key]);					
+					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $id");
+					//unset($array[$key]);					
+				}
+			}
+		}		
+	}
+
+
+
+	function onAfterWrite(){
+		//check for the attributes used so that they can be added to VariationAttributes
+		parent::onAfterWrite();
+		$this->cleaningUpVariationData();
+	}
+
+	function onAfterDelete(){
+		parent::onAfterDelete();
+		$this->cleaningUpVariationData();
+	}
+
+	protected function cleaningUpVariationData() {
+		//removing non-existing ProductVariation_AttributeValues (Type does not exist)
+		//removing non-existing Product_VariationAttributes (Type does not exist)
+		$sql = "
+			Select \"ProductAttributeTypeID\"
+			FROM \"Product_VariationAttributes\"
+			WHERE \"ProductID\" = ".$this->owner->ID;
+		$data = DB::query($sql);
+		$array = $data->keyedColumn();
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $productAttributeTypeID) {
+				if(!DataObject::get_by_id("ProductAttributeType", $productAttributeTypeID)) {
+					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $productAttributeTypeID");
+					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $productAttributeTypeID");
 				}
 			}
 		}
+		//removing non-existing ProductVariation_AttributeValues (Value does not exist)
+		$sql = "
+			Select \"ProductAttributeValueID\"
+			FROM \"ProductVariation\"
+				INNER JOIN \"ProductVariation_AttributeValues\"
+					ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+			WHERE \"ProductVariation\".\"ProductID\" = ".$this->owner->ID;
+		$data = DB::query($sql);
+		$array = $data->keyedColumn();
 		return $array;
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $productAttributeValueID) {
+				if(!DataObject::get_by_id("ProductAttributeType", $productAttributeValueID)) {
+					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $productAttributeValueID");
+					//unset($array[$key]);					
+				}
+			}
+		}
+		//removing non-existing Product_VariationAttributes (Type does not exist)
+		$sql = "
+			SELECT \"ProductID\"
+			FROM \"Product_VariationAttributes\"
+				LEFT JOIN \"Product_Live\"
+					ON \"Product_VariationAttributes\".\"ProductID\" = \"Product_Live\".\"ID\"
+				LEFT JOIN \"Product\"
+					ON \"Product_VariationAttributes\".\"ProductID\" = \"Product\".\"ID\"
+			WHERE
+				\"Product_Live\".\"ID\" IS NULL AND
+				\"Product\".\"ID\" IS NULL 
+		";
+		$data = DB::query($sql);
+		$array = $data->keyedColumn();
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $productID) {
+				if(!DataObject::get_by_id("ProductAttributeType", $productID)) {
+					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductID\" = $productID");
+				}
+			}
+		}		
 	}
-
-
-
-	function onBeforeWrite(){
-		//check for the attributes used so that they can be added to VariationAttributes
-		parent::onBeforeWrite();
-	}
-
 }
 
 class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
@@ -353,9 +418,12 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		$attributes = $this->owner->VariationAttributes();
 		if($attributes) {
 			foreach($attributes as $attribute){
-				$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$this->possibleValuesForAttributeType($attribute));//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
-				if(self::get_use_js_validation()) {
-					$requiredfields[] = "ProductAttributes[$attribute->ID]";
+				$options = $this->possibleValuesForAttributeType($attribute);
+				if($options) {
+					$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+					if(self::get_use_js_validation()) {
+						$requiredfields[] = "ProductAttributes[$attribute->ID]";
+					}
 				}
 			}
 		}

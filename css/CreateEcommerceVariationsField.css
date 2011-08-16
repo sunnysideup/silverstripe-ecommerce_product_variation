@@ -1,5 +1,5 @@
  .loading {background: url(/ecommerce_product_variation/images/loading.gif) no-repeat top right transparent;}
-.createEcommerceVariations li.messageHolder {margin-bottom: 20px;}
+.createEcommerceVariations li.messageHolder {margin: 20px 0;}
 .createEcommerceVariations li.createButtonHolder {margin-top: 20px;}
 .createEcommerceVariations ul ul {padding-left: 40px;}
  	.createEcommerceVariations div.fieldHolder{ margin-bottom: 7px;}
