@@ -10,7 +10,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			),
 			"many_many" => array(
 				'VariationAttributes' => 'ProductAttributeType'
-			)
+			),
 		);
 	}
 
@@ -485,20 +485,34 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 						$quantity = 1;
 					}
 					ShoppingCart::singleton()->addBuyable($variation,$quantity);
-					$form->sessionMessage(_t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Successfully added to cart."),"good");
+					if($variation->IsInCart()) {
+						$msg = _t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Added to cart.");
+						$status = "good";
+					}
+					else {
+						$msg = _t("ProductWithVariationDecorator.NOTSUCCESSFULLYADDED","Not added to cart.");
+						$status = "bad";
+					}
 				}
 				else{
-					$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That option is not available."),"bad");
+					$msg = _t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That option is not available.");
+					$status = "bad";
 				}
 			}
 			else {
-				$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That option is not available."),"bad");
+				$msg = _t("ProductWithVariationDecorator.VARIATIONNOTAVAILABLE","That option is not available.");
+				$status = "bad";
 			}
 		}
 		else {
-			$form->sessionMessage(_t("ProductWithVariationDecorator.VARIATIONNOTFOUND","The items you are looking for is not found."),"bad");
+			$msg = _t("ProductWithVariationDecorator.VARIATIONNOTFOUND","The item(s) you are looking for are not available.");
+			$status = "bad";			
 		}
-		if(!Director::is_ajax()){
+		if(Director::is_ajax()){
+			return ShoppingCart::singleton()->setMessageAndReturn($msg, $status);
+		}
+		else {
+			$form->sessionMessage($msg,$status);
 			Director::redirectBack();
 		}
 	}
