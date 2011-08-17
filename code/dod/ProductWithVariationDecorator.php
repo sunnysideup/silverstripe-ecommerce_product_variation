@@ -46,6 +46,18 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return $this->NumberOfVariations() ? true : false;
 	}
 
+	/**
+	 * this method is really useful when you mix Products and Product Variations
+	 * That is, in a template, you might have something like $Buyable.Product
+	 * With the method below, this will work BOTH if the Buyable is a Product
+	 * and a product Varation
+	 * @return DataObject (Product)
+	 **/ 
+
+	function Product() {
+		return $this;
+	}
+
 	function updateCMSFields(FieldSet &$fields) {
 		$fields->addFieldToTab('Root.Content', new Tab(ProductVariation::get_plural_name(),
 			new HeaderField(ProductVariation::get_plural_name() . " for {$this->owner->Title}"),
