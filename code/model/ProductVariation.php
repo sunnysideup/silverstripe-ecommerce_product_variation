@@ -178,6 +178,10 @@ class ProductVariation extends DataObject {
 		}
 	}
 
+	function IsProductVariation() {
+		return true;
+	}
+
 	function onAfterWrite() {
 		parent::onAfterWrite();
 		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
