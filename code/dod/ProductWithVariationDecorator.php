@@ -55,7 +55,11 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 **/ 
 
 	function Product() {
-		return $this;
+		return $this->owner;
+	}
+
+	function IsProduct() {
+		return true;
 	}
 
 	function updateCMSFields(FieldSet &$fields) {
