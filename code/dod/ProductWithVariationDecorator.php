@@ -11,27 +11,16 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			"many_many" => array(
 				'VariationAttributes' => 'ProductAttributeType'
 			),
+			"many_many_extraFields" => array(
+				'VariationAttributes' => array(
+					'Notes' => 'Varchar(200)'
+				)
+			)
 		);
 	}
 
 	function canDelete($member  = null) {
 		return (bool)!$this->Variations();
-	}
-
-	function canPurchase($member = null) {
-		$allowpurchase = false;
-		if($this->owner->Variations()->exists()){
-			foreach($this->owner->Variations() as $variation){
-				if($variation->canPurchase()){
-					$allowpurchase = true;
-					break;
-				}
-			}
-		}
-		else{
-			return null; //ignore this decorator function if there are no variations
-		}
-		return $allowpurchase;
 	}
 
 	function NumberOfVariations() {

@@ -60,6 +60,14 @@ class ProductVariation extends DataObject {
 		'PurchasedTotal' => 'Purchased Total'
 	);
 
+	public static $searchable_fields = array(
+		'Price' => array(
+			'field' => 'NumericField',
+			'title' => 'Price'
+		),
+		"Product.Title" => "PartialMatchFilter"
+	);
+
 	public static $default_sort = "Sort ASC, InternalItemID ASC";
 
 	public static $singular_name = "Product Variation";
@@ -273,7 +281,7 @@ class ProductVariation extends DataObject {
 			return false;
 		}
 		if($product = $this->Product()) {
-			$allowpurchase = $product->Price > 0;
+			$allowpurchase = $product->canPurchase($member);
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($allowpurchase && $extended !== null) {

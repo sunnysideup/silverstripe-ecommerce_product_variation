@@ -9,7 +9,7 @@
 				<div class="checkboxInputHolder fieldHolder">
 					<input type="checkbox" class="checkbox dataForType" id="TypeCheckID"  name="typeCheckID" value="ID" disabled="disabled" checked="checked" rel="ID" />
 					<label>
-						<a href="#" rel="TypeID" class="editNameLink  dataForType">NAME</a>
+						<a href="#" rel="TypeID" class="editNameLink dataForType">NAME</a>
 						<a href="#" rel="ID" class="deleteLink  dataForType DELETE">delete</a>
 					</label>
 				</div>
