@@ -30,6 +30,11 @@ class ProductAttributeType extends DataObject{
 		'Name' => 'Name'
 	);
 
+	static $belongs_many_many = array(
+		'Products' => 'Product'
+	);
+
+
 	static $indexes = array(
 		"Sort" => true
 	);
