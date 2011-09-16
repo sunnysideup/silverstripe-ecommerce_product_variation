@@ -10,8 +10,8 @@ class ProductVariation extends DataObject {
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
 		'AllowPurchase' => 'Boolean',
-		'Sort' => "Int",
-		'Description' => "Varchar(255)"
+		'Sort' => 'Int',
+		'Description' => 'Varchar(255)'
 	);
 
 	public static $has_one = array(
@@ -211,7 +211,7 @@ class ProductVariation extends DataObject {
 	 * We use this function to make it more universal.
 	 * For a buyable, a parent could refer to a ProductGroup OR a Product
 	 * @return DataObject | Null
-	 **/ 
+	 **/
 	function Parent(){
 		return $this->Product();
 	}
