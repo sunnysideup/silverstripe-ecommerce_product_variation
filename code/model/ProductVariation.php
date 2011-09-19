@@ -212,10 +212,12 @@ class ProductVariation extends DataObject {
 	 * For a buyable, a parent could refer to a ProductGroup OR a Product
 	 * @return DataObject | Null
 	 **/
-	function Parent(){
+	function Parent(){return $this->getParent();}
+	function getParent(){
 		return $this->Product();
 	}
 
+	function Title(){return $this->getTitle();}
 	function getTitle($withSpan = false){
 		if($this->Description) {
 			$title = $this->Description;
@@ -250,10 +252,13 @@ class ProductVariation extends DataObject {
 		return $this->InternalItemID;
 	}
 
+
+	function AllowPuchaseText() {return $this->getAllowPuchaseText();}
 	function getAllowPuchaseText() {
 		return $this->AllowPurchase ? 'Yes' : 'No';
 	}
 
+	function PurchasedTotal() {return $this->getPurchasedTotal();}
 	function getPurchasedTotal() {
 		return DB::query("SELECT COUNT(*) FROM \"OrderItem\" WHERE \"BuyableID\" = '$this->ID'")->value();
 	}
@@ -317,23 +322,22 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $parentIsTheSame && $orderItem instanceof ProductVariation_OrderItem;
 	}
 
-	function UnitPrice() {
+	function UnitPrice() {return $this->getUnitPrice();}
+	function getUnitPrice() {
 		$unitPrice = $this->ProductVariation()->Price;
 		$this->extend('updateUnitPrice',$unitPrice);
 		return $unitPrice;
 	}
 
-	function TableTitle() {
+	public function TableTitle(){return $this->getTableTitle();}
+	function getTableTitle() {
 		$tabletitle = $this->ProductVariation()->Product()->Title;
 		$this->extend('updateTableTitle',$tabletitle);
 		return $tabletitle;
 	}
 
+	function TableSubTitle() {return $this->getTableSubTitle();}
 	function getTableSubTitle() {
-		return $this->TableSubTitle();
-	}
-
-	function TableSubTitle() {
 		$tablesubtitle = $this->ProductVariation()->getTitle(true);
 		$this->extend('updateTableSubTitle',$tablesubtitle);
 		return $tablesubtitle;
