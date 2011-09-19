@@ -29,12 +29,9 @@ class ProductAttributeValue extends DataObject{
 		'ValueForDropdown' => "HTMLText"
 	);
 
+	function Title() {return $this->getTitle();}
 	function getTitle() {
 		return $this->Value;
-	}
-
-	function Title() {
-		return $this->getTitle();
 	}
 
 	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
@@ -86,8 +83,8 @@ class ProductAttributeValue extends DataObject{
 		return $fields;
 	}
 
-
-	function ValueForDropdown() {
+	function ValueForDropdown() {return $this->getValueForDropdown();}
+	function getValueForDropdown() {
 		$v = $this->Value;
 		$update = $this->extend("updateValueForDropdown", $v);
 		if(is_array($update) && count($update) == 1) {
@@ -136,6 +133,6 @@ class ProductAttributeValue extends DataObject{
 			$this->extend("dodataobjectsort");
 		}
 	}
-	
+
 }
 
