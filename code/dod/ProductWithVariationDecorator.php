@@ -59,7 +59,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		));
 		if($this->owner->Variations() && $this->owner->Variations()->count()){
 			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
-			$fields->addFieldToTab('Root.Content.Details', new LiteralField('UpdateVariations', "<p class=\"message good\">Click <a href=\"{$this->owner->Link('updatevariationpricefromproduct')}\">here</a> to update all the variations with the price above.</p>"), 'InternalItemID');
+			$fields->addFieldToTab('Root.Content.Details', new LiteralField('UpdateVariationsPrices', "<p class=\"message good\">Click <a href=\"{$this->owner->Link('updatevariationpricefromproduct')}\">here</a> to update all the variations with the price above.</p>"), 'InternalItemID');
 		}
 	}
 
@@ -166,7 +166,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	/**
 	 * TO DO: work out how it works...
 	 *
-	 */ 
+	 */
 
 	function generateVariationsFromAttributeValues(array $values) {
 		$cpt = 0;
@@ -209,11 +209,11 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 		return $cpt;
 	}
-	
+
 	/**
 	 * TO DO: work out how it works...
 	 *
-	 */ 
+	 */
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
 			user_error("attributes must be provided as an array of numeric keys and values IDs...", E_USER_NOTICE);
@@ -296,7 +296,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			foreach($array as $key => $id) {
 				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
 					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $id");
-					//unset($array[$key]);					
+					//unset($array[$key]);
 				}
 			}
 		}
@@ -317,10 +317,10 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			foreach($array as $key => $id) {
 				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
 					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $id");
-					//unset($array[$key]);					
+					//unset($array[$key]);
 				}
 			}
-		}		
+		}
 	}
 
 
@@ -367,7 +367,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			foreach($array as $key => $productAttributeValueID) {
 				if(!DataObject::get_by_id("ProductAttributeType", $productAttributeValueID)) {
 					DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $productAttributeValueID");
-					//unset($array[$key]);					
+					//unset($array[$key]);
 				}
 			}
 		}
@@ -381,7 +381,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					ON \"Product_VariationAttributes\".\"ProductID\" = \"Product\".\"ID\"
 			WHERE
 				\"Product_Live\".\"ID\" IS NULL AND
-				\"Product\".\"ID\" IS NULL 
+				\"Product\".\"ID\" IS NULL
 		";
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
@@ -391,7 +391,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductID\" = $productID");
 				}
 			}
-		}		
+		}
 	}
 }
 
@@ -553,5 +553,5 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		return $vals;
 	}
 
-	
+
 }
