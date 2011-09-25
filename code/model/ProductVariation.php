@@ -218,38 +218,51 @@ class ProductVariation extends DataObject {
 	}
 
 	function Title(){return $this->getTitle();}
-	function getTitle($withSpan = false){
+	function getTitle($withSpan = false, $noProductTitle = false){
 		if($this->Description) {
 			$title = $this->Description;
 			if($withSpan) {
 				$title = "<span>".$title."</span>";
 			}
-			return $title;
 		}
-		$styleArray = self::get_current_style_option_array();
-		$values = $this->AttributeValues();
-		if($values->exists()){
-			$labelvalues = array();
-			if(count($values)) {
-				foreach($values as $value){
-					$v = '';
-					if($withSpan) {
-						$v = '<span>';
+		else {
+			$styleArray = self::get_current_style_option_array();
+			$values = $this->AttributeValues();
+			if($values->exists()){
+				$labelvalues = array();
+				if(count($values)) {
+					foreach($values as $value){
+						$v = '';
+						if($withSpan) {
+							$v = '<span>';
+						}
+						if($styleArray["ShowType"]) {
+							$v .= $value->Type()->Label.$styleArray["BetweenTypeAndValue"];
+						}
+						$v .= $value->Value;
+						if($withSpan) {
+							$v .= '</span>';
+						}
+						$labelvalues[] = $v;
 					}
-					if($styleArray["ShowType"]) {
-						$v .= $value->Type()->Label.$styleArray["BetweenTypeAndValue"];
-					}
-					$v .= $value->Value;
-					if($withSpan) {
-						$v .= '</span>';
-					}
-					$labelvalues[] = $v;
 				}
+				$title = implode($styleArray["BetweenVariations"],$labelvalues);
+				return $title;
 			}
-			$title = implode($styleArray["BetweenVariations"],$labelvalues);
+			else {
+				$title = $this->InternalItemID;
+			}
+		}
+		if($noProductTitle) {
 			return $title;
 		}
-		return $this->InternalItemID;
+		if($withSpan) {
+			$productTitle = '<span class="productTitle">'.$this->Product()->Title.'</span>';
+		}
+		else {
+			$productTitle = $this->Product()->Title;
+		}
+		return $productTitle. " ".$title;
 	}
 
 
@@ -338,7 +351,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 
 	function TableSubTitle() {return $this->getTableSubTitle();}
 	function getTableSubTitle() {
-		$tablesubtitle = $this->ProductVariation()->getTitle(true);
+		$tablesubtitle = $this->ProductVariation()->getTitle(true, true);
 		$this->extend('updateTableSubTitle',$tablesubtitle);
 		return $tablesubtitle;
 	}
