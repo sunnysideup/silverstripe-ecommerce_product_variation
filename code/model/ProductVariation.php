@@ -28,7 +28,8 @@ class ProductVariation extends DataObject {
 		'Title' => 'HTMLText',
 		'Link' => 'Text',
 		'AllowPuchaseText' => 'Text',
-		'PurchasedTotal' => 'Int'
+		'PurchasedTotal' => 'Int',
+		'CalculatedPrice' => 'Currency'
 	);
 
 	public static $versioning = array(
@@ -276,6 +277,14 @@ class ProductVariation extends DataObject {
 		return DB::query("SELECT COUNT(*) FROM \"OrderItem\" WHERE \"BuyableID\" = '$this->ID'")->value();
 	}
 
+	function CalculatedPrice() {return $this->getCalculatedPrice();}
+	function getCalculatedPrice() {
+		$price = $this->Price;
+		$this->extend('updateCalculatedPrice',$price);
+		return $price;
+	}
+
+
 	//this is used by TableListField to access attribute values.
 	function AttributeProxy(){
 		$do = new DataObject();
@@ -337,7 +346,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 
 	function UnitPrice() {return $this->getUnitPrice();}
 	function getUnitPrice() {
-		$unitPrice = $this->ProductVariation()->Price;
+		$unitPrice = $this->ProductVariation()->getCalculatedPrice();
 		$this->extend('updateUnitPrice',$unitPrice);
 		return $unitPrice;
 	}
