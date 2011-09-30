@@ -321,6 +321,9 @@ class ProductVariation extends DataObject {
 		$this->AllowPurchase = 1;
 	}
 
+	function QuantityDecimals(){
+		return 0;
+	}
 
 
 }
