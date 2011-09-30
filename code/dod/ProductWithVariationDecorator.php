@@ -41,7 +41,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 * With the method below, this will work BOTH if the Buyable is a Product
 	 * and a product Varation
 	 * @return DataObject (Product)
-	 **/ 
+	 **/
 
 	function Product() {
 		return $this->owner;
@@ -485,7 +485,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 			$variation = $this->owner->getVariationByAttributes($data['ProductAttributes']);
 			if($variation) {
 				if($variation->canPurchase()) {
-					$quantity = intval($data['Quantity']);
+					$quantity = round($data['Quantity'], $variation->QuantityDecimals());
 					if(!$quantity) {
 						$quantity = 1;
 					}
@@ -511,7 +511,7 @@ class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
 		}
 		else {
 			$msg = _t("ProductWithVariationDecorator.VARIATIONNOTFOUND","The item(s) you are looking for are not available.");
-			$status = "bad";			
+			$status = "bad";
 		}
 		if(Director::is_ajax()){
 			return ShoppingCart::singleton()->setMessageAndReturn($msg, $status);
