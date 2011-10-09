@@ -69,7 +69,7 @@ class ProductVariation extends DataObject {
 		"Product.Title" => "PartialMatchFilter"
 	);
 
-	public static $default_sort = "Sort ASC, InternalItemID ASC, Price ASC";
+	public static $default_sort = "\"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
 
 	public static $singular_name = "Product Variation";
 		function i18n_singular_name() { return _t("ProductVariation.PRODUCTVARIATION", "Product Variation");}
