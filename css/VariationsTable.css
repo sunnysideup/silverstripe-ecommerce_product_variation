@@ -1,3 +1,3 @@
-.variationsTable table {margin: 10px 0; }
+.variationsTable table {margin: 10px 0; clear: both;}
 .variationsTable .label {text-align: center;}
 .variationsTable td.price {text-align: right}
