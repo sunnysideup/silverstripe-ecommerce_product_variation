@@ -395,7 +395,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 }
 
-class ProductWithVariationDecorator_Controller extends DataObjectDecorator {
+class ProductWithVariationDecorator_Controller extends Extension {
 
 	protected static $use_js_validation = true;
 		static function set_use_js_validation($b) {self::$use_js_validation = $b;}
