@@ -20,7 +20,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 
 	function canDelete($member  = null) {
-		return (bool)!$this->Variations();
+		return (bool)!$this->owner->Variations();
 	}
 
 	function NumberOfVariations() {
