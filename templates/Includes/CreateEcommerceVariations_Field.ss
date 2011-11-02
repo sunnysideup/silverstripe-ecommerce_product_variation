@@ -3,7 +3,10 @@
 </div>
 <div id="CreateEcommerceVariationsTemplate" class="createEcommerceVariations">
 	<ul>
-		<li class="messageHolder"><span class="message GOODORBAD">MESSAGE</span></li>
+		<li class="messageHolder">
+			<p id="InitMessage" class="message GOODORBAD">MESSAGE</p>
+			<p id="MainReminderMessage" class="message good">Please make sure to click on the <i>create</i> button at the bottom of the list to finalise your selection.</p>
+		</li>
 		<li class="typeHolder">
 			<div class="typeCheckHolder">
 				<div class="checkboxInputHolder fieldHolder">

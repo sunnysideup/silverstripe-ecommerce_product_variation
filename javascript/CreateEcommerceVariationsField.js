@@ -12,6 +12,8 @@
 
 var CreateEcommerceVariationsField = {
 
+	reminderProvided: false,
+
 	//URL to access controller
 	url: '',
 		set_url: function(v) {this.url = v;},
@@ -19,7 +21,7 @@ var CreateEcommerceVariationsField = {
 	//product we are dealing with
 	productID: 0,
 		set_productID: function(v) {this.productID = v;},
-		getProductIDSelector: '#Form_EditForm_ID',		
+		getProductIDSelector: '#Form_EditForm_ID',
 
 	//id of field that has link to controller
 	fieldID:"CreateEcommerceVariationsInner",
@@ -40,7 +42,7 @@ var CreateEcommerceVariationsField = {
 	createButtonHolderHTML: "",
 
 	init: function() {
-		CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";		
+		CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
 		jQuery(CreateEcommerceVariationsField.startLinkSelector).live(
 			'click',
 			function() {
@@ -82,6 +84,7 @@ var CreateEcommerceVariationsField = {
 		CreateEcommerceVariationsField.productID = jQuery(CreateEcommerceVariationsField.getProductIDSelector).val();
 		CreateEcommerceVariationsField.addAddLinkToggles();
 		CreateEcommerceVariationsField.addEditLinkToggles();
+		CreateEcommerceVariationsField.addGroupItemLinkedClicks();
 		CreateEcommerceVariationsField.add();
 		CreateEcommerceVariationsField.rename();
 		CreateEcommerceVariationsField.move();
@@ -107,6 +110,70 @@ var CreateEcommerceVariationsField = {
 				jQuery(rel).slideToggle();
 			}
 		);
+	},
+
+	addGroupItemLinkedClicks: function() {
+		//if the parent is unticked then untick the children
+		jQuery(".typeCheckHolder input.dataForType").live(
+			"each",
+			function(i, el) {
+				if(jQuery(el).is(":checked") || jQuery(el).attr("disabled") == "disabled") {
+					jQuery(el).parents("li.typeHolder").find(".valuesHolder").slideDown();
+				}
+				else {
+					jQuery(el).parents("li.typeHolder").find(".valuesHolder").slideUp();
+				}
+			}
+		);
+
+		jQuery(".typeCheckHolder input.dataForType").live(
+			"change",
+			function() {
+				if(jQuery(this).is(':checked')) {
+					jQuery(this).parents("li.typeHolder").find(".valuesHolder").slideDown();
+				}
+				else {
+					jQuery(this).parent().parent().parent().find(".valuesHolder").slideUp();
+					jQuery(this).parent().parent().parent().find(".valuesHolder input.dataForValue").each(
+						function(i, el) {
+							jQuery(el).attr("checked", "");
+						}
+					);
+				}
+			}
+		);
+		//if all the children are unticked then untick the parent
+		jQuery(".valuesHolder input.dataForValue").live(
+			"change",
+			function() {
+				if(!CreateEcommerceVariationsField.reminderProvided) {
+					jQuery("#MainReminderMessage").slideDown();
+					jQuery("#InitMessage").removeClass("message");
+					CreateEcommerceVariationsField.reminderProvided = true;
+				}
+				if(jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input.dataForType").attr("disabled") == "disabled") {
+					//do nothing
+				}
+				else {
+					var hasTickedSibling = false;
+					jQuery(this).parents(".valuesHolder").find("input.dataForValue").each(
+						function(i, el) {
+							if(jQuery(el).is(":checked")) {
+								hasTickedSibling = true;
+							}
+						}
+					);
+					if(jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input").attr("disabled") != "disabled"){
+						if(!hasTickedSibling) {
+							jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input").attr("checked", "");
+						}
+						else {
+							jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input").attr("checked", "checked");
+						}
+					}
+				}
+			}
+		)
 	},
 
 	add:function() {
@@ -209,11 +276,12 @@ var CreateEcommerceVariationsField = {
 						dataType: "html"
 					});
 					*/
-					
+
 				}
 				return false;
 			}
 		);
+
 	},
 
 	getDataFromServer: function(action, getVariables) {
@@ -248,14 +316,21 @@ var CreateEcommerceVariationsField = {
 					CreateEcommerceVariationsField.removeOldStuff();
 					jQuery('#' + CreateEcommerceVariationsField.fieldID).html(html);
 					//CreateEcommerceVariationsField.attachFunctions();
+					jQuery("#CreateEcommerceVariationsInner a").each (
+						function (i, el) {
+							var title = jQuery(el).text();
+							jQuery(el).attr("title", title);
+						}
+					);
 					jQuery('#' + CreateEcommerceVariationsField.fieldID).removeClass('loading');
+
 				}
 			}
 		);
 	},
 
 	createTypeNode: function(type) {
-		
+
 		var html = CreateEcommerceVariationsField.typesHolderHTML;
 		html = html.replace(/ID/g, type.ID);
 		html = html.replace(/NAME/g, type.Name);
@@ -280,6 +355,7 @@ var CreateEcommerceVariationsField = {
 		}
 		html = html.replace(/<li>VALUEHOLDER<\/li>/g, valueHtml);
 		html = html.replace(/ChangeToId/g, 'ID');
+
 		return html;
 	},
 
@@ -335,7 +411,7 @@ var CreateEcommerceVariationsField = {
 	},
 
 
-	
+
 }
 
 

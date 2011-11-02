@@ -1,3 +1,4 @@
+#MainReminderMessage {display: none;}
  .loading {background: url(/ecommerce_product_variation/images/loading.gif) no-repeat top right transparent;}
 .createEcommerceVariations li.messageHolder {margin: 20px 0;}
 .createEcommerceVariations li.createButtonHolder {margin-top: 20px;}
