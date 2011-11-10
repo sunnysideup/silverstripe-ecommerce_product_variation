@@ -40,6 +40,7 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 //Object::add_extension("ProductAttributeType", "ProductAttributeDecoratorColour_Type");
 //ProductAttributeDecoratorColour_Value::set_default_contrast_colour("FFFFFF");
 //ProductAttributeDecoratorColour_Value::set_default_colour("000000");
+//ProductAttributeDecoratorColour_Value::set_put_styling_in_dropdown_options(true);
 // ____________ IMPORTANT NAME CHANGES....
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATION']  = "Product Variation";
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATIONS']  = "Product Variations";
