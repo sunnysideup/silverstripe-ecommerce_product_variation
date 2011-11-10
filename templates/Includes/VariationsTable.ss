@@ -14,13 +14,13 @@
 	<tr>
 	<% if AttributeValues %>
 		<% control AttributeValues %>
-		<td class="label">$Value</td>
+		<td class="label"<% if RGBCode %> style="color: #{$ComputedRGBCode}; background-color: #{$ComputedContrastRGBCode}"<% end_if %> >$Value</td>
 		<% end_control %>
 	<% else %>
 		<th scope="row" class="label">$Title.XML</th>
 	<% end_if %>
 		<td class="price">
-			<span class="price">$Price.Nice $Currency $TaxInfo.PriceSuffix</span>
+			<span class="price">$CalculatedPrice.Nice $Currency $TaxInfo.PriceSuffix</span>
 		</td>
 		<td class="action">
 			<span class="action">

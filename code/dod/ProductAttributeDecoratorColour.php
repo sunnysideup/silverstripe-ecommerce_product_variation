@@ -7,11 +7,16 @@ class ProductAttributeDecoratorColour_Value extends DataObjectDecorator {
 
 	protected static $default_contrast_colour = "FFFFFF";
 		static function get_default_contrast_colour() {return self::$default_contrast_colour;}
-		static function set_default_contrast_colour() {return self::$default_contrast_colour;}
+		static function set_default_contrast_colour($s) {self::$default_contrast_colour = $s;}
 
 	protected static $default_colour = "000000";
 		static function get_default_colour() {return self::$default_colour;}
-		static function set_default_colour() {return self::$default_colour;}
+		static function set_default_colour($s) {self::$default_colour = $s;}
+
+	//the following option will only work if you turn your dropdown into a list using JS
+	protected static $put_styling_in_dropdown_options = false;
+		static function get_put_styling_in_dropdown_options() {return self::$put_styling_in_dropdown_options;}
+		static function set_put_styling_in_dropdown_options($b) {self::$put_styling_in_dropdown_options = $b;}
 
 	public function extraStatics() {
 		return array (
@@ -59,10 +64,12 @@ class ProductAttributeDecoratorColour_Value extends DataObjectDecorator {
 		return $v;
 	}
 
-	function updateValueForDropdown(&$v) {
-		if($this->hasColour()) {
-			$style = 'color: #'.$this->ComputedRGBCode().'; background-color: #'.$this->ComputedContrastRGBCode().';';
-			$v = '<span style="'.$style.'">'.$v.'</span>';
+	function updateValueForDropdown(&$v, $forceUpdate = false) {
+		if(self::get_put_styling_in_dropdown_options()) {
+			if($this->hasColour() || $forceUpdate) {
+				$style = 'color: #'.$this->ComputedRGBCode().'; background-color: #'.$this->ComputedContrastRGBCode().';';
+				$v = '<span style="'.$style.'">'.$v.'</span>';
+			}
 		}
 		return $v;
 	}

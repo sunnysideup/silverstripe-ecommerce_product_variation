@@ -220,48 +220,49 @@ class ProductVariation extends DataObject {
 
 	function Title(){return $this->getTitle();}
 	function getTitle($withSpan = false, $noProductTitle = false){
-		if($this->Description) {
-			$title = $this->Description;
-			if($withSpan) {
-				$title = "<span>".$title."</span>";
+		$styleArray = self::get_current_style_option_array();
+		$values = $this->AttributeValues();
+		if($values->exists()){
+			$labelvalues = array();
+			if(count($values)) {
+				foreach($values as $value){
+					$v = '';
+					if($withSpan) {
+						$v = '<span>';
+					}
+					if($styleArray["ShowType"]) {
+						$v .= $value->Type()->Label.$styleArray["BetweenTypeAndValue"];
+					}
+					$v .= $value->Value;
+					if($withSpan) {
+						$v .= '</span>';
+					}
+					$labelvalues[] = $v;
+				}
 			}
+			$title = implode($styleArray["BetweenVariations"],$labelvalues);
 		}
 		else {
-			$styleArray = self::get_current_style_option_array();
-			$values = $this->AttributeValues();
-			if($values->exists()){
-				$labelvalues = array();
-				if(count($values)) {
-					foreach($values as $value){
-						$v = '';
-						if($withSpan) {
-							$v = '<span>';
-						}
-						if($styleArray["ShowType"]) {
-							$v .= $value->Type()->Label.$styleArray["BetweenTypeAndValue"];
-						}
-						$v .= $value->Value;
-						if($withSpan) {
-							$v .= '</span>';
-						}
-						$labelvalues[] = $v;
-					}
-				}
-				$title = implode($styleArray["BetweenVariations"],$labelvalues);
-				return $title;
+			$title = $this->InternalItemID;
+		}
+		if($this->Description) {
+			if($withSpan) {
+				$title .= "; <span class=\"extraDescription\">".$this->Description."</span>";
 			}
 			else {
-				$title = $this->InternalItemID;
+				$title .= "; ".$this->Description;
 			}
 		}
 		if($noProductTitle) {
 			return $title;
 		}
-		if($withSpan) {
-			$productTitle = '<span class="productTitle">'.$this->Product()->Title.'</span>';
-		}
 		else {
-			$productTitle = $this->Product()->Title;
+			if($withSpan) {
+				$productTitle = '<span class="productTitle">'.$this->Product()->Title.'</span>';
+			}
+			else {
+				$productTitle = $this->Product()->Title;
+			}
 		}
 		return $productTitle. " ".$title;
 	}
@@ -342,18 +343,39 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return DataObject::get_by_id("ProductVariation", $this->BuyableID);
 	}
 
+
+	/**
+	 * Check if two order items are the same
+	 * @param Object - $orderItem should be a ProductVariation_OrderItem;
+	 * @return Boolean
+	 **/
 	function hasSameContent($orderItem) {
 		$parentIsTheSame = parent::hasSameContent($orderItem);
 		return $parentIsTheSame && $orderItem instanceof ProductVariation_OrderItem;
 	}
 
+	/**
+	 * price per item
+	 *@return Float
+	 **/
 	function UnitPrice() {return $this->getUnitPrice();}
 	function getUnitPrice() {
-		$unitPrice = $this->ProductVariation()->getCalculatedPrice();
-		$this->extend('updateUnitPrice',$unitPrice);
-		return $unitPrice;
+		$unitprice = 0;
+		if($this->priceHasBeenFixed()) {
+			return parent::getUnitPrice();
+		}
+		elseif($productVariation = $this->ProductVariation()){
+			$unitprice = $productVariation->getCalculatedPrice();
+			$this->extend('updateUnitPrice',$unitprice);
+		}
+		return $unitprice;
 	}
 
+	/**
+	 *@decription: we return the product name here -
+	 * leaving the Table Sub Title for the name of the variation
+	 *@return String - title in cart.
+	 **/
 	public function TableTitle(){return $this->getTableTitle();}
 	function getTableTitle() {
 		$tabletitle = $this->ProductVariation()->Product()->Title;
@@ -361,6 +383,11 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $tabletitle;
 	}
 
+	/**
+	 *@decription: we return the product variation name here
+	 * the Table Title will return the name of the Product.
+	 *@return String - sub title in cart.
+	 **/
 	function TableSubTitle() {return $this->getTableSubTitle();}
 	function getTableSubTitle() {
 		$tablesubtitle = $this->ProductVariation()->getTitle(true, true);
@@ -370,20 +397,6 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
-	}
-
-	public function debug() {
-		$title = $this->TableTitle();
-		$productVariationID = $this->BuyableID;
-		$productVariationVersion = $this->Version;
-		return parent::debug() .<<<HTML
-			<h3>ProductVariation_OrderItem class details</h3>
-			<p>
-				<b>Title : </b>$title<br/>
-				<b>ProductVariation ID : </b>$productVariationID<br/>
-				<b>ProductVariation Version : </b>$productVariationVersion<br/>
-			</p>
-HTML;
 	}
 
 

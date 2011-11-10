@@ -83,10 +83,30 @@ class ProductAttributeValue extends DataObject{
 		return $fields;
 	}
 
+	/**
+	 * casted variable
+	 * returns the value for the option in the select dropdown box.
+	 *@return String
+	 **/
 	function ValueForDropdown() {return $this->getValueForDropdown();}
 	function getValueForDropdown() {
 		$v = $this->Value;
 		$update = $this->extend("updateValueForDropdown", $v);
+		if(is_array($update) && count($update) == 1) {
+			$v = $update[0];
+		}
+		return $v;
+	}
+
+	/**
+	 * casted variable
+	 * returns the value for the variations table
+	 *@return String
+	 **/
+	function ValueForTable() {return $this->getValueForTable();}
+	function getValueForTable() {
+		$v = $this->Value;
+		$update = $this->extend("updateValueForDropdown", $v, $force = true);
 		if(is_array($update) && count($update) == 1) {
 			$v = $update[0];
 		}
