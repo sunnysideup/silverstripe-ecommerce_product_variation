@@ -3,6 +3,10 @@
 
 class ProductWithVariationDecorator extends DataObjectDecorator {
 
+	/**
+	 * standard SS method
+	 *
+	 */
 	function extraStatics(){
 		return array(
 			"has_many" => array(
@@ -19,10 +23,18 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		);
 	}
 
+	/**
+	 * standard SS method
+	 *
+	 */
 	function canDelete($member  = null) {
 		return (bool)!$this->owner->Variations();
 	}
 
+	/**
+	 * tells you the number of variations this product has
+	 * @return Int
+	 */
 	function NumberOfVariations() {
 		$vars = $this->owner->Variations();
 		if($vars) {
@@ -31,6 +43,10 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return 0;
 	}
 
+	/**
+	 * tells you whether the product has any variations
+	 * @return Boolean
+	 */
 	function HasVariations() {
 		return $this->NumberOfVariations() ? true : false;
 	}
@@ -42,15 +58,26 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 * and a product Varation
 	 * @return DataObject (Product)
 	 **/
-
 	function Product() {
 		return $this->owner;
 	}
 
+
+	/**
+	 * tells you whether the current object is a product
+	 * seems a bit silly, but it can be useful as other buyables
+	 * can return false from this method.
+	 * @return Boolean
+	 */
 	function IsProduct() {
 		return true;
 	}
 
+
+	/**
+	 * standard SS method
+	 *
+	 */
 	function updateCMSFields(FieldSet &$fields) {
 		$fields->addFieldToTab('Root.Content', new Tab(ProductVariation::get_plural_name(),
 			new HeaderField(ProductVariation::get_plural_name() . " for {$this->owner->Title}"),
@@ -63,6 +90,11 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		}
 	}
 
+
+	/**
+	 * standard SS method
+	 * @return Object (ComplexTableField)
+	 */
 	function getVariationsTable() {
 		$singleton = singleton('ProductVariation');
 		$query = $singleton->buildVersionSQL("\"ProductID\" = '{$this->owner->ID}'");
@@ -96,6 +128,12 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return $tableField;
 	}
 
+
+	/**
+	 * tells us if any of the variations, related to this product,
+	 * are currently in the cart.
+	 * @return Boolean
+	 */
 	function VariationIsInCart() {
 		$variations = $this->owner->Variations();
 		if($variations) {
@@ -108,6 +146,12 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		return false;
 	}
 
+
+	/**
+	 * tells us if any of the variations, related to this product,
+	 * OR the product itself, is currently in the cart.
+	 * @return Boolean
+	 */
 	function VariationOrProductIsInCart() {
 		return ($this->owner->IsInCart() || $this->VariationIsInCart());
 	}
@@ -397,15 +441,29 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
+	/**
+	 * tells us if Javascript should be used in validating
+	 * the product variation form.
+	 * @var Boolean
+	 */
 	protected static $use_js_validation = true;
 		static function set_use_js_validation($b) {self::$use_js_validation = $b;}
 		static function get_use_js_validation() {return self::$use_js_validation;}
 
+
+	/**
+	 * tells us if Javascript should be used in validating
+	 * the product variation form.
+	 * @var String
+	 */
 	protected static $alternative_validator_class_name = "";
 		static function set_alternative_validator_class_name($s) {self::$alternative_validator_class_name = $s;}
 		static function get_alternative_validator_class_name() {return self::$alternative_validator_class_name;}
 
-
+	/**
+	 * standard SS variable
+	 * @var Array
+	 */
 	public static $allowed_actions = array('updatevariationpricefromproduct');
 
 	function updatevariationpricefromproduct() {
@@ -426,17 +484,28 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				$options = $this->possibleValuesForAttributeType($attribute);
 				if($options) {
 					$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
-					if(self::get_use_js_validation()) {
-						$requiredfields[] = "ProductAttributes[$attribute->ID]";
-					}
+					$requiredfields[] = "ProductAttributes[$attribute->ID]";
 				}
 			}
 		}
 		$fields = new FieldSet($farray);
 		$fields->push(new NumericField('Quantity','Quantity',1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
+		$actions = new FieldSet(
+			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add this item to cart"))
+		);
+		$requiredfields[] = 'Quantity';
+		$requiredFieldsClass = "RequiredFields";
+		if(self::get_alternative_validator_class_name()) {
+			$requiredFieldsClass = self::get_alternative_validator_class_name();
+		}
+		$validator = new $requiredFieldsClass($requiredfields);
 		//variation options json generation
-		if(true){ //TODO: make javascript json inclusion optional
+		if(self::get_use_js_validation()){ //TODO: make javascript json inclusion optional
+			$validator->setJavascriptValidationHandler("none");
+			if(self::get_alternative_validator_class_name()) {
+				Requirements::javascript(self::get_alternative_validator_class_name());
+			}
 
 			$vararray = array();
 			if($vars = $this->owner->Variations()){
@@ -445,37 +514,16 @@ class ProductWithVariationDecorator_Controller extends Extension {
 						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
 					}
 				}
-
 			}
 
 			$json = json_encode($vararray);
-
 			$jsonscript = "var variationsjson = $json";
-
 			Requirements::customScript($jsonscript,'variationsjson');
 			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
-			if(self::get_alternative_validator_class_name()) {
-				Requirements::javascript(self::get_alternative_validator_class_name());
-			}
-			Requirements::themedCSS('variationsform');
 		}
-
-		$actions = new FieldSet(
-			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add this item to cart"))
-		);
-
-
-		$requiredfields[] = 'Quantity';
-		if(self::get_alternative_validator_class_name()) {
-			$requiredFieldsClass = self::get_alternative_validator_class_name();
-		}
-		else {
-			$requiredFieldsClass = "RequiredFields";
-		}
-		$validator = new $requiredFieldsClass($requiredfields);
+		Requirements::themedCSS('variationsform');
 		$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
 		return $form;
-
 	}
 
 	function addVariation($data,$form){
