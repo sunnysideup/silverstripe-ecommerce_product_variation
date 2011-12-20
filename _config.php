@@ -35,12 +35,6 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 //DataObjectSorterDOD::set_do_not_add_alternative_sort_field(true);
 //____________CUSTOMISED CMS INTERACTION
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
-//____________COLOUR OPTIONS
-//Object::add_extension("ProductAttributeValue", "ProductAttributeDecoratorColour_Value");
-//Object::add_extension("ProductAttributeType", "ProductAttributeDecoratorColour_Type");
-//ProductAttributeDecoratorColour_Value::set_default_contrast_colour("FFFFFF");
-//ProductAttributeDecoratorColour_Value::set_default_colour("000000");
-//ProductAttributeDecoratorColour_Value::set_put_styling_in_dropdown_options(true);
 // ____________ IMPORTANT NAME CHANGES....
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATION']  = "Product Variation";
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATIONS']  = "Product Variations";
