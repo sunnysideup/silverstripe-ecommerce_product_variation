@@ -91,7 +91,7 @@ class ProductAttributeValue extends DataObject{
 	function ValueForDropdown() {return $this->getValueForDropdown();}
 	function getValueForDropdown() {
 		$v = $this->Value;
-		$update = $this->extend("updateValueForDropdown", $v);
+		$update = $this->extend("updateValueForDropdown", $v, $force = false);
 		if(is_array($update) && count($update) == 1) {
 			$v = $update[0];
 		}

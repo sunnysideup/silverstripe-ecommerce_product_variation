@@ -1,20 +1,43 @@
 <?php
+/**
+ * @author Nicolaas
+ *
+ * This decorator is for any product variation values that are colours.
+ *
+ *
+ *
+ */
 
 class ProductAttributeDecoratorColour_Value extends DataObjectDecorator {
 
-	protected static $colour_array = array();
-		static function get_colour_array() {return self::$colour_array;}
 
-	protected static $default_contrast_colour = "FFFFFF";
-		static function get_default_contrast_colour() {return self::$default_contrast_colour;}
-		static function set_default_contrast_colour($s) {self::$default_contrast_colour = $s;}
-
+	/**
+	 * @Var string Default colour shown
+	 */
 	protected static $default_colour = "000000";
 		static function get_default_colour() {return self::$default_colour;}
 		static function set_default_colour($s) {self::$default_colour = $s;}
 
-	//the following option will only work if you turn your dropdown into a list using JS
-	protected static $put_styling_in_dropdown_options = false;
+
+	/**
+	 * Contrast colours are used when, for example,
+	 * you want to show a white colour and your background-color is also white
+	 * @Var string default contrast colour shown
+	 *
+	 */
+	protected static $default_contrast_colour = "FFFFFF";
+		static function get_default_contrast_colour() {return self::$default_contrast_colour;}
+		static function set_default_contrast_colour($s) {self::$default_contrast_colour = $s;}
+
+
+
+	/**
+	 * when using colours, you can opt to show the colours in the select dropdown
+	 * select fields do not allow html in them, so you will have to use some html tricks
+	 * @Var boolean
+	 *
+	 */
+	protected static $put_styling_in_dropdown_options = true;
 		static function get_put_styling_in_dropdown_options() {return self::$put_styling_in_dropdown_options;}
 		static function set_put_styling_in_dropdown_options($b) {self::$put_styling_in_dropdown_options = $b;}
 
