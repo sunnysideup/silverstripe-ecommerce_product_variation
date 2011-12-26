@@ -101,9 +101,6 @@ class ProductAttributeType extends DataObject{
 		//to do, why do switch to "all" the options if there are no values?
 		$values = ($values) ? $values : $this->Values('',"\"Sort\" ASC, \"Value\" ASC");
 		if($values->exists() && $values->count() > 0){
-			if(ProductAttributeDecoratorColour_Value::get_put_styling_in_dropdown_options()){
-				Requirements::javacript(ProductAttributeDecoratorColour_Value::get_js_location_for_select_styling());
-			}
 			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown'));
 			if($emptystring && $values->count() > 1) {
 				$field->setEmptyString($emptystring);
