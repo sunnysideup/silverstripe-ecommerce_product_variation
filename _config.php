@@ -20,6 +20,7 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
+
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
 //____________HIGHLY RECOMMENDED
 //ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
@@ -31,8 +32,6 @@ ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 //____________EASY SORTING - REQUIRES: http://sunny.svnrepository.com/svn/sunny-side-up-general/dataobjectsorter
 //Object::add_extension('ProductAttributeValue', 'DataObjectSorterDOD');
 //Object::add_extension('ProductAttributeType', 'DataObjectSorterDOD');
-//DataObjectSorterDOD::set_also_update_sort_field(true);
-//DataObjectSorterDOD::set_do_not_add_alternative_sort_field(true);
 //____________CUSTOMISED CMS INTERACTION
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
 // ____________ IMPORTANT NAME CHANGES....
