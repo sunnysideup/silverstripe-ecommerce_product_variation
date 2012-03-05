@@ -45,7 +45,7 @@ class ProductAttributeType extends DataObject{
 	public $Variations = null;
 
 	public static $singular_name = "Attribute Type";
-		function i18n_single_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Attribute Type");}
+		function i18n_singular_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Attribute Type");}
 
 	public static $plural_name = "Attribute Types";
 		function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Attribute Types");}
@@ -125,7 +125,7 @@ class ProductAttributeType extends DataObject{
 		parent::onBeforeWrite();
 		$i = 0;
 		while(!$this->Name || DataObject::get_one($this->ClassName, "\"Name\" = '".$this->Name."' AND \"".$this->ClassName."\".\"ID\" <> ".intval($this->ID))) {
-			$this->Name = $this->i18n_single_name();
+			$this->Name = $this->i18n_singular_name();
 			if($i) {
 				$this->Name .= "_".$i;
 			}

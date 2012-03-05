@@ -37,7 +37,7 @@ class ProductAttributeValue extends DataObject{
 	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 
 	public static $singular_name = "Attribute Value";
-		function i18n_single_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Attribute Value");}
+		function i18n_singular_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Attribute Value");}
 
 	public static $plural_name = "Attribute Values";
 		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Attribute Values");}
@@ -116,11 +116,11 @@ class ProductAttributeValue extends DataObject{
 	function onBeforeDelete() {
 		parent::onBeforeDelete();
 		if(!$this->Value) {
-			$this->Value = $this->i18n_single_name();
+			$this->Value = $this->i18n_singular_name();
 			$i = 0;
 			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
 				if($i) {
-					$this->Value = $this->i18n_single_name()."_".$i;
+					$this->Value = $this->i18n_singular_name()."_".$i;
 				}
 				$i++;
 			}
@@ -135,7 +135,7 @@ class ProductAttributeValue extends DataObject{
 			$this->Value = $this->i18n_single_name();
 			$i = 0;
 			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
-				$this->Value = $this->i18n_single_name()."_".$i;
+				$this->Value = $this->i18n_singular_name()."_".$i;
 				$i++;
 			}
 		}
