@@ -580,6 +580,20 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		return $types;
 	}
 
+	/**
+	 * action!
+	 * this action is for selecting product variations
+	 *
+	 */
+	function selectoptions(){
+		if(Director::is_ajax()) {
+			return $this->renderWith("ProductActions");
+		}
+		else {
+			Director::redirect($this->Link());
+		}
+		return array();
+	}
 
 	function possibleValuesForAttributeType($type){
 		if($type instanceOf ProductAttributeType) {
