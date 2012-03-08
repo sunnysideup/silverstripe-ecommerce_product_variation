@@ -441,6 +441,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
+
 	/**
 	 * tells us if Javascript should be used in validating
 	 * the product variation form.
@@ -464,7 +465,10 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	 * standard SS variable
 	 * @var Array
 	 */
-	public static $allowed_actions = array('updatevariationpricefromproduct');
+	public static $allowed_actions = array(
+		'updatevariationpricefromproduct' => true,
+		'selectvariation' => true
+	);
 
 	function updatevariationpricefromproduct() {
 		$variations = $this->owner->Variations();
@@ -580,20 +584,6 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		return $types;
 	}
 
-	/**
-	 * action!
-	 * this action is for selecting product variations
-	 *
-	 */
-	function selectoptions(){
-		if(Director::is_ajax()) {
-			return $this->renderWith("ProductActions");
-		}
-		else {
-			Director::redirect($this->Link());
-		}
-		return array();
-	}
 
 	function possibleValuesForAttributeType($type){
 		if($type instanceOf ProductAttributeType) {
@@ -615,5 +605,20 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		return $vals;
 	}
 
+
+	/**
+	 * action!
+	 * this action is for selecting product variations
+	 *
+	 */
+	function selectvariation(){
+		if(Director::is_ajax()) {
+			return $this->owner->renderWith("SelectVariationFromProductGroup");
+		}
+		else {
+			Director::redirect($this->owner->Link());
+		}
+		return array();
+	}
 
 }
