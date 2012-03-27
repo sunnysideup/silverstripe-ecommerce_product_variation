@@ -16,7 +16,7 @@ class ProductVariation extends DataObject {
 
 	public static $has_one = array(
 		'Product' => 'Product',
-		'Image' => 'ProductVariation_Image'
+		'Image' => 'Product_Image'
 	);
 
 	static $many_many = array(
@@ -326,10 +326,6 @@ class ProductVariation extends DataObject {
 		return 0;
 	}
 
-
-}
-
-class ProductVariation_Image extends Image {
 
 }
 

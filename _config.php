@@ -5,7 +5,7 @@ Director::addRules(50, array(
 	'createecommercevariationsbatch/$Action' => 'CreateEcommerceVariations_Batch'
 ));
 
-Buyable::add_class("ProductVariation");
+//Buyable::add_class("ProductVariation");
 Object::add_extension("Product", "ProductWithVariationDecorator");
 Object::add_extension("Product_Controller", "ProductWithVariationDecorator_Controller");
 Object::add_extension("ProductBulkLoader","ProductVariationBulkLoader");

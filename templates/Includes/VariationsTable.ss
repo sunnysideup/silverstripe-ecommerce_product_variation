@@ -20,16 +20,12 @@
 		<th scope="row" class="label">$Title.XML</th>
 	<% end_if %>
 		<td class="price">
-			<span class="price">$CalculatedPrice.Nice $Currency $TaxInfo.PriceSuffix</span>
+			<span class="price">$CalculatedPrice.Nice $Currency</span>
 		</td>
 		<td class="action">
 			<span class="action">
 	<% if canPurchase %>
-		<% if IsInCart %>
-			<a class="button" href="$OrderItem.RemoveAllLink" title="<% sprintf(_t("REMOVE","Remove &quot;%s&quot; from your cart"),$Title.XML) %>"><% _t("REMOVELINK","Remove from cart") %></a>
-		<% else %>
-			<a class="button" href="$OrderItem.AddLink" title="<% sprintf(_t("ADD","Add &quot;%s&quot; to your cart"),$Title.XML) %>"><% _t("ADDLINK","Add this item to cart") %></a>
-		<% end_if %>
+		<% include ProductActionsForGroup %>
 	<% end_if %>
 			</span>
 			<p class="description">$Description</p>
