@@ -329,6 +329,7 @@ class ProductVariation extends DataObject {
 
 }
 
+
 class ProductVariation_OrderItem extends Product_OrderItem {
 
 	// ProductVariation Access Function
