@@ -496,7 +496,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		$fields->push(new NumericField('Quantity','Quantity',1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
 		$actions = new FieldSet(
-			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add this item to cart"))
+			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add to cart"))
 		);
 		$requiredfields[] = 'Quantity';
 		$requiredFieldsClass = "RequiredFields";
