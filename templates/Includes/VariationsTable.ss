@@ -8,7 +8,7 @@
 		<th scope="col" class="label">Variation</th>
 <% end_if %>
 		<th scope="col" class="price"><% _t("PRICE","Price") %></th>
-		<th scope="col" class="cartActions">&nbsp;</th>
+		<th scope="col" class="actionCell">&nbsp;</th>
 	</tr>
 <% control Variations %>
 	<tr>
@@ -22,12 +22,8 @@
 		<td class="price">
 			<span class="price">$CalculatedPrice.Nice $Currency</span>
 		</td>
-		<td class="action">
-			<span class="cartActions">
-	<% if canPurchase %>
-		<% include ProductActionsForGroup %>
-	<% end_if %>
-			</span>
+		<td class="actionCell">
+			<span class="actionOuter"><% if canPurchase %><% include ProductActionsForGroup %><% end_if %></span>
 			<p class="description">$Description</p>
 		</td>
 	</tr>
