@@ -326,6 +326,21 @@ class ProductVariation extends DataObject {
 		return 0;
 	}
 
+	/**
+	 * Use the sort order of the variation attributes to order the attribute values.
+	 * This ensures that when VariationAttributes is used for a table header
+	 * and AttributeValues are used for the table rows then the columns will be
+	 * in the same order
+	 */
+	public function AttributeValues(){
+		$values = parent::AttributeValues();
+		$types = $this->Product()->VariationAttributes();
+		$result = new DataObjectSet();
+		foreach($types as $type) {
+			$result->push($values->find('TypeID', $type->ID));
+		}
+		return $result;
+	}
 
 }
 
