@@ -457,7 +457,15 @@ class ProductVariation extends DataObject implements BuyableModel{
 		return array();
 	}
 
-
+	/**
+	 * Action to return specific version of a product.
+	 * This is really useful for sold products where you want to retrieve the actual version that you sold.
+	 * @param Int $versionNumber
+	 * @return DataObject | Null
+	 */
+	function getVersionOfProduct($versionNumber){
+		Versioned::get_version($this->ClassName, $this->ID, $versionNumber);
+	}
 
 
 	//ORDER ITEM
