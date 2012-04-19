@@ -424,6 +424,15 @@ class ProductVariation extends DataObject implements BuyableModel{
 	}
 
 	/**
+	 * returns the default image of the product
+	 * @return Image | Null
+	 */
+	public function DefaultImage() {
+		return $this->Product()->DefaultImage();
+	}
+
+
+	/**
 	 * returns a product image for use in templates
 	 * e.g. $DummyImage.Width();
 	 * @return Product_Image
@@ -753,21 +762,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 		return $this->canEdit($member);
 	}
 
-	/**
-	 * returns the default image of the product
-	 * @return Image | Null
-	 */
-	public function DefaultImage() {
-		return $this->Product()->DefaultImage();
-	}
 
-	/**
-	 * returns the link to the default image from the product
-	 * @return String 
-	 */
-	public function DefaultImageLink() {
-		return $this->Product()->DefaultImageLink();
-	}
 }
 
 
