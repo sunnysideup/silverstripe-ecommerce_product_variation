@@ -342,6 +342,12 @@ class ProductVariation extends DataObject {
 		return $result;
 	}
 
+	public function DefaultImage() {
+		return $this->Product()->DefaultImage();
+	}
+	public function DefaultImageLink() {
+		return $this->Product()->DefaultImageLink();
+	}
 }
 
 
