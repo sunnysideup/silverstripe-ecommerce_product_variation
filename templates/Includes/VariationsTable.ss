@@ -12,7 +12,7 @@
 	</tr>
 <% control Variations %>
 	<tr>
-	<% if AttributeValues %>
+	<% if AttributeValuesSorted %>
 		<% control AttributeValues %>
 		<td class="label"<% if RGBCode %> style="color: #{$ComputedRGBCode}; background-color: #{$ComputedContrastRGBCode}"<% end_if %> >$Value</td>
 		<% end_control %>

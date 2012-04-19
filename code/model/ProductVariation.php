@@ -4,8 +4,24 @@
  *
  * @package ecommerce
  */
-class ProductVariation extends DataObject {
+class ProductVariation extends DataObject implements BuyableModel{
 
+	/**
+	 * Standard SS variable.
+	 */
+	public static $api_access = array(
+		'view' => array(
+			"Title",
+			"AllowPurchase",
+			"InternalItemID",
+			"Price"
+		)
+	);
+
+
+	/**
+	 * Standard SS variable.
+	 */
 	public static $db = array(
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
@@ -14,66 +30,106 @@ class ProductVariation extends DataObject {
 		'Description' => 'Varchar(255)'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $has_one = array(
 		'Product' => 'Product',
 		'Image' => 'Product_Image'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	static $many_many = array(
 		'AttributeValues' => 'ProductAttributeValue'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $casting = array(
 		'Parent' => 'Product',
 		'Title' => 'HTMLText',
 		'Link' => 'Text',
 		'AllowPuchaseText' => 'Text',
-		'PurchasedTotal' => 'Int',
 		'CalculatedPrice' => 'Currency'
 	);
 
-	public static $versioning = array(
-		'Stage'
-	);
-
-	public static $extensions = array(
-		"Versioned('Stage')",
-		"Buyable"
-	);
-
-	public static $indexes = array(
-		"Sort" => true
-	);
-
+	/**
+	 * Standard SS variable.
+	 */
 	public static $defaults = array(
 		"AllowPurchase" => 1
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
+	public static $versioning = array(
+		'Stage'
+	);
+
+	/**
+	 * Standard SS variable.
+	 */
+	public static $extensions = array(
+		"Versioned('Stage')"
+	);
+
+	/**
+	 * Standard SS variable.
+	 */
+	public static $indexes = array(
+		"Sort" => true
+	);
+
+	/**
+	 * Standard SS variable.
+	 */
 	public static $field_labels = array(
 		"Description" => "Title (optional)"
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $summary_fields = array(
 		'Product.Title' => 'Product',
 		'Title' => 'Title',
 		'Price' => 'Price',
-		'AllowPuchaseText' => 'Buyable',
-		'PurchasedTotal' => 'Purchased Total'
+		'AllowPuchaseText' => 'Buyable'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $searchable_fields = array(
 		'Price' => array(
-			'field' => 'NumericField',
-			'title' => 'Price'
+			'title' => 'Price',
+			'field' => 'NumericField'
+		),
+		'InternalItemID' => array(
+			'filter' => 'PartialMatchFilter',
+			'title' => 'Internal Item ID'
 		),
 		"Product.Title" => "PartialMatchFilter"
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $default_sort = "\"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $singular_name = "Product Variation";
 		function i18n_singular_name() { return _t("ProductVariation.PRODUCTVARIATION", "Product Variation");}
 
+	/**
+	 * Standard SS variable.
+	 */
 	public static $plural_name = "Product Variations";
 		function i18n_plural_name() { return _t("ProductVariation.PRODUCTVARIATIONS", "Product Variations");}
 		public static function get_plural_name(){
@@ -82,8 +138,10 @@ class ProductVariation extends DataObject {
 		}
 
 	/**
- 	 *@param
-    **/
+	 * How is the title build up?
+	 *
+	 * @var Array
+	 **/
 	protected static $title_style_option = array(
 		"default" => array(
 			"ShowType" => true,
@@ -109,6 +167,10 @@ class ProductVariation extends DataObject {
 		return self::$title_style_option[self::get_current_style_option_code()];
 	}
 
+	/**
+	 * Standard SS method
+	 * @return FieldSet
+	 */
 	function getCMSFields() {
 		$product = $this->Product();
 		$fields = new FieldSet(new TabSet('Root',
@@ -122,7 +184,7 @@ class ProductVariation extends DataObject {
 		));
 		$types = $product->VariationAttributes();
 		if($this->ID) {
-			$purchased = $this->getPurchasedTotal();
+			$hasBeenSold = $this->HasBeenSold();
 			$values = $this->AttributeValues();
 			foreach($types as $type) {
 				$field = $type->getDropDownField();
@@ -130,13 +192,13 @@ class ProductVariation extends DataObject {
 					$value = $values->find('TypeID', $type->ID);
 					if($value) {
 						$field->setValue($value->ID);
-						if($purchased) {
+						if($hasBeenSold) {
 							$field = $field->performReadonlyTransformation();
 							$field->setName("Type{$type->ID}");
 						}
 					}
 					else {
-						if($purchased) {
+						if($hasBeenSold) {
 							$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.ALREADYPURCHASED", 'NOT SET (you can not select a value now because it has already been purchased).'));
 						}
 						else {
@@ -153,16 +215,14 @@ class ProductVariation extends DataObject {
 				new ComplexTableField(
 					$this,
 					'OrderItems',
-					'ProductVariation_OrderItem',
+					'OrderItem',
 					array(
 						'Order.ID' => '#',
 						'Order.Created' => 'When',
-						'Order.Member.Name' => 'Member',
-						'Quantity' => 'Quantity',
-						'Total' => 'Total'
+						'Quantity' => 'Quantity'
 					),
 					new FieldSet(),
-					"\"BuyableID\" = '$this->ID'",
+					"\"BuyableID\" = '".$this->ID."' AND \"BuyableClassName\" = '".$this->ClassName."'",
 					"\"Created\" DESC"
 				)
 			);
@@ -177,8 +237,29 @@ class ProductVariation extends DataObject {
 		return $fields;
 	}
 
+	/**
+	 * Use the sort order of the variation attributes to order the attribute values.
+	 * This ensures that when VariationAttributes is used for a table header
+	 * and AttributeValues are used for the table rows then the columns will be
+	 * in the same order.
+	 * @return DataObjectSet
+	 */
+	public function AttributeValuesSorted(){
+		$values = parent::AttributeValues();
+		$types = $this->Product()->VariationAttributes();
+		$result = new DataObjectSet();
+		foreach($types as $type) {
+			$result->push($values->find('TypeID', $type->ID));
+		}
+		return $result;
+	}
+
+
+	/**
+	 * add requirements for pop-up
+	 */
 	function getRequirementsForPopup() {
-		$purchased = $this->getPurchasedTotal();
+		$hasBeenSold = $this->HasBeenSold();
 		if(! $this->ID || ! $purchased) {
 			Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 			Requirements::javascript('ecommerce_product_variation/javascript/productvariation.js');
@@ -187,37 +268,18 @@ class ProductVariation extends DataObject {
 		}
 	}
 
-	function IsProductVariation() {
-		return true;
-	}
-
-	function onAfterWrite() {
-		parent::onAfterWrite();
-		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
-			$this->AttributeValues()->setByIDList(array_values($_POST['ProductAttributes']));
-		}
-		unset($_POST['ProductAttributes']);
-	}
-
-	function onBeforeDelete() {
-		parent::onBeforeDelete();
-		$this->AttributeValues()->removeAll();
-	}
-
-	function Link(){
-		return $this->Product()->Link();
+	/**
+	 * standard SS method
+	 */
+	function populateDefaults() {
+		$this->AllowPurchase = 1;
 	}
 
 	/**
-	 * We use this function to make it more universal.
-	 * For a buyable, a parent could refer to a ProductGroup OR a Product
-	 * @return DataObject | Null
-	 **/
-	function Parent(){return $this->getParent();}
-	function getParent(){
-		return $this->Product();
-	}
-
+	 * Puts together a title for the Product Variation
+	 * @todo: return from template (renderWith)
+	 * @return String
+	 */
 	function Title(){return $this->getTitle();}
 	function getTitle($withSpan = false, $noProductTitle = false){
 		$styleArray = self::get_current_style_option_array();
@@ -264,29 +326,42 @@ class ProductVariation extends DataObject {
 				$productTitle = $this->Product()->Title;
 			}
 		}
-		return $productTitle. " ".$title;
+		return $productTitle." ".$title;
 	}
 
-
+	/**
+	 * returns YES or NO for the CMS Fields
+	 * @return String
+	 */
 	function AllowPuchaseText() {return $this->getAllowPuchaseText();}
 	function getAllowPuchaseText() {
 		return $this->AllowPurchase ? 'Yes' : 'No';
 	}
 
-	function PurchasedTotal() {return $this->getPurchasedTotal();}
-	function getPurchasedTotal() {
-		return DB::query("SELECT COUNT(*) FROM \"OrderItem\" WHERE \"BuyableID\" = '$this->ID'")->value();
+	/**
+	 * Standard SS Method
+	 */
+	function onAfterWrite() {
+		parent::onAfterWrite();
+		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
+			$this->AttributeValues()->setByIDList(array_values($_POST['ProductAttributes']));
+		}
+		unset($_POST['ProductAttributes']);
 	}
 
-	function CalculatedPrice() {return $this->getCalculatedPrice();}
-	function getCalculatedPrice() {
-		$price = $this->Price;
-		$this->extend('updateCalculatedPrice',$price);
-		return $price;
+	/**
+	 * Standard SS Method
+	 * Remove links to Attribute Values
+	 */
+	function onBeforeDelete() {
+		parent::onBeforeDelete();
+		$this->AttributeValues()->removeAll();
 	}
 
-
-	//this is used by TableListField to access attribute values.
+	/**
+	 * this is used by TableListField to access attribute values.
+	 * @return DataObject
+	 */
 	function AttributeProxy(){
 		$do = new DataObject();
 		if($this->AttributeValues()->exists()){
@@ -297,54 +372,399 @@ class ProductVariation extends DataObject {
 		return $do;
 	}
 
-	function canDelete() {
-		return $this->getPurchasedTotal() == 0;
+
+
+
+
+
+
+	//GROUPS AND SIBLINGS
+
+
+	/**
+	 * We use this function to make it more universal.
+	 * For a buyable, a parent could refer to a ProductGroup OR a Product
+	 * @return DataObject | Null
+	 **/
+	function Parent(){return $this->getParent();}
+	function getParent(){
+		return $this->Product();
+	}
+
+	/**
+	 * Returns the direct parent (group) for the product.
+	 *
+	 * @return Null | DataObject(ProductGroup)
+	 **/
+	function MainParentGroup(){
+		return $this->Product();
+	}
+
+	/**
+	 * Returns Buybales in the same group
+	 * @return Null | DataObjectSet
+	 **/
+	function Siblings(){
+		return DataObject::get("ProductVariation", "\"ProductID\" = ".$this->ProductID);
 	}
 
 
-	//TODO: provide human-understandable reasons variation can't be purcahsed
+
+
+	//IMAGES
+
+	/**
+	 * Returns a link to a default image.
+	 * If a default image is set in the site config then this link is returned
+	 * Otherwise, a standard link is returned
+	 * @return String
+	 */
+	function DefaultImageLink() {
+		$this->EcomConfig()->DefaultImageLink();
+	}
+
+	/**
+	 * returns a product image for use in templates
+	 * e.g. $DummyImage.Width();
+	 * @return Product_Image
+	 */
+	function DummyImage(){
+		return new Product_Image();
+	}
+
+
+
+
+	// VERSIONING
+
+	/**
+	 * Action to return specific version of a product.
+	 * This is really useful for sold products where you want to retrieve the actual version that you sold.
+	 * @param HTTPRequest $request
+	 */
+	function viewversion($request){
+		$version = intval($request->param("ID"));
+		Director::redirect($this->Product()->Link("viewversion")."/".$version."/");
+		return array();
+	}
+
+
+
+
+	//ORDER ITEM
+
+	/**
+	 * returns the order item associated with the buyable.
+	 * ALWAYS returns one, even if there is none in the cart.
+	 * Does not write to database.
+	 * @return OrderItem (no kidding)
+	 **/
+	public function OrderItem() {
+		//work out the filter
+		$filter = "";
+		$this->extend('updateItemFilter',$filter);
+		//make the item and extend
+		$item = ShoppingCart::singleton()->findOrMakeItem($this, $filter);
+		$this->extend('updateDummyItem',$item);
+		return $item;
+	}
+
+	/**
+	 *
+	 * @var String
+	 */
+	protected $defaultClassNameForOrderItem = "ProductVariation_OrderItem";
+
+
+	/**
+	 * you can overwrite this function in your buyable items (such as Product)
+	 * @return String
+	 **/
+	public function classNameForOrderItem() {
+		$className = $this->defaultClassNameForOrderItem;
+		$update = $this->extend("updateClassNameForOrderItem", $className);
+		if(is_string($update) && class_exists($update)) {
+			$className = $update;
+		}
+		return $className;
+	}
+
+	/**
+	 * You can set an alternative class name for order item using this method
+	 * @param String $ClassName
+	 **/
+	public function setAlternativeClassNameForOrderItem($className){
+		$this->defaultClassNameForOrderItem = $className;
+	}
+
+	/**
+	 * When purchasing this buyable, how many decimals can it have?
+	 * @return Int
+	 */
+	function QuantityDecimals(){
+		return 0;
+	}
+
+
+	/**
+	 * Number of variations sold
+	 * @TODO: check if we need to use other class names
+	 * @return Int
+	 */
+	function HasBeenSold() {return $this->getHasBeenSold();}
+	function getHasBeenSold() {
+		return DB::query("
+			SELECT COUNT(*)
+			FROM \"OrderItem\"
+				INNER JOIN \"OrderAttribute\" ON \"OrderAttribute\".\"ID\" = \"OrderItem\".\"ID\"
+			WHERE
+				\"BuyableID\" = '".$this->ID."' AND
+				\"BuyableClassName\" = '".$this->ClassName."'
+			LIMIT 1
+			"
+		)->value();
+	}
+
+
+
+
+	//LINKS
+
+	/**
+	 *
+	 * @return String
+	 */
+	function Link($action = null){
+		return $this->Product()->Link($action);
+	}
+
+	/**
+	 * passing on shopping cart links ...is this necessary?? ...why not just pass the cart?
+	 * @return String
+	 */
+	function AddLink() {
+		return ShoppingCart_Controller::add_item_link($this->ID, $this->ClassName, $this->linkParameters());
+	}
+
+	/**
+	 * link use to add (one) to cart
+	 *@return String
+	 */
+	function IncrementLink() {
+		//we can do this, because by default add link adds one
+		return ShoppingCart_Controller::add_item_link($this->ID, $this->ClassName, $this->linkParameters());
+	}
+
+	/**
+	 * Link used to remove one from cart
+	 * we can do this, because by default remove link removes one
+	 * @return String
+	 */
+	function DecrementLink() {
+		return ShoppingCart_Controller::remove_item_link($this->ID, $this->ClassName, $this->linkParameters());
+	}
+
+	/**
+	 * remove one buyable's orderitem from cart
+	 * @return String (Link)
+	 */
+	function RemoveLink() {
+		return ShoppingCart_Controller::remove_item_link($this->ID, $this->ClassName, $this->linkParameters());
+	}
+
+	/**
+	 * remove all of this buyable's orderitem from cart
+	 * @return String (Link)
+	 */
+	function RemoveAllLink() {
+		return ShoppingCart_Controller::remove_all_item_link($this->ID, $this->ClassName, $this->linkParameters());
+	}
+
+	/**
+	 * remove all of this buyable's orderitem from cart and go through to this buyble to add alternative selection.
+	 * @return String (Link)
+	 */
+	function RemoveAllAndEditLink() {
+		return ShoppingCart_Controller::remove_all_item_and_edit_link($this->ID, $this->ClassName, $this->linkParameters());
+	}
+
+	/**
+	 * set new specific new quantity for buyable's orderitem
+	 * @param double
+	 * @return String (Link)
+	 */
+	function SetSpecificQuantityItemLink($quantity) {
+		return ShoppingCart_Controller::set_quantity_item_link($this->ID, $this->ClassName, array_merge($this->linkParameters(), array("quantity" => $quantity)));
+	}
+
+	/**
+	 * @todo: do we still need this?
+	 * @return Array
+	 **/
+	protected function linkParameters(){
+		$array = array();
+		$this->extend('updateLinkParameters',$array);
+		return $array;
+	}
+
+
+
+
+	//TEMPLATE STUFF
+
+	/**
+	 *
+	 * @return boolean
+	 */
+	function IsInCart(){
+		return ($this->OrderItem() && $this->OrderItem()->Quantity > 0) ? true : false;
+	}
+
+	/**
+	 * returns the instance of EcommerceConfigAjax for use in templates.
+	 * In templates, it is used like this:
+	 * $EcommerceConfigAjax.TableID
+	 *
+	 * @return EcommerceConfigAjax
+	 **/
+	public function AJAXDefinitions() {
+		return EcommerceConfigAjax::get_one($this);
+	}
+
+	/**
+	 * @return EcommerceDBConfig
+	 **/
+	function EcomConfig() {
+		return EcommerceDBConfig::current_ecommerce_db_config();
+	}
+
+	/**
+	 * Is it a variation?
+	 * @return Boolean
+	 */
+	function IsProductVariation() {
+		return true;
+	}
+
+	/**
+	 * returns the actual price worked out after discounts, currency conversions, etc...
+	 * TODO: return as Money
+	 * @return Money
+	 */
+	function CalculatedPrice() {return $this->getCalculatedPrice();}
+	function getCalculatedPrice() {
+		$price = $this->Price;
+		$this->extend('updateCalculatedPrice',$price);
+		return $price;
+	}
+
+
+	/**
+	 * How do we display the price?
+	 * @return Money
+	 */
+	function DisplayPrice() {return $this->getDisplayPrice();}
+	function getDisplayPrice() {
+		$price = $this->CalculatedPrice();
+		if($this->Cart()->HasAlternativeCurrency()) {
+			$exchangeRate = $this->Cart()->ExchangeRate;
+			if($exchangeRate) {
+				$price = $exchangeRate * $price;
+			}
+		}
+		$moneyObject = new Money("DisplayPrice");
+		$moneyObject->setCurrency($this->Cart()->DisplayCurrency());
+		$moneyObject->setValue($price);
+		return $moneyObject;
+	}
+
+
+
+
+	//CRUD SETTINGS
+
+	/**
+	 * Is the product for sale?
+	 * @return Boolean
+	 */
 	function canPurchase($member = null) {
-		$allowpurchase = false;
-		if(!$this->AllowPurchase) {
+		if($this->EcomConfig()->ShopClosed) {
+			return false;
+		}
+		$allowpurchase = $this->AllowPurchase;
+		if(!$allowpurchase) {
 			return false;
 		}
 		if($product = $this->Product()) {
 			$allowpurchase = $product->canPurchase($member);
+			if(!$allowpurchase) {
+				return false;
+			}
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
-		if($allowpurchase && $extended !== null) {
+		if($extended !== null) {
 			$allowpurchase = $extended;
 		}
 		return $allowpurchase;
 	}
 
-	function populateDefaults() {
-		$this->AllowPurchase = 1;
-	}
 
-	function QuantityDecimals(){
-		return 0;
+	/**
+	 * Shop Admins can edit
+	 * @return Boolean
+	 */
+	function canEdit($member = null) {
+		if(!$member) {
+			$member == Member::currentUser();
+		}
+		$shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
+		if($member && Permission::checkMember($member, $shopAdminCode)) {
+			return true;
+		}
+		return parent::canEdit($member);
 	}
 
 	/**
-	 * Use the sort order of the variation attributes to order the attribute values.
-	 * This ensures that when VariationAttributes is used for a table header
-	 * and AttributeValues are used for the table rows then the columns will be
-	 * in the same order
+	 * Once the item has been sold, it can not be deleted.
+	 * @return Boolean
 	 */
-	public function AttributeValues(){
-		$values = parent::AttributeValues();
-		$types = $this->Product()->VariationAttributes();
-		$result = new DataObjectSet();
-		foreach($types as $type) {
-			$result->push($values->find('TypeID', $type->ID));
+	function canDelete($member = null) {
+		//can we delete sold items? or can we only make them invisible
+		if($this->HasBeenSold()) {
+			return false;
 		}
-		return $result;
+		return parent::canDelete($member);
 	}
 
+	/**
+	 * Standard SS method
+	 * //check if it is in a current cart?
+	 * @return Boolean
+	 */
+	public function canDeleteFromLive($member = null) {
+		return $this->canEdit($member);
+	}
+
+	/**
+	 * Standard SS method
+	 * @return Boolean
+	 */
+	public function canCreate($member = null) {
+		return $this->canEdit($member);
+	}
+
+	/**
+	 * returns the default image of the product
+	 * @return Image | Null
+	 */
 	public function DefaultImage() {
 		return $this->Product()->DefaultImage();
 	}
+
+	/**
+	 * returns the link to the default image from the product
+	 * @return String 
+	 */
 	public function DefaultImageLink() {
 		return $this->Product()->DefaultImageLink();
 	}
@@ -358,18 +778,10 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		//TO DO: the line below does not work because it does NOT get the right version
 		return $this->Buyable(true);
 		//THIS WORKS
-		return DataObject::get_by_id("ProductVariation", $this->BuyableID);
-	}
-
-
-	/**
-	 * Check if two order items are the same
-	 * @param Object - $orderItem should be a ProductVariation_OrderItem;
-	 * @return Boolean
-	 **/
-	function hasSameContent($orderItem) {
-		$parentIsTheSame = parent::hasSameContent($orderItem);
-		return $parentIsTheSame && $orderItem instanceof ProductVariation_OrderItem;
+		return DataObject::get_one(
+			"ProductVariation",
+			"\"ProductVariation\".\"ID\" = ".$this->BuyableID." AND \"BuyableClassName\" = '".$this->BuyableClassName."'"
+		);
 	}
 
 	/**
@@ -417,37 +829,6 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		parent::onBeforeWrite();
 	}
 
-
-	function requireDefaultRecords() {
-		parent::requireDefaultRecords();
-		// we must check for individual database types here because each deals with schema in a none standard way
-		//can we use Table::has_field ???
-		$db = DB::getConn();
-		if($db->hasTable("Product_OrderItem")) {
-			if( $db instanceof PostgreSQLDatabase ){
-				$exist = DB::query("SELECT column_name FROM information_schema.columns WHERE table_name ='Product_OrderItem' AND column_name = 'ProductVariationVersion'")->numRecords();
-			}
-			else{
-				// default is MySQL - broken for others, each database conn type supported must be checked for!
-				$exist = DB::query("SHOW COLUMNS FROM \"Product_OrderItem\" LIKE 'ProductVariationVersion'")->numRecords();
-			}
-			if($exist > 0) {
-				DB::query("
-					UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
-						SET \"OrderItem\".\"Version\" = \"ProductVariation_OrderItem\".\"ProductVariationVersion\"
-					WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
-				");
-				DB::query("
-					UPDATE \"OrderItem\", \"ProductVariation_OrderItem\"
-						SET \"OrderItem\".\"BuyableID\" = \"ProductVariation_OrderItem\".\"ProductVariationID\"
-					WHERE \"OrderItem\".\"ID\" = \"ProductVariation_OrderItem\".\"ID\"
-				");
-				DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationVersion\" \"_obsolete_ProductVariationVersion\" Integer(11)");
-				DB::query("ALTER TABLE \"ProductVariation_OrderItem\" CHANGE COLUMN \"ProductVariationID\" \"_obsolete_ProductVariationID\" Integer(11)");
-				DB::alteration_message('made ProductVariationVersion and ProductVariationID obsolete in ProductVariation_OrderItem', 'obsolete');
-			}
-		}
-	}
 
 
 }

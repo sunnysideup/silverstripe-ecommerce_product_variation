@@ -47,20 +47,12 @@ class ProductAttributeValue extends DataObject{
 		}
 
 	public function canDelete($member = null) {
-		/*$alreadyUsed = DB::query("
-			SELECT COUNT(\"ProductAttributeValueID\")
+		return DB::query("
+			SELECT COUNT(*)
 			FROM \"ProductVariation_AttributeValues\"
-				INNER JOIN \"OrderItem\" ON \"OrderItem\".\"BuyableID\" = \"ProductVariation_AttributeValues\" .\"ProductVariationID\"
-				INNER JOIN \"OrderAttribute\" ON \"OrderAttribute\".\"ID\" = \"OrderItem\" .\"ID\"
-			WHERE
-				\"ProductAttributeValueID\" = ".$this->ID."
-				AND \"OrderAttribute\".\"ClassName\" = 'ProductVariation_OrderItem'"
-		)->value();
-		if($alreadyUsed) {
-			return false;
-		}
-		return true;*/
-		return DB::query("SELECT COUNT(*) FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = '$this->ID'")->value() == 0;
+				INNER JOIN \"ProductVariation\" ON  \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+			WHERE \"ProductAttributeValueID\" = ".$this->ID
+		)->value() == 0;
 	}
 
 

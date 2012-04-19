@@ -31,7 +31,8 @@ class CreateEcommerceVariations extends Controller {
 
 	function init() {
 		parent::init();
-		if(!Permission::check("CMS_ACCESS_CMSMain")  && !Permission::check("SHOPADMIN")) {
+		$shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
+		if(!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check($shopAdminCode)) {
 			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
 		}
 		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = $_GET["typeorvalue"];}
@@ -290,7 +291,8 @@ class CreateEcommerceVariations_Batch extends Controller {
 
 	function init() {
 		parent::init();
-		if(!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check("SHOPADMIN")) {
+		$shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
+		if(!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check($shopAdminCode)) {
 			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
 		}
 	}
