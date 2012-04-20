@@ -260,7 +260,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 */
 	function getRequirementsForPopup() {
 		$hasBeenSold = $this->HasBeenSold();
-		if(! $this->ID || ! $purchased) {
+		if(! $this->ID || ! $hasBeenSold) {
 			Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 			Requirements::javascript('ecommerce_product_variation/javascript/productvariation.js');
 			Requirements::customScript("ProductVariation.set_url('createecommercevariations')", 'CreateEcommerceVariationsField_set_url');
