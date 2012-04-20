@@ -177,6 +177,9 @@ class ProductVariation extends DataObject {
 		return $fields;
 	}
 
+	/**
+	 * TODO: what this is all about?
+	 */
 	function getRequirementsForPopup() {
 		$hasBeenSold = $this->getPurchasedTotal();
 		if(! $this->ID || ! $purchased) {
