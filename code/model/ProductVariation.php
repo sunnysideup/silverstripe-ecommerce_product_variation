@@ -178,7 +178,7 @@ class ProductVariation extends DataObject {
 	}
 
 	function getRequirementsForPopup() {
-		$purchased = $this->getPurchasedTotal();
+		$hasBeenSold = $this->getPurchasedTotal();
 		if(! $this->ID || ! $purchased) {
 			Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 			Requirements::javascript('ecommerce_product_variation/javascript/productvariation.js');
@@ -275,7 +275,7 @@ class ProductVariation extends DataObject {
 
 	function PurchasedTotal() {return $this->getPurchasedTotal();}
 	function getPurchasedTotal() {
-		return DB::query("SELECT COUNT(*) FROM \"OrderItem\" WHERE \"BuyableID\" = '$this->ID'")->value();
+		return DB::query("SELECT COUNT(*) FROM \"OrderItem\" WHERE \"BuyableID\" = '$this->ID' AND \"ClassName\" = 'ProductVariation_OrderItem'")->value();
 	}
 
 	function CalculatedPrice() {return $this->getCalculatedPrice();}
