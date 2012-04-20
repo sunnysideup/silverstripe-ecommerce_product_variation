@@ -257,6 +257,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * add requirements for pop-up
+	 * TODO: what this is all about?
 	 */
 	function getRequirementsForPopup() {
 		$hasBeenSold = $this->HasBeenSold();
