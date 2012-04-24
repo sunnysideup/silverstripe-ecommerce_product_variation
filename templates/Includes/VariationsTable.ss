@@ -23,7 +23,7 @@
 			<span class="price">$CalculatedPrice.Nice $Currency</span>
 		</td>
 		<td class="actionCell">
-			<div class="actionOuter"><% if canPurchase %><% include ProductActionsForGroup %><% end_if %></div>
+			<div class="actionOuter"><% if canPurchase %><% include ProductActionsInner %><% end_if %></div>
 			<p class="description">$Description</p>
 		</td>
 	</tr>
