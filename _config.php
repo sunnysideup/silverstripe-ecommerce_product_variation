@@ -13,6 +13,8 @@ Object::add_extension("ProductBulkLoader","ProductVariationBulkLoader");
 Product_Controller::$allowed_actions[] = 'VariationForm';
 Product_Controller::$allowed_actions[] = 'addvariation';
 LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery/jquery.js");
+//Requirements::block(THIRDPARTY_DIR."/jquery/jquery.js");
+//Requirements::javascript(Director::protocol()."ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js");
 LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 LeftAndMain::require_javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
 LeftAndMain::require_themed_css("CreateEcommerceVariationsField");

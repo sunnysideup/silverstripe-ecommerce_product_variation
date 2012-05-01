@@ -12,6 +12,10 @@
 
 var CreateEcommerceVariationsField = {
 
+	//by setting the root delegate selector very "high", it will ensure it always works.
+	delegateRootSelector: "body",
+		set_delegateRootSelector: function(s) {this.delegateRootSelector = s;},
+
 	reminderProvided: false,
 
 	//URL to access controller
@@ -43,7 +47,8 @@ var CreateEcommerceVariationsField = {
 
 	init: function() {
 		CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
-		jQuery(CreateEcommerceVariationsField.startLinkSelector).live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			CreateEcommerceVariationsField.startLinkSelector,
 			'click',
 			function() {
 				return CreateEcommerceVariationsField.startup();
@@ -94,7 +99,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addAddLinkToggles: function() {
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink",
 			"click",
 			function() {
 				jQuery(this).parent("label").next("div").slideToggle();
@@ -103,7 +109,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addEditLinkToggles: function() {
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editNameLink").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" .editNameLink",
 			"click",
 			function() {
 				var rel = "#editFieldFor"+jQuery(this).attr("rel");
@@ -114,8 +121,7 @@ var CreateEcommerceVariationsField = {
 
 	addGroupItemLinkedClicks: function() {
 		//if the parent is unticked then untick the children
-		jQuery(".typeCheckHolder input.dataForType").live(
-			"each",
+		jQuery(".typeCheckHolder input.dataForType").each(
 			function(i, el) {
 				if(jQuery(el).is(":checked") || jQuery(el).attr("disabled") == "disabled") {
 					jQuery(el).parents("li.typeHolder").find(".valuesHolder").slideDown();
@@ -126,7 +132,8 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 
-		jQuery(".typeCheckHolder input.dataForType").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" .typeCheckHolder input.dataForType",
 			"change",
 			function() {
 				if(jQuery(this).is(':checked')) {
@@ -143,7 +150,8 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 		//if all the children are unticked then untick the parent
-		jQuery(".valuesHolder input.dataForValue").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" .valuesHolder input.dataForValue",
 			"change",
 			function() {
 				if(!CreateEcommerceVariationsField.reminderProvided) {
@@ -177,7 +185,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	add:function() {
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input",
 			"change",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
@@ -188,7 +197,8 @@ var CreateEcommerceVariationsField = {
 
 	rename:function() {
 		//reset form
-		jQuery("#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input",
 			"change",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
@@ -223,7 +233,8 @@ var CreateEcommerceVariationsField = {
 
 	remove:function() {
 		//reset form
-		jQuery("a.deleteLink").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" a.deleteLink",
 			"click",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
@@ -236,7 +247,8 @@ var CreateEcommerceVariationsField = {
 	deleteValue:function() {
 
 		//reset form
-		jQuery("#A").live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+" #A",
 			"click",
 			function() {
 				CreateEcommerceVariationsField.reset();
@@ -246,7 +258,8 @@ var CreateEcommerceVariationsField = {
 	},
 
 	createVariations: function() {
-		jQuery('li.createButtonHolder input').live(
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
+			"#"+CreateEcommerceVariationsField.fieldID+' li.createButtonHolder input',
 			"click",
 			function() {
 				data = CreateEcommerceVariationsField.selectGetVariables();
