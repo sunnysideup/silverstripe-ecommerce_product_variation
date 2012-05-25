@@ -737,7 +737,9 @@ class ProductVariation extends DataObject implements BuyableModel{
 		$moneyObject->setValue($price);
 		$updatedObject = $this->extend('updateDisplayPrice',$moneyObject);
 		if($updatedObject !== null) {
-			$moneyObject = $updatedObject[0];
+			if(is_array($updatedObject) && count($updatedObject)) {
+				$moneyObject = $updatedObject[0];
+			}
 		}
 		return $moneyObject;
 	}
