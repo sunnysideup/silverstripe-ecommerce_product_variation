@@ -28,7 +28,13 @@
 				<span class="price">$CalculatedPrice.Nice $Currency</span>
 			</td>
 			<td class="actionCell">
-				<div class="actionOuter"><% if canPurchase %><% include ProductActionsInner %><% end_if %></div>
+				<div class="actionOuter">
+					<% if canPurchase %>
+						<% include ProductActionsInner %>
+					<% else %>
+						<div class="notForSale message">$EcomConfig.NotForSaleMessage</div>
+					<% end_if %>
+				</div>
 			</td>
 		</tr>
 <% end_control %>
