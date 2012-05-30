@@ -281,56 +281,37 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * Puts together a title for the Product Variation
-	 * @todo: return from template (renderWith)
 	 * @return String
 	 */
 	function Title(){return $this->getTitle();}
-	function getTitle($withSpan = false, $noProductTitle = false){
-		$styleArray = self::get_current_style_option_array();
-		$values = $this->AttributeValues();
-		if($values->exists()){
-			$labelvalues = array();
-			if(count($values)) {
-				foreach($values as $value){
-					$v = '';
-					if($withSpan) {
-						$v = '<span>';
-					}
-					if($styleArray["ShowType"]) {
-						$v .= $value->Type()->Label.$styleArray["BetweenTypeAndValue"];
-					}
-					$v .= $value->Value;
-					if($withSpan) {
-						$v .= '</span>';
-					}
-					$labelvalues[] = $v;
-				}
-			}
-			$title = implode($styleArray["BetweenVariations"],$labelvalues);
+	function getTitle($withHTML = false, $noProductTitle = false){
+		$this->WithProductTitle = $noProductTitle ? false : true;
+		$array = array(
+			"Values" => $this->AttributeValues(),
+			"Product" => $this->Product(),
+			"Description" => $this->Description,
+			"InternalItemID" => $this->InternalItemID,
+			"Price" => $this->Price
+		);
+		$html = $this->customise($array)->renderWith("ProductVariationItem");
+		if($withHTML) {
+			return $html;
 		}
-		else {
-			$title = $this->InternalItemID;
-		}
-		if($this->Description) {
-			if($withSpan) {
-				$title .= "; <span class=\"extraDescription\">".$this->Description."</span>";
-			}
-			else {
-				$title .= "; ".$this->Description;
-			}
-		}
-		if($noProductTitle) {
-			return $title;
-		}
-		else {
-			if($withSpan) {
-				$productTitle = '<span class="productTitle">'.$this->Product()->Title.'</span>';
-			}
-			else {
-				$productTitle = $this->Product()->Title;
-			}
-		}
-		return $productTitle." ".$title;
+		return Convert::raw2att(trim(preg_replace( '/\s+/', ' ', strip_tags($html))));
+	}
+
+	/**
+	 * shorthand
+	 */
+	function FullDescription(){
+		return $this->Title(true, false);
+	}
+
+	/**
+	 * shorthand
+	 */
+	function ImgAltTag(){
+		return $this->Title(false, false);
 	}
 
 	/**
