@@ -18,7 +18,8 @@ class CreateEcommerceVariations extends Controller {
 	protected $_product = null;
 	protected $_typeorvalue = "type"; // or value!
 	protected $_classname = "type"; // or value!
-	protected $_namefield = "Name"; // or value!
+	protected $_namefield = "Name";
+	protected $_labelfield = "Label"; // only for ProductAttributeType
 	protected $_id = 0;
 	protected $_value = "";
 	protected $_position = -1; //use -1 to distinguish it from 0 (first in sorting order)
@@ -144,11 +145,16 @@ class CreateEcommerceVariations extends Controller {
 		die("not completed yet");
 		return $this->jsonforform();
 	}
+
 	function rename() {
 		//is it Type or Value?
 		$obj = DataObject::get_by_id($this->_classname, $this->_id);
 		if($obj) {
 			$name = $obj->{$this->_namefield};
+			if($obj instanceOf ProductAttributeType) {
+				$obj->{$this->_labelfield} = $this->_value;
+				$name .= " (".$obj->{$this->_labelfield}.")";
+			}
 			$obj->{$this->_namefield} = $this->_value;
 			$obj->write();
 			$this->_message = _t("CreateEcommerceVariations.HASBEENRENAMED","$name has been renamed to ".$this->_value,".");
@@ -159,6 +165,7 @@ class CreateEcommerceVariations extends Controller {
 		}
 		return $this->jsonforform();
 	}
+
 	function add() {
 		//is it Type or Value?
 		$obj = new $this->_classname();
