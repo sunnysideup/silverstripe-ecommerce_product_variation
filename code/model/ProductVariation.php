@@ -483,7 +483,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @param Int $version
 	 * @return DataObject | Null
 	 */
-	function getVersionOfProduct($id = 0, $version = 0);
+	function getVersionOfProduct($id = 0, $version = 0){
 		if(!$id) {
 			$id = $this->ID;
 		}
