@@ -877,11 +877,4 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		$this->extend('updateTableSubTitle',$tablesubtitle);
 		return $tablesubtitle;
 	}
-
-	function onBeforeWrite() {
-		parent::onBeforeWrite();
-	}
-
-
-
 }
