@@ -792,19 +792,12 @@ class ProductVariation extends DataObject implements BuyableModel{
 	}
 
 	/**
-	 * Once the item has been sold, it can not be deleted.
+	 * Standard SS method
 	 * @return Boolean
-	 * UPDATE: this method is no longer needed as we can now safely retrieve
-	 * "deleted" ProductVariations from versions
-
-	function canDelete($member = null) {
-		//can we delete sold items? or can we only make them invisible
-		if($this->HasBeenSold()) {
-			return false;
-		}
-		return parent::canDelete($member);
+	 */
+	public function canDelete($member = null) {
+		return $this->canEdit($member);
 	}
-	*/
 
 	/**
 	 * Standard SS method
@@ -828,7 +821,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 
 class ProductVariation_OrderItem extends Product_OrderItem {
-	 
+
 	// ProductVariation Access Function
 	public function ProductVariation($current = false) {
 		//TO DO: the line below does not work because it does NOT get the right version
@@ -880,7 +873,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		$this->extend('updateTableSubTitle',$tablesubtitle);
 		return $tablesubtitle;
 	}
-	
+
 	function getInternalItemID() {
 		$variation = $this->ProductVariation();
 		return $variation->InternalItemID;
