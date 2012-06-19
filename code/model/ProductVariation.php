@@ -828,6 +828,18 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	
 	public static $api_access = array(
 		'view' => array(
+			'CalculatedTotal',
+			'TableTitle',
+			'TableSubTitleNOHTML',
+			'Name',
+			'TableValue',
+			'Quantity',
+			'BuyableID',
+			'BuyableClassName',
+			'Version',
+			'UnitPrice',
+			'Total',
+			'Order',
 			'ProductVariationInternalItemID'
 		)
 	);
