@@ -826,6 +826,16 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 class ProductVariation_OrderItem extends Product_OrderItem {
 	
+	public static $api_access = array(
+		'view' => array(
+			'ProductVariationInternalItemID'
+		)
+	);
+	
+	static $casting = array(
+		'ProductVariationInternalItemID' => 'Varchar'
+	);
+	 
 	// ProductVariation Access Function
 	public function ProductVariation($current = false) {
 		//TO DO: the line below does not work because it does NOT get the right version
@@ -876,5 +886,11 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		$tablesubtitle = $this->ProductVariation()->getTitle(true, true);
 		$this->extend('updateTableSubTitle',$tablesubtitle);
 		return $tablesubtitle;
+	}
+	
+	function ProductVariationInternalItemID() {return $this->getProductVariationInternalItemID();}
+	function getProductVariationInternalItemID() {
+		$variation = $this->ProductVariation();
+		return $variation->InternalItemID;
 	}
 }
