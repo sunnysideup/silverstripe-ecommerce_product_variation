@@ -826,11 +826,6 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	public function ProductVariation($current = false) {
 		//TO DO: the line below does not work because it does NOT get the right version
 		return $this->Buyable(true);
-		//THIS WORKS
-		return DataObject::get_one(
-			"ProductVariation",
-			"\"ProductVariation\".\"ID\" = ".$this->BuyableID." AND \"BuyableClassName\" = '".$this->BuyableClassName."'"
-		);
 	}
 
 	/**
