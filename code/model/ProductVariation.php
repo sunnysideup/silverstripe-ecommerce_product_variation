@@ -825,28 +825,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 
 class ProductVariation_OrderItem extends Product_OrderItem {
-	
-	public static $api_access = array(
-		'view' => array(
-			'CalculatedTotal',
-			'TableTitle',
-			'TableSubTitleNOHTML',
-			'Name',
-			'TableValue',
-			'Quantity',
-			'BuyableID',
-			'BuyableClassName',
-			'Version',
-			'UnitPrice',
-			'Total',
-			'Order',
-			'ProductVariationInternalItemID'
-		)
-	);
-	
-	static $casting = array(
-		'ProductVariationInternalItemID' => 'Varchar'
-	);
 	 
 	// ProductVariation Access Function
 	public function ProductVariation($current = false) {
@@ -900,8 +878,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $tablesubtitle;
 	}
 	
-	function ProductVariationInternalItemID() {return $this->getProductVariationInternalItemID();}
-	function getProductVariationInternalItemID() {
+	function getInternalItemID() {
 		$variation = $this->ProductVariation();
 		return $variation->InternalItemID;
 	}
