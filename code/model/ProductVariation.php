@@ -749,7 +749,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * updates the quick lookup list.
 	 * This method should be called from onAfterWrite
 	 */
-	protected function updateQuickLookupList(){}
+	protected function updateBuyableDataList(){}
 
 
 
