@@ -852,9 +852,14 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	 **/
 	public function TableTitle(){return $this->getTableTitle();}
 	function getTableTitle() {
-		$tabletitle = $this->ProductVariation()->Product()->Title;
-		$this->extend('updateTableTitle',$tabletitle);
-		return $tabletitle;
+		$tableTitle = _t("Product.UNKNOWN", "Unknown Product");
+		if($variation = $this->ProductVariation()) {
+			if($product = $variation->Product()) {
+				$tableTitle = $product->Title;
+			}
+		}
+		$this->extend('updateTableTitle',$tableTitle);
+		return $tableTitle;
 	}
 
 	/**
@@ -870,7 +875,8 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	}
 
 	function getInternalItemID() {
-		$variation = $this->ProductVariation();
-		return $variation->InternalItemID;
+		if($variation = $this->ProductVariation()) {
+			return $variation->InternalItemID;
+		}
 	}
 }
