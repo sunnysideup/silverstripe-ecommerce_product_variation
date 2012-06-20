@@ -28,7 +28,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 		'AllowPurchase' => 'Boolean',
 		'Sort' => 'Int',
 		'Description' => 'Varchar(255)',
-		'FullName' => 'Text'
+		'FullName' => 'Text',
+		'FullSiteTreeSort' => 'Varchar(110)'
 	);
 
 	/**
@@ -83,7 +84,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 */
 	public static $indexes = array(
 		"Sort" => true,
-		"FullName" => true //Name for look-up lists
+		"FullName" => true,
+		"FullSiteTreeSort" => true
 	);
 
 	/**
@@ -331,10 +333,11 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * standard SS method
-	 * sets the full name of the variation
+	 * sets the FullName + FullSiteTreeSort of the variation
 	 */
 	function onBeforeWrite(){
 		parent::onbeforeWrite();
+		$this->FullSiteTreeSort = $this->Sort;
 		$fullName = "";
 		if($this->InternalItemID) {
 			$fullName .= $this->InternalItemID." - ";
@@ -342,6 +345,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 		$fullName .= $this->getTitle(false, true);
 		if($product = $this->MainParentGroup()) {
 			$fullName .= " (".$product->Title.")";
+			$this->FullSiteTreeSort = $product->FullSiteTreeSort.",".$this->FullSiteTreeSort;
 		}
 		$this->FullName = $fullName;
 	}
