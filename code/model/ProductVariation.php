@@ -27,7 +27,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 		'Price' => 'Currency',
 		'AllowPurchase' => 'Boolean',
 		'Sort' => 'Int',
-		'Description' => 'Varchar(255)'
+		'Description' => 'Varchar(255)',
+		'FullName' => 'Text'
 	);
 
 	/**
@@ -81,7 +82,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * Standard SS variable.
 	 */
 	public static $indexes = array(
-		"Sort" => true
+		"Sort" => true,
+		"FullName" => true //Name for look-up lists
 	);
 
 	/**
@@ -298,7 +300,10 @@ class ProductVariation extends DataObject implements BuyableModel{
 		if($withHTML) {
 			return $html;
 		}
-		return Convert::raw2att(trim(preg_replace( '/\s+/', ' ', strip_tags($html))));
+		else {
+			//@todo: reverse the ampersands, etc...
+			return Convert::raw2att(trim(preg_replace( '/\s+/', ' ', strip_tags($html))));
+		}
 	}
 
 	/**
@@ -322,6 +327,23 @@ class ProductVariation extends DataObject implements BuyableModel{
 	function AllowPuchaseText() {return $this->getAllowPuchaseText();}
 	function getAllowPuchaseText() {
 		return $this->AllowPurchase ? 'Yes' : 'No';
+	}
+
+	/**
+	 * standard SS method
+	 * sets the full name of the variation
+	 */
+	function onBeforeWrite(){
+		parent::onbeforeWrite();
+		$fullName = "";
+		if($this->InternalItemID) {
+			$fullName .= $this->InternalItemID." - ";
+		}
+		$fullName .= $this->getTitle(false, true);
+		if($product = $this->MainParentGroup()) {
+			$fullName .= " (".$product->Title.")";
+		}
+		$this->FullName = $fullName;
 	}
 
 	/**
@@ -357,7 +379,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 		}
 		return $do;
 	}
-
 
 
 
@@ -745,12 +766,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 		return $moneyObject;
 	}
 
-	/**
-	 * updates the quick lookup list.
-	 * This method should be called from onAfterWrite
-	 */
-	protected function updateBuyableDataList(){}
-
 
 
 	//CRUD SETTINGS
@@ -879,9 +894,4 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $tablesubtitle;
 	}
 
-	function getInternalItemID() {
-		if($variation = $this->ProductVariation()) {
-			return $variation->InternalItemID;
-		}
-	}
 }
