@@ -28,7 +28,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 		'AllowPurchase' => 'Boolean',
 		'Sort' => 'Int',
 		'Description' => 'Varchar(255)',
-		'FullName' => 'Text',
+		'FullName' => 'Varchar(255)',
 		'FullSiteTreeSort' => 'Varchar(110)'
 	);
 
@@ -109,15 +109,19 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * Standard SS variable.
 	 */
 	public static $searchable_fields = array(
-		'Price' => array(
+		"FullName" => array(
+			'title' => 'Keyword',
+			'field' => 'TextField'
+		),
+		"Price" => array(
 			'title' => 'Price',
 			'field' => 'NumericField'
 		),
-		'InternalItemID' => array(
-			'filter' => 'PartialMatchFilter',
-			'title' => 'Internal Item ID'
+		"InternalItemID" => array(
+			'title' => 'Internal Item ID',
+			'filter' => 'PartialMatchFilter'
 		),
-		"Product.Title" => "PartialMatchFilter"
+		'AllowPurchase'
 	);
 
 	/**
