@@ -466,8 +466,8 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	 * @var Array
 	 */
 	public static $allowed_actions = array(
-		'updatevariationpricefromproduct' => true,
-		'selectvariation' => true
+		'updatevariationpricefromproduct',
+		'selectvariation'
 	);
 
 	function updatevariationpricefromproduct() {
