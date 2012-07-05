@@ -2,6 +2,16 @@
 
 class ProductAttributeValue extends DataObject{
 
+	/**
+	 * Standard SS variable.
+	 */
+	public static $api_access = array(
+		'view' => array(
+			"Value",
+			"Type"
+		)
+	);
+
 	static $db = array(
 		'Value' => 'Varchar(255)',
 		'Sort' => 'Int'
@@ -9,12 +19,6 @@ class ProductAttributeValue extends DataObject{
 
 	static $has_one = array(
 		'Type' => 'ProductAttributeType'
-	);
-
-	static $has_many = array();
-
-	static $belongs_to = array(
-
 	);
 
 	static $belongs_many_many = array(

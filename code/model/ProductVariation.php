@@ -12,9 +12,12 @@ class ProductVariation extends DataObject implements BuyableModel{
 	public static $api_access = array(
 		'view' => array(
 			"Title",
+			"Description",
+			"FullName",
 			"AllowPurchase",
 			"InternalItemID",
-			"Price"
+			"Price",
+			"Version"
 		)
 	);
 
@@ -811,7 +814,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return Boolean
 	 */
 	function canView($member = null){
-		return $this->Parent()->canView($member);
+		return $this->Parent()->canEdit($member);
 	}
 
 	/**

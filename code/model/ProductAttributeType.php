@@ -12,7 +12,16 @@
  */
 
 class ProductAttributeType extends DataObject{
-
+	/**
+	 * Standard SS variable.
+	 */
+	public static $api_access = array(
+		'view' => array(
+			"Name",
+			"Label",
+			"Values"
+		)
+	);
 	public static $db = array(
 		'Name' => 'Varchar', //for back-end use
 		'Label' => 'Varchar', //for front-end use
