@@ -101,6 +101,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	public static $summary_fields = array(
 		'Product.Title' => 'Product',
 		'Title' => 'Title',
+		'InternalItemID' => 'InternalItemID',
 		'Price' => 'Price',
 		'AllowPuchaseText' => 'Buyable'
 	);
@@ -803,6 +804,15 @@ class ProductVariation extends DataObject implements BuyableModel{
 		return $allowpurchase;
 	}
 
+
+	/**
+	 * standard SS Method
+	 * we explicitely set this to give access in the API
+	 * @return Boolean
+	 */
+	function canView($member = null){
+		return $this->Parent()->canView($member);
+	}
 
 	/**
 	 * Shop Admins can edit
