@@ -48,7 +48,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 * @return Boolean
 	 */
 	function HasVariations() {
-		return $this->NumberOfVariations() ? true : false;
+		return $this->owner->NumberOfVariations() ? true : false;
 	}
 
 	/**

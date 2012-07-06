@@ -16,11 +16,11 @@ class ProductVariation extends DataObject implements BuyableModel{
 			"FullName",
 			"AllowPurchase",
 			"InternalItemID",
+			"NumberSold",
 			"Price",
 			"Version"
 		)
 	);
-
 
 	/**
 	 * Standard SS variable.
@@ -30,6 +30,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 		'Price' => 'Currency',
 		'AllowPurchase' => 'Boolean',
 		'Sort' => 'Int',
+		'NumberSold' => 'Int',
 		'Description' => 'Varchar(255)',
 		'FullName' => 'Varchar(255)',
 		'FullSiteTreeSort' => 'Varchar(110)'
@@ -344,7 +345,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * sets the FullName + FullSiteTreeSort of the variation
 	 */
 	function onBeforeWrite(){
-		parent::onbeforeWrite();
+		parent::onBeforeWrite();
 		$this->FullSiteTreeSort = $this->Sort;
 		$fullName = "";
 		if($this->InternalItemID) {
@@ -355,7 +356,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$fullName .= " (".$product->Title.")";
 			$this->FullSiteTreeSort = $product->FullSiteTreeSort.",".$this->FullSiteTreeSort;
 		}
-		$this->FullName = $fullName;
+		$this->FullName = strip_tags($fullName);
 	}
 
 	/**
@@ -367,6 +368,10 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$this->AttributeValues()->setByIDList(array_values($_POST['ProductAttributes']));
 		}
 		unset($_POST['ProductAttributes']);
+		if($product = $this->Product()) {
+			$product->writeToStage('Stage');
+			$product->publish('Stage', 'Live');
+		}
 	}
 
 	/**
