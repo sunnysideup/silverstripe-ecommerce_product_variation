@@ -121,10 +121,10 @@ class ProductAttributeValue extends DataObject{
 				$i++;
 			}
 		}
-		// No Need To Remove Variations because of onBeforeDelete
-		/*$variations = $this->ProductVariation();
-		foreach($variations as $variation) $variation->delete();*/
+		//delete ProductVariation_AttributeValues were the Attribute Value does not exist.
+		DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\" = ".$this->ID);
 	}
+
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		if(!$this->Value) {

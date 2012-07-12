@@ -154,6 +154,7 @@ class ProductAttributeType extends DataObject{
 				$value->destroy();
 			}
 		}
+		DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = ".$this->ID);
 	}
 
 	function dodataobjectsort() {
