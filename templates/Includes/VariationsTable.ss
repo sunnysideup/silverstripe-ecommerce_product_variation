@@ -1,7 +1,7 @@
 <table class="quantityTable" summary="<% _t("PRODUCTOPTIONS","Product Options") %>">
 	<thead>
 		<tr>
-			<td scope="col" class="description"><% _t("Product.VARIATIONDESCRIPTIONLABEL", "") %></th>
+			<th scope="col" class="description"><% _t("Product.VARIATIONDESCRIPTIONLABEL", "") %>&nbsp;</th>
 <% if VariationAttributes %>
 	<% control VariationAttributes %>
 			<th scope="col" class="label">$Label</th>
@@ -10,6 +10,7 @@
 			<th scope="col" class="label">Variation</th>
 <% end_if %>
 			<th scope="col" class="price"><% _t("PRICE","Price") %></th>
+			<th scope="col" class="actionCell">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
