@@ -346,15 +346,14 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 */
 	function onBeforeWrite(){
 		parent::onBeforeWrite();
-		$this->FullSiteTreeSort = $this->Sort;
 		$fullName = "";
 		if($this->InternalItemID) {
-			$fullName .= $this->InternalItemID." - ";
+			$fullName .= $this->InternalItemID.": ";
 		}
 		$fullName .= $this->getTitle(false, true);
 		if($product = $this->MainParentGroup()) {
-			$fullName .= " (".$product->Title.")";
-			$this->FullSiteTreeSort = $product->FullSiteTreeSort.",".$this->FullSiteTreeSort;
+			$fullName .= " (".$product->FullTitle.")";
+			$this->FullSiteTreeSort = $product->FullSiteTreeSort.",".$this->Sort;
 		}
 		$this->FullName = strip_tags($fullName);
 	}
