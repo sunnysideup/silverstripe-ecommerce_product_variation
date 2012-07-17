@@ -278,12 +278,14 @@ class CreateEcommerceVariations_Field extends LiteralField {
 	}
 
 	function AttributeSorterLink() {
-		if(class_exists("DataObjectSorterController")) {
+		$singleton = singleton("ProductAttributeType");
+		if(class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
 			return DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
 		}
 	}
 	function ValueSorterLink() {
-		if(class_exists("DataObjectSorterController")) {
+		$singleton = singleton("ProductAttributeValue");
+		if(class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
 			return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
 		}
 	}

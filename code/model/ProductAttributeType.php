@@ -67,7 +67,7 @@ class ProductAttributeType extends DataObject{
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
-		if(class_exists("DataObjectSorterController")) {
+		if(class_exists("DataObjectSorterController") && $this->hasExtension("DataObjectSorterDOD")) {
 			$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
 			$fields->addFieldToTab("Root.Sort", new LiteralField("SortTypes", $sortLink));
 		}
@@ -155,15 +155,6 @@ class ProductAttributeType extends DataObject{
 			}
 		}
 		DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = ".$this->ID);
-	}
-
-	function dodataobjectsort() {
-		if(!class_exists("DataObjectSorterDOD")) {
-			USER_ERROR("you have not installed the dataobjectsorter module - either hide the sort option OR install it: http://sunny.svnrepository.com/svn/sunny-side-up-general/dataobjectsorter");
-		}
-		else {
-			$this->extend("dodataobjectsort");
-		}
 	}
 
 
