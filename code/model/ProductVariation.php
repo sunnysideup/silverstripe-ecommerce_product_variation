@@ -188,7 +188,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 		$product = $this->Product();
 		$fields = new FieldSet(new TabSet('Root',
 			new Tab('Main',
-				new NumericField('Price'),
+				new ReadOnlyField('FullName', _t("ProductVariation.FULLNAME", 'Full Name')),
+				new NumericField('Price', _t("ProductVariation.PRICE", 'Price')),
 				new CheckboxField('AllowPurchase', _t("ProductVariation.ALLOWPURCHASE", 'Allow Purchase ?')),
 				new TextField('InternalItemID', _t("ProductVariation.INTERNALITEMID", 'Internal Item ID')),
 				new TextField('Description', _t("ProductVariation.DESCRIPTION", "Description (optional)")),
@@ -345,17 +346,32 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * sets the FullName + FullSiteTreeSort of the variation
 	 */
 	function onBeforeWrite(){
+		$this->prepareFullFields();
 		parent::onBeforeWrite();
+	}
+
+	/**
+	 * sets the FullName and FullSiteTreeField to the latest values
+	 * This can be useful as you can compare it to the ones saved in the database.
+	 * Returns true if the value is different from the one in the database.
+	 * @return Boolean
+	 */
+	public function prepareFullFields(){
 		$fullName = "";
 		if($this->InternalItemID) {
 			$fullName .= $this->InternalItemID.": ";
 		}
 		$fullName .= $this->getTitle(false, true);
 		if($product = $this->MainParentGroup()) {
-			$fullName .= " (".$product->FullTitle.")";
+			$product->prepareFullFields();
+			$fullName .= " (".$product->FullName.")";
 			$this->FullSiteTreeSort = $product->FullSiteTreeSort.",".$this->Sort;
 		}
 		$this->FullName = strip_tags($fullName);
+		if(($this->dbObject("FullName") != $this->FullName) || ($this->dbObject("FullSiteTreeSort") != $this->FullSiteTreeSort)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <% if WithProductTitle %>
 	<span class="productVariationProductTitle">
-		$Product.Title
+		$Product.Title,
 	</span>
 <% end_if %>
 <% if Values %><% if Values.count %>
