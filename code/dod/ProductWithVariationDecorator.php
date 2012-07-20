@@ -433,7 +433,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			}
 		}
 		if(count($arrayOfTypesToKeepForProduct)) {
-			DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).")");
+			DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).") AND ProductID = ".$this->owner->ID);
 		}
 	}
 }
