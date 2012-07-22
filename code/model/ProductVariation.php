@@ -772,30 +772,11 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * How do we display the price?
-	 * @return Money
+	 * @return Money | Null
 	 */
 	function DisplayPrice() {return $this->getDisplayPrice();}
 	function getDisplayPrice() {
-		$price = $this->CalculatedPrice();
-		$order = ShoppingCart::current_order();
-		if($order) {
-			if($order->HasAlternativeCurrency()) {
-				$exchangeRate = $order->ExchangeRate;
-				if($exchangeRate && $exchangeRate != 1) {
-					$price = $exchangeRate * $price;
-				}
-			}
-		}
-		$moneyObject = new Money("DisplayPrice");
-		$moneyObject->setCurrency($order->CurrencyUsed()->Code);
-		$moneyObject->setValue($price);
-		$updatedObject = $this->extend('updateDisplayPrice',$moneyObject);
-		if($updatedObject !== null) {
-			if(is_array($updatedObject) && count($updatedObject)) {
-				$moneyObject = $updatedObject[0];
-			}
-		}
-		return $moneyObject;
+		return EcommerceCurrency::display_price($this->CalculatedPrice());
 	}
 
 
