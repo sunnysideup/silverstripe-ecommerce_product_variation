@@ -389,33 +389,12 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	}
 
 	/**
-	 * removing non-existing ProductVariation_AttributeValues (Type does not exist)
-	 * removing non-existing Product_VariationAttributes (Type does not exist)
-	 * removing productAttributeValue where Attribute does not exist.
+	 * based on the ProductVariations for the products
+	 * removing non-existing Product_VariationAttributes
+	 * adding non-existing Product_VariationAttributes
 	 */
-	protected function cleaningUpVariationData() {
-		$sql = "
-			Select \"ProductAttributeTypeID\"
-			FROM \"Product_VariationAttributes\"
-			WHERE \"ProductID\" = ".$this->owner->ID;
-		$data = DB::query($sql);
-		$array = $data->keyedColumn();
-		if(is_array($array) && count($array) ) {
-			foreach($array as $key => $productAttributeTypeID) {
-				//attribute type does not exist.
-				if(!DataObject::get_by_id("ProductAttributeType", $productAttributeTypeID)) {
-					//delete non-existing combinations of Product_VariationAttributes (where the attribute does not exist)
-					//DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $productAttributeTypeID");
-					//non-existing product attribute values.
-					$productAttributeValues = DataObject::get("ProductAttributeValue", "\"TypeID\" = $productAttributeTypeID");
-					if($productAttributeValues) {
-						foreach($productAttributeValues as $productAttributeValue) {
-							$productAttributeValue->delete();
-						}
-					}
-				}
-			}
-		}
+	public function cleaningUpVariationData() {
+		$productID = $this->owner->ID;
 		$sql = "
 			SELECT ProductAttributeValue.TypeID
 			FROM ProductVariation
@@ -423,7 +402,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					ON ProductVariation_AttributeValues.ProductVariationID = ProductVariation.ID
 				INNER JOIN ProductAttributeValue
 					ON ProductVariation_AttributeValues.ProductAttributeValueID = ProductAttributeValue.ID
-			WHERE ProductVariation.ProductID = ".$this->owner->ID;
+			WHERE ProductVariation.ProductID = ".$productID;
 		$arrayOfTypesToKeepForProduct = array();
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
@@ -433,7 +412,32 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			}
 		}
 		if(count($arrayOfTypesToKeepForProduct)) {
-			DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).") AND \"ProductID\" = ".$this->owner->ID);
+			DB::query("
+				DELETE FROM \"Product_VariationAttributes\"
+				WHERE
+					\"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).")
+					AND \"ProductID\" = '$productID'
+			");
+			foreach($arrayOfTypesToKeepForProduct as $productAttributeTypeID) {
+				$counter = DB::query("
+					SELECT COUNT(ID)
+					FROM \"Product_VariationAttributes\"
+					WHERE
+						\"ProductAttributeTypeID\" = '$productAttributeTypeID'
+						AND \"ProductID\" = $productID
+				");
+				if(!$counter->value()) {
+					DB::query("
+						INSERT INTO \"Product_VariationAttributes\" (
+							\"ProductID\" ,
+							\"ProductAttributeTypeID\"
+						)
+						VALUES (
+							'$productAttributeTypeID', '$productID'
+						)
+					");
+				}
+			}
 		}
 	}
 }

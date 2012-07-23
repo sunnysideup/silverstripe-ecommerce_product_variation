@@ -157,6 +157,30 @@ class ProductAttributeType extends DataObject{
 		DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = ".$this->ID);
 	}
 
+	function cleanup(){
+		$sql = "
+			Select \"ProductAttributeTypeID\"
+			FROM \"Product_VariationAttributes\"
+			WHERE \"ProductID\" = ".$this->owner->ID;
+		$data = DB::query($sql);
+		$array = $data->keyedColumn();
+		if(is_array($array) && count($array) ) {
+			foreach($array as $key => $productAttributeTypeID) {
+				//attribute type does not exist.
+				if(!DataObject::get_by_id("ProductAttributeType", $productAttributeTypeID)) {
+					//delete non-existing combinations of Product_VariationAttributes (where the attribute does not exist)
+					//DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $productAttributeTypeID");
+					//non-existing product attribute values.
+					$productAttributeValues = DataObject::get("ProductAttributeValue", "\"TypeID\" = $productAttributeTypeID");
+					if($productAttributeValues) {
+						foreach($productAttributeValues as $productAttributeValue) {
+							$productAttributeValue->delete();
+						}
+					}
+				}
+			}
+		}
+	}
 
 }
 
