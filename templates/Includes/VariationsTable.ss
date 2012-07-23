@@ -9,7 +9,7 @@
 		<% else %>
 			<th scope="col" class="label">Variation</th>
 <% end_if %>
-			<th scope="col" class="price"><% _t("PRICE","Price") %></th>
+			<th scope="col" class="price"><% _t("PRICE","Price") %> ($EcomConfig.Currency)</th>
 			<th scope="col" class="actionCell">&nbsp;</th>
 		</tr>
 	</thead>
@@ -25,7 +25,7 @@
 			<th scope="row" class="label">$Title.XML</th>
 	<% end_if %>
 			<td class="price">
-				<span class="price">$CalculatedPrice.Nice $Currency</span>
+				<span class="price">$CalculatedPrice.Nice</span>
 				<% include Order_Content_DisplayPrice %>
 			</td>
 			<td class="actionCell">
