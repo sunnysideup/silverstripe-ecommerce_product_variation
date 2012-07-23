@@ -26,6 +26,7 @@
 	<% end_if %>
 			<td class="price">
 				<span class="price">$CalculatedPrice.Nice $Currency</span>
+				<% include Order_Content_DisplayPrice %>
 			</td>
 			<td class="actionCell">
 				<div class="actionOuter">
