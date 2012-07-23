@@ -420,7 +420,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					\"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).")
 					AND \"ProductID\" = '$productID'
 			");
-			if($deleteCounter=>value()) {
+			if($deleteCounter->value()) {
 				if($verbose) {
 					DB::alteration_message("DELETING Attribute Type From ".$this->owner->Title, "deleted");
 				}
