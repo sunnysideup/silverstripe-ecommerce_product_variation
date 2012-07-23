@@ -391,7 +391,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	/**
 	 * based on the ProductVariations for the products
 	 * removing non-existing Product_VariationAttributes
-	 * adding non-existing Product_VariationAttributes
+	 * adding existing Product_VariationAttributes
 	 */
 	public function cleaningUpVariationData() {
 		$productID = $this->owner->ID;
@@ -433,7 +433,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 							\"ProductAttributeTypeID\"
 						)
 						VALUES (
-							'$productAttributeTypeID', '$productID'
+							'$productID', '$productAttributeTypeID'
 						)
 					");
 				}
