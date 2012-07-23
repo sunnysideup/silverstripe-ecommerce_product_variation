@@ -393,16 +393,17 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 * removing non-existing Product_VariationAttributes
 	 * adding existing Product_VariationAttributes
 	 */
-	public function cleaningUpVariationData() {
+	public function cleaningUpVariationData($verbose = false) {
+		$changes = false;
 		$productID = $this->owner->ID;
 		$sql = "
-			SELECT ProductAttributeValue.TypeID
-			FROM ProductVariation
-				INNER JOIN ProductVariation_AttributeValues
-					ON ProductVariation_AttributeValues.ProductVariationID = ProductVariation.ID
-				INNER JOIN ProductAttributeValue
-					ON ProductVariation_AttributeValues.ProductAttributeValueID = ProductAttributeValue.ID
-			WHERE ProductVariation.ProductID = ".$productID;
+			SELECT \"ProductAttributeValue\".\"TypeID\"
+			FROM \"ProductVariation\"
+				INNER JOIN \"ProductVariation_AttributeValues\"
+					ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+				INNER JOIN \"ProductAttributeValue\"
+					ON \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\" = \"ProductAttributeValue\".\"ID\"
+			WHERE \"ProductVariation\".\"ProductID\" = ".$productID;
 		$arrayOfTypesToKeepForProduct = array();
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
@@ -412,21 +413,36 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 			}
 		}
 		if(count($arrayOfTypesToKeepForProduct)) {
-			DB::query("
-				DELETE FROM \"Product_VariationAttributes\"
+			$deleteCounter = DB::query("
+				SELECT COUNT(ID)
+				FROM \"Product_VariationAttributes\"
 				WHERE
 					\"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).")
 					AND \"ProductID\" = '$productID'
 			");
+			if($deleteCounter=>value()) {
+				if($verbose) {
+					DB::alteration_message("DELETING Attribute Type From ".$this->owner->Title, "deleted");
+				}
+				DB::query("
+					DELETE FROM \"Product_VariationAttributes\"
+					WHERE
+						\"ProductAttributeTypeID\" NOT IN (".implode(",", $arrayOfTypesToKeepForProduct).")
+						AND \"ProductID\" = '$productID'
+				");
+			}
 			foreach($arrayOfTypesToKeepForProduct as $productAttributeTypeID) {
-				$counter = DB::query("
+				$addCounter = DB::query("
 					SELECT COUNT(ID)
 					FROM \"Product_VariationAttributes\"
 					WHERE
 						\"ProductAttributeTypeID\" = '$productAttributeTypeID'
 						AND \"ProductID\" = $productID
 				");
-				if(!$counter->value()) {
+				if(!$addCounter->value()) {
+					if($verbose) {
+						DB::alteration_message("ADDING Attribute Type From ".$this->owner->Title, "created");
+					}
 					DB::query("
 						INSERT INTO \"Product_VariationAttributes\" (
 							\"ProductID\" ,
