@@ -21,6 +21,8 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
 
 ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
 
+SS_Report::register("SideReport", "EcommerceSideReport_ProductsWithVariations");
+
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
