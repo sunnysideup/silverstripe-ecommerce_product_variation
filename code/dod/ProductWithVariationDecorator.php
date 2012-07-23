@@ -421,6 +421,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 					AND \"ProductID\" = '$productID'
 			");
 			if($deleteCounter->value()) {
+				$changes = true;
 				if($verbose) {
 					DB::alteration_message("DELETING Attribute Type From ".$this->owner->Title, "deleted");
 				}
@@ -440,6 +441,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 						AND \"ProductID\" = $productID
 				");
 				if(!$addCounter->value()) {
+					$changes = true;
 					if($verbose) {
 						DB::alteration_message("ADDING Attribute Type From ".$this->owner->Title, "created");
 					}
@@ -455,6 +457,24 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 				}
 			}
 		}
+		else {
+			$deleteAllCounter = DB::query("
+				SELECT COUNT(ID)
+				FROM \"Product_VariationAttributes\"
+				WHERE \"ProductID\" = '$productID'
+			");
+			if($deleteAllCounter->value()) {
+				$changes = true;
+				if($verbose) {
+					DB::alteration_message("DELETING ALL Attribute Types From ".$this->owner->Title, "deleted");
+				}
+				DB::query("
+					DELETE FROM \"Product_VariationAttributes\"
+					WHERE \"ProductID\" = '$productID'
+				");
+			}
+		}
+		return $changes;
 	}
 }
 
