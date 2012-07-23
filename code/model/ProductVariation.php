@@ -911,9 +911,14 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	 **/
 	function TableSubTitle() {return $this->getTableSubTitle();}
 	function getTableSubTitle() {
-		$tablesubtitle = $this->ProductVariation()->getTitle(true, true);
-		$this->extend('updateTableSubTitle',$tablesubtitle);
-		return $tablesubtitle;
+		$tableSubTitle = _t("Product.VARIATIONNOTFOUND", "Variation Not Found");
+		if($variation = $this->ProductVariation()) {
+			if($variation->exists()) {
+				$tableSubTitle = $variation->getTitle(true, true);
+			}
+		}
+		$this->extend('updateTableSubTitle',$tableSubTitle);
+		return $tableSubTitle;
 	}
 
 }
