@@ -9,7 +9,7 @@
 		<% else %>
 			<th scope="col" class="label">Variation</th>
 <% end_if %>
-			<th scope="col" class="price"><% _t("PRICE","Price") %> ($EcomConfig.Currency)</th>
+			<th scope="col" class="price"><% _t("PRICE","Price") %> <% if EcomConfig.Currency %> ($EcomConfig.Currency)<% end_if %></th>
 			<th scope="col" class="actionCell">&nbsp;</th>
 		</tr>
 	</thead>
