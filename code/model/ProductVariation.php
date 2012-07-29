@@ -132,7 +132,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $default_sort = "\"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
+	public static $default_sort = "\"FullSiteTreeSort\" ASC, \"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
 
 	/**
 	 * Standard SS variable.
@@ -866,7 +866,6 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 
 	// ProductVariation Access Function
 	public function ProductVariation($current = false) {
-		//TO DO: the line below does not work because it does NOT get the right version
 		return $this->Buyable($current);
 	}
 
