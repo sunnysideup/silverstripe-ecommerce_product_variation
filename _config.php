@@ -27,9 +27,17 @@ SS_Report::register("SideReport", "EcommerceSideReport_ProductsWithVariations");
 
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
 //____________HIGHLY RECOMMENDED
-//ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeValue");
-//ProductsAndGroupsModelAdmin::add_managed_model("ProductAttributeType");
-//ProductsAndGroupsModelAdmin::add_managed_model("ProductVariation");
+/**
+ * ADD TO ECOMMERCE.YAML:
+ProductsAndGroupsModelAdmin:
+	managed_modules: [
+		...
+		ProductVariation,
+		ProductAttributeValue,
+		ProductAttributeType
+	]
+*/
+
 //____________ADD TO CART FORM INTERACTION
 //ProductWithVariationDecorator_Controller::set_use_js_validation(false);
 //ProductWithVariationDecorator_Controller::set_alternative_validator_class_name("MyValidatorClass");
