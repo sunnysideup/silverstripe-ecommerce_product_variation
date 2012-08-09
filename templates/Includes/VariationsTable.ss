@@ -16,7 +16,10 @@
 	<tbody>
 <% control Variations %>
 		<tr>
-			<th scope="row" class="<% if Description %>hasDescription<% else %>noDescription<% end_if %>">$Description &nbsp;</th>
+			<th scope="row" class="<% if Description %>hasDescription<% else %>noDescription<% end_if %>">
+				$Description &nbsp;
+				<% include ProductGroupItemImage %>
+			</th>
 	<% if AttributeValuesSorted %>
 		<% control AttributeValues %>
 			<td class="label"<% if RGBCode %> style="color: #{$ComputedRGBCode}; background-color: #{$ComputedContrastRGBCode}"<% end_if %> >$Value</td>
