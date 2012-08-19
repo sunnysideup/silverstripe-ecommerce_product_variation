@@ -17,8 +17,8 @@
 <% control Variations %>
 		<tr>
 			<th scope="row" class="<% if Description %>hasDescription<% else %>noDescription<% end_if %>">
+				<% include ProductVariationImage %>
 				$Description &nbsp;
-				<% include ProductGroupItemImage %>
 			</th>
 	<% if AttributeValuesSorted %>
 		<% control AttributeValues %>
