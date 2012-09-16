@@ -608,7 +608,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			return ShoppingCart::singleton()->setMessageAndReturn($msg, $status);
 		}
 		else {
-			$form->sessionMessage($msg,$status);
+			ShoppingCart::singleton()->setMessageAndReturn($msg, $status, $form);
 			Director::redirectBack();
 		}
 	}
