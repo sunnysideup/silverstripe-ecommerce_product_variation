@@ -341,14 +341,18 @@ class ProductVariation extends DataObject implements BuyableModel{
 		return $this->AllowPurchase ? 'Yes' : 'No';
 	}
 
+	protected $currentStageOfRequest = "";
 	/**
 	 * standard SS method
 	 * sets the FullName + FullSiteTreeSort of the variation
 	 */
 	function onBeforeWrite(){
+		$this->currentStageOfRequest = Versioned::current_stage();
+		Versioned::set_reading_mode("");
 		$this->prepareFullFields();
 		parent::onBeforeWrite();
 	}
+
 
 	/**
 	 * sets the FullName and FullSiteTreeField to the latest values
@@ -387,6 +391,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$product->writeToStage('Stage');
 			$product->publish('Stage', 'Live');
 		}
+		Versioned::set_reading_mode($this->currentStageOfRequest);
 	}
 
 	/**
