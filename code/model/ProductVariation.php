@@ -1,8 +1,9 @@
 <?php
+
 /**
- * @todo How does this class work in relation to Product?
  *
  * @package ecommerce
+ * @subpackage buyables
  */
 class ProductVariation extends DataObject implements BuyableModel{
 
@@ -58,7 +59,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 		'Parent' => 'Product',
 		'Title' => 'HTMLText',
 		'Link' => 'Text',
-		'AllowPuchaseText' => 'Text',
+		'AllowPurchaseNice' => 'Varchar',
 		'CalculatedPrice' => 'Currency'
 	);
 
@@ -103,11 +104,10 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * Standard SS variable.
 	 */
 	public static $summary_fields = array(
-		'Product.Title' => 'Product',
-		'Title' => 'Title',
-		'InternalItemID' => 'InternalItemID',
+		'CMSThumbnail' => 'Image',
+		'FullName' => 'Description',
 		'Price' => 'Price',
-		'AllowPuchaseText' => 'Buyable'
+		'AllowPurchaseNice' => 'For Sale'
 	);
 
 	/**
@@ -320,6 +320,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * shorthand
+	 * @return String
 	 */
 	function FullDescription(){
 		return $this->Title(true, false);
@@ -327,6 +328,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * shorthand
+	 * @return String
 	 */
 	function ImgAltTag(){
 		return $this->Title(false, false);
@@ -336,9 +338,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * returns YES or NO for the CMS Fields
 	 * @return String
 	 */
-	function AllowPuchaseText() {return $this->getAllowPuchaseText();}
-	function getAllowPuchaseText() {
-		return $this->AllowPurchase ? 'Yes' : 'No';
+	function AllowPurchaseNice() {
+		return $this->obj("AllowPurchase")->Nice();
 	}
 
 	protected $currentStageOfRequest = "";
@@ -476,6 +477,19 @@ class ProductVariation extends DataObject implements BuyableModel{
 		if($product = $this->Product()) {
 			return $product->BestAvailableImage();
 		}
+	}
+
+	/**
+	 * Little hack to show thumbnail in summary fields in modeladmin in CMS.
+	 * @return String (HTML = formatted image)
+	 */
+	function CMSThumbnail(){
+		if($image = $this->Image()) {
+			if($image->exists()) {
+				return $image->Thumbnail();
+			}
+		}
+		return "["._t("product.NOIMAGE", "no image")."]";
 	}
 
 	/**
