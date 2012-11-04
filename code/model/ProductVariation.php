@@ -713,7 +713,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 	}
 
 	/**
-	 * @todo: do we still need this?
 	 * @return Array
 	 **/
 	protected function linkParameters(){
