@@ -806,7 +806,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return Boolean
 	 */
 	function canPurchase($member = null) {
-		if($this->EcomConfig()->ShopClosed) {
+		$config = $this->EcomConfig();
+		if($config->ShopClosed) {
 			return false;
 		}
 		$allowpurchase = $this->AllowPurchase;
@@ -814,10 +815,14 @@ class ProductVariation extends DataObject implements BuyableModel{
 			return false;
 		}
 		if($product = $this->Product()) {
-			$allowpurchase = $product->canPurchase($member);
+			$allowpurchase = $product->canPurchase($member, false);
 			if(!$allowpurchase) {
 				return false;
 			}
+		}
+		$price = $this->getCalculatedPrice();
+		if($price == 0 && ! $config->AllowFreeProductPurchase) {
+			return false;
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($extended !== null) {
