@@ -87,14 +87,20 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 *
 	 */
 	function updateCMSFields(FieldSet &$fields) {
-		$fields->addFieldToTab('Root.Content', new Tab(ProductVariation::get_plural_name(),
-			new HeaderField(ProductVariation::get_plural_name() . " for {$this->owner->Title}"),
+		$tabName = ProductVariation::get_plural_name();
+		$fields->addFieldToTab('Root.Content', $tab = new Tab($tabName,
+			new HeaderField("$tabName for {$this->owner->Title}"),
 			$this->owner->getVariationsTable(),
 			new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
 		));
-		if($this->owner->Variations() && $this->owner->Variations()->count()){
+		$variations = $this->owner->Variations();
+		if($variations && $variations->Count()){
 			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
 			$fields->addFieldToTab('Root.Content.Details', new LiteralField('UpdateVariationsPrices', "<p class=\"message good\">Click <a href=\"{$this->owner->Link('updatevariationpricefromproduct')}\">here</a> to update all the variations with the price above (SAVE AND PUBLISH THE PRODUCT FIRST).</p>"), 'InternalItemID');
+			if(class_exists('DataObjectOneFieldUpdateController')) {
+				$link = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'Price', "ProductID = {$this->owner->ID}", '', 'here');
+				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good">Click ' . $link . ' to update variation prices.</p>'), 'Variations');
+			}
 		}
 	}
 
