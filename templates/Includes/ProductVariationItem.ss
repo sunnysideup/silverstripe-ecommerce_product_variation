@@ -1,6 +1,6 @@
 <% if WithProductTitle %>
 	<span class="productVariationProductTitle">
-		$Product.Title
+		$Product.Title.XML
 	</span>
 <% end_if %>
 <% if Values %> - <% if Values.count %>
@@ -16,6 +16,6 @@
 <% end_if %><% end_if %>
 <% if Description %>
 	<span class="productVariationDescription">
-		$Description;
+		$Description.XML;
 	</span>
 <% end_if %>
