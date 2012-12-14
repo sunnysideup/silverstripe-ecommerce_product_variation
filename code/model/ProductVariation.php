@@ -19,6 +19,9 @@ class ProductVariation extends DataObject implements BuyableModel{
 			"InternalItemID",
 			"NumberSold",
 			"Price",
+			"Weight",
+			"Model",
+			"Quantifier",
 			"Version"
 		)
 	);
@@ -29,6 +32,9 @@ class ProductVariation extends DataObject implements BuyableModel{
 	public static $db = array(
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
+		'Weight' => 'Decimal(9,4)',
+		'Model' => 'Varchar(30)',
+		'Quantifier' => 'Varchar(30)',
 		'AllowPurchase' => 'Boolean',
 		'Sort' => 'Int',
 		'NumberSold' => 'Int',
@@ -186,16 +192,32 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 */
 	function getCMSFields() {
 		$product = $this->Product();
-		$fields = new FieldSet(new TabSet('Root',
-			new Tab('Main',
-				new ReadOnlyField('FullName', _t("ProductVariation.FULLNAME", 'Full Name')),
-				new NumericField('Price', _t("ProductVariation.PRICE", 'Price')),
-				new CheckboxField('AllowPurchase', _t("ProductVariation.ALLOWPURCHASE", 'Allow Purchase ?')),
-				new TextField('InternalItemID', _t("ProductVariation.INTERNALITEMID", 'Internal Item ID')),
-				new TextField('Description', _t("ProductVariation.DESCRIPTION", "Description (optional)")),
-				new ImageField('Image')
+		$fields = new FieldSet(
+			new TabSet('Root',
+				new Tab('Main',
+					new ReadOnlyField('FullName', _t("ProductVariation.FULLNAME", 'Full Name')),
+					new NumericField('Price', _t("ProductVariation.PRICE", 'Price')),
+					new CheckboxField('AllowPurchase', _t("ProductVariation.ALLOWPURCHASE", 'Allow Purchase ?'))
+				),
+				new Tab('Details',
+					new TextField('InternalItemID', _t("ProductVariation.INTERNALITEMID", 'Internal Item ID')),
+					new TextField('Description', _t("ProductVariation.DESCRIPTION", "Description (optional)"))
+				),
+				new Tab('Image',
+					new ImageField('Image')
+				)
 			)
-		));
+		);
+		if($this->EcomConfig()->ProductsHaveWeight) {
+			$fields->addFieldToTab('Root.Details', new NumericField('Weight', _t('ProductVariation.WEIGHT', 'Weight')));
+		}
+		if($this->EcomConfig()->ProductsHaveModelNames) {
+			$fields->addFieldToTab('Root.Details',new TextField('Model', _t('ProductVariation.MODEL', 'Model')));
+		}
+		if($this->EcomConfig()->ProductsHaveQuantifiers) {
+			$fields->addFieldToTab('Root.Details',new TextField('Quantifier', _t('ProductVariation.QUANTIFIER', 'Quantifier (e.g. per kilo, per month, per dozen, each)')));
+		}
+		$fields->addFieldToTab('Root.Details',new ReadOnlyField('FullSiteTreeSort', _t('Product.FULLSITETREESORT', 'Full sort index')));
 		$types = $product->VariationAttributes();
 		if($this->ID) {
 			$hasBeenSold = $this->HasBeenSold();
@@ -267,7 +289,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 		}
 		return $result;
 	}
-
 
 	/**
 	 * add requirements for pop-up
@@ -354,7 +375,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 		parent::onBeforeWrite();
 	}
 
-
 	/**
 	 * sets the FullName and FullSiteTreeField to the latest values
 	 * This can be useful as you can compare it to the ones saved in the database.
@@ -373,6 +393,13 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$this->FullSiteTreeSort = $product->FullSiteTreeSort.",".$this->Sort;
 		}
 		$this->FullName = strip_tags($fullName);
+		if($this->EcomConfig()->ProductsHaveWeight) {
+			if(!$this->Weight) {
+				if($product && $product->Weight) {
+					$this->Weight = $product->Weight;
+				}
+			}
+		}
 		if(($this->dbObject("FullName") != $this->FullName) || ($this->dbObject("FullSiteTreeSort") != $this->FullSiteTreeSort)) {
 			return true;
 		}
@@ -927,9 +954,9 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	}
 
 	/**
-	 *@decription: we return the product variation name here
+	 * we return the product variation name here
 	 * the Table Title will return the name of the Product.
-	 *@return String - sub title in cart.
+	 * @return String - sub title in cart.
 	 **/
 	function TableSubTitle() {return $this->getTableSubTitle();}
 	function getTableSubTitle() {
