@@ -921,7 +921,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 
 	/**
 	 * price per item
-	 *@return Float
+	 * @return Float
 	 **/
 	function UnitPrice($recalculate = false) {return $this->getUnitPrice($recalculate);}
 	function getUnitPrice($recalculate = false) {
