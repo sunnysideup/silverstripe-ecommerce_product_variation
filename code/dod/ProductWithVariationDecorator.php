@@ -119,7 +119,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 		$attributes = $this->owner->VariationAttributes();
 		foreach($attributes as $attribute){
-			$summaryfields["AttributeProxy.Val$attribute->Name"] = $attribute->Title;
+			$summaryfields["AttributeProxy.Val$attribute->ID"] = $attribute->Title;
 		}
 
 		$summaryfields = array_merge($summaryfields, $singleton->summaryFields());
