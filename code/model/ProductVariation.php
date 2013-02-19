@@ -54,7 +54,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	static $many_many = array(
+	public static $many_many = array(
 		'AttributeValues' => 'ProductAttributeValue'
 	);
 
@@ -364,6 +364,11 @@ class ProductVariation extends DataObject implements BuyableModel{
 	}
 
 	protected $currentStageOfRequest = "";
+
+	protected $saveParentProduct = false;
+
+	function setSaveParentProduct($b) {$this->saveParentProduct = $b;}
+
 	/**
 	 * standard SS method
 	 * sets the FullName + FullSiteTreeSort of the variation
@@ -411,13 +416,21 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 */
 	function onAfterWrite() {
 		parent::onAfterWrite();
+		//clean up data???
+		//todo: what is this for?
 		if(isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])){
-			$this->AttributeValues()->setByIDList(array_values($_POST['ProductAttributes']));
+			$productAttributesArray = array();
+			foreach($_POST['ProductAttributes'] as $key => $value) {
+				$productAttributesArray[$key] = intval($value);
+			}
+			$this->AttributeValues()->setByIDList(array_values($productAttributesArray));
 		}
 		unset($_POST['ProductAttributes']);
-		if($product = $this->Product()) {
-			$product->writeToStage('Stage');
-			$product->publish('Stage', 'Live');
+		if($this->saveParentProduct) {
+			if($product = $this->Product()) {
+				$product->writeToStage('Stage');
+				$product->publish('Stage', 'Live');
+			}
 		}
 		Versioned::set_reading_mode($this->currentStageOfRequest);
 	}

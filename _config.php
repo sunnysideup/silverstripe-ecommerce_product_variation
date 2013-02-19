@@ -41,11 +41,14 @@ ProductsAndGroupsModelAdmin:
 //____________ADD TO CART FORM INTERACTION
 //ProductWithVariationDecorator_Controller::set_use_js_validation(false);
 //ProductWithVariationDecorator_Controller::set_alternative_validator_class_name("MyValidatorClass");
+
 //____________EASY SORTING - REQUIRES: http://sunny.svnrepository.com/svn/sunny-side-up-general/dataobjectsorter
 //Object::add_extension('ProductAttributeValue', 'DataObjectSorterDOD');
 //Object::add_extension('ProductAttributeType', 'DataObjectSorterDOD');
+
 //____________CUSTOMISED CMS INTERACTION
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
+
 // ____________ IMPORTANT NAME CHANGES....
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATION']  = "Product Variation";
 //$lang['en_US']['ProductVariation']['PRODUCTVARIATIONS']  = "Product Variations";
@@ -53,4 +56,10 @@ ProductsAndGroupsModelAdmin:
 //$lang['en_US']['ProductAttributeValue']['ATTRIBUTEVALUES']  = "Product Attributes";
 //$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPE']  = "Product Attribute Type";
 //$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPES']  = "Product Attribute Types";
+
+// ________________ CMS
+//Object::add_extension("EcommerceDatabaseAdmin","EcommerceProductVariationTaskDeleteVariations_EXT");
+
+
+
 // __________________________________ END ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________

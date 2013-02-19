@@ -183,10 +183,10 @@ class CreateEcommerceVariations extends Controller {
 				user_error($obj->Title ." should be an instance of ProductAttributeType", E_USER_WARNING);
 			}*/
 		}
-
 		$this->_message = $this->_value.' '._t("CreateEcommerceVariations.HASBEENADDED",'has been added.');
 		return $this->jsonforform();
 	}
+
 	function remove() {
 		//is it Type or Value?
 		$obj = DataObject::get_by_id($this->_classname, $this->_id);
@@ -289,45 +289,4 @@ class CreateEcommerceVariations_Field extends LiteralField {
 			return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
 		}
 	}
-}
-
-class CreateEcommerceVariations_Batch extends Controller {
-
-	static $allowed_actions = array(
-		'updatepriceofvariationsfromparentproduct' => "CMS_ACCESS_CMSMain",
-		'deleteallvariationswithoutprice' => "CMS_ACCESS_CMSMain"
-	);
-
-	function init() {
-		parent::init();
-		$shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
-		if(!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check($shopAdminCode)) {
-			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
-		}
-	}
-
-
-	/**
-	*ADMIN ONLY SUPERTRICK
-	* http://www.mysite.com/createecommercevariationsbatch/updateallpricevariationsfromparentproduct/
-	* sets all variation prices to the parent product price...
-	**/
-	function updatepriceofvariationsfromparentproduct() {
-		DB::query("
-			UPDATE \"ProductVariation\"
-			INNER JOIN \"Product\" ON \"Product\".\"ID\" = \"ProductVariation\".\"ProductID\"
-			SET \"ProductVariation\".\"Price\" = \"Product\".\"Price\"
-		");
-		DB::alteration_message("all variation prices have been reset to their parent product price", "created");
-	}
-
-	function deleteallvariationswithoutprice() {
-		DB::query("
-			DELETE
-			FROM \"ProductVariation\"
-			WHERE \"ProductVariation\".\"Price\" = 0
-		");
-		DB::alteration_message("all variation without price has been deleted...", "created");
-	}
-
 }
