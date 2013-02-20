@@ -452,7 +452,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 		$do = new DataObject();
 		if($this->AttributeValues()->exists()){
 			foreach($this->AttributeValues() as $value){
-				$do->{'Val'.$value->Type()->Name} = $value->Value;
+				$do->{'Val'.$value->Type()->ID} = $value->Value;
 			}
 		}
 		return $do;
