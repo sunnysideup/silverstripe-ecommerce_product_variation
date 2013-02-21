@@ -487,7 +487,6 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
-
 	static $allowed_actions = array(
 		"selectvariation",
 		"VariationForm"
