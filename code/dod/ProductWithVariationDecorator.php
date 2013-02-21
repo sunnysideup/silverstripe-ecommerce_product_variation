@@ -487,6 +487,12 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
+
+	static $allowed_actions = array(
+		"selectvariation",
+		"VariationForm"
+	);
+
 	/**
 	 * tells us if Javascript should be used in validating
 	 * the product variation form.
