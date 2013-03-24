@@ -122,7 +122,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 	public static $searchable_fields = array(
 		"FullName" => array(
 			'title' => 'Keyword',
-			'field' => 'TextField'
+			'field' => 'TextField',
+			'filter' => 'PartialMatchFilter'
 		),
 		"Price" => array(
 			'title' => 'Price',
