@@ -124,7 +124,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 
 		$summaryfields = array_merge($summaryfields, $singleton->summaryFields());
 		unset($summaryfields["Product.Title"]);
-		unset($summaryfields["Title"]);
+		//unset($summaryfields["Title"]);
 
 		$tableField = new ComplexTableField(
 			$this->owner,
