@@ -194,7 +194,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 */
 	function getCMSFields() {
 		$product = $this->Product();
-		$fields = new FieldSet(
+		$fields = new FieldList(
 			new TabSet('Root',
 				new Tab('Main',
 					new ReadOnlyField('FullName', _t("ProductVariation.FULLNAME", 'Full Name')),
@@ -259,7 +259,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 						'Order.Created' => 'When',
 						'Quantity' => 'Quantity'
 					),
-					new FieldSet(),
+					new FieldList(),
 					"\"BuyableID\" = '".$this->ID."' AND \"BuyableClassName\" = '".$this->ClassName."'",
 					"\"Created\" DESC"
 				)
@@ -285,7 +285,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	public function AttributeValuesSorted(){
 		$values = parent::AttributeValues();
 		$types = $this->Product()->VariationAttributes();
-		$result = new DataObjectSet();
+		$result = new ArrayList();
 		foreach($types as $type) {
 			$result->push($values->find('TypeID', $type->ID));
 		}
@@ -577,12 +577,12 @@ class ProductVariation extends DataObject implements BuyableModel{
 		$version = intval($request->param("ID"));
 		$product = $this->Product();
 		if($product) {
-			Director::redirect($product->Link("viewversion/".$product->ID."/".$version."/"));
+			$this->redirect($product->Link("viewversion/".$product->ID."/".$version."/"));
 		}
 		else {
 			$page = DataObject::get_one("ErrorPage", "ErrorCode = '404'");
 			if($page) {
-				Director::redirect($page->Link());
+				$this->redirect($page->Link());
 				return;
 			}
 		}

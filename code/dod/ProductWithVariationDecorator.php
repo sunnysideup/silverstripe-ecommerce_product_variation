@@ -9,13 +9,13 @@
 
 
 
-class ProductWithVariationDecorator extends DataObjectDecorator {
+class ProductWithVariationDecorator extends DataExtension {
 
 	/**
 	 * standard SS method
 	 *
 	 */
-	function extraStatics(){
+	function extraStatics($class = null  $extension = null){
 		return array(
 			"has_many" => array(
 				'Variations' => 'ProductVariation'
@@ -86,7 +86,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 	 * standard SS method
 	 *
 	 */
-	function updateCMSFields(FieldSet &$fields) {
+	function updateCMSFields(FieldList $fields) {
 		$tabName = ProductVariation::get_plural_name();
 		$fields->addFieldToTab('Root.Content', $tab = new Tab($tabName,
 			new HeaderField("$tabName for {$this->owner->Title}"),
@@ -95,7 +95,7 @@ class ProductWithVariationDecorator extends DataObjectDecorator {
 		));
 		$variations = $this->owner->Variations();
 		if($variations && $variations->Count()){
-			$fields->addFieldToTab('Root.Content.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
+			$fields->addFieldToTab('Root.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
 			if(class_exists('DataObjectOneFieldUpdateController')) {
 				$link = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'Price', "ProductID = {$this->owner->ID}", '', 'update variation prices ...');
 				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good"> ' . $link . '</p>'), 'Variations');
@@ -524,10 +524,10 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				}
 			}
 		}
-		$fields = new FieldSet($farray);
+		$fields = new FieldList($farray);
 		$fields->push(new NumericField('Quantity','Quantity',1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
-		$actions = new FieldSet(
+		$actions = new FieldList(
 			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add to cart"))
 		);
 		$requiredfields[] = 'Quantity';
@@ -602,7 +602,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		}
 		else {
 			ShoppingCart::singleton()->setMessageAndReturn($msg, $status, $form);
-			Director::redirectBack();
+			$this->owner->redirectBack();
 		}
 	}
 
@@ -648,7 +648,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			return $this->owner->renderWith("SelectVariationFromProductGroup");
 		}
 		else {
-			Director::redirect($this->owner->Link());
+			$this->owner->redirect($this->owner->Link());
 		}
 		return array();
 	}

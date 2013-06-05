@@ -93,7 +93,7 @@ class ProductAttributeType extends DataObject{
 	}
 
 	function convertArrayToValues(array $values){
-		$set = new DataObjectSet();
+		$set = new ArrayList();
 		foreach($values as $value){
 			$val = $this->Values()->find('Value',$value);
 			if(!$val){  //TODO: ignore case, if possible
