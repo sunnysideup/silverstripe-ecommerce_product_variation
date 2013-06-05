@@ -26,11 +26,11 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
 		else {
 			DB::alteration_message("this is a test only", "created");
 		}
-		$product = DataObject::get_by_id("Product", $productID);
+		$product = Product::get()->byID($productID);
 		if($product) {
 			DB::alteration_message("Deleting variations for ".$product->Title, "deleted");
-			$variations = DataObject::get("ProductVariation", "ProductID = ".$productID, $sort= null, $join = null, "0, 100");
-			if($variations) {
+			$variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
+			if($variations->count()) {
 				DB::alteration_message("PRE DELETE COUNT: ".$variations->count());
 				foreach($variations as $variation) {
 					DB::alteration_message("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Deleting Variation: ".$variation->Title(), "deleted");
@@ -39,9 +39,9 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
 					}
 					$productVariationArrayID[$variation->ID] = $variation->ID;
 				}
-				$variations = DataObject::get("ProductVariation", "ProductID = ".$productID, $sort= null, $join = null, "0, 100");
+				$variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
 				if($live) {
-					if($variations) {
+					if($variations->count()) {
 						DB::alteration_message("POST DELETE COUNT: ".$variations->count());
 					}
 					else {

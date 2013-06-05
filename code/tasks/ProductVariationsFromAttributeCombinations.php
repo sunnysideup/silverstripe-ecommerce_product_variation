@@ -3,9 +3,8 @@
 class ProductVariationsFromAttributeCombinations extends CliController{
 
 	function process(){
-
-		$products = DataObject::get('Product');
-		if(!$products) {
+		$products = Product::get();
+		if(!$products->count()) {
 			return;
 		}
 		else {

@@ -76,9 +76,9 @@ class ProductAttributeType extends DataObject{
 
 	static function find_or_make($name){
 		$name = strtolower($name);
-		if($type = DataObject::get_one('ProductAttributeType',"LOWER(\"Name\") = '$name'"))
+		if($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
 			return $type;
-
+		}
 		$type = new ProductAttributeType();
 		$type->Name = $name;
 		$type->Label = $name;
@@ -133,7 +133,8 @@ class ProductAttributeType extends DataObject{
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		$i = 0;
-		while(!$this->Name || DataObject::get_one($this->ClassName, "\"Name\" = '".$this->Name."' AND \"".$this->ClassName."\".\"ID\" <> ".intval($this->ID))) {
+		$className = $this->ClassName;
+		while(!$this->Name || $className::get()->filter(array("Name" => $this->Name))->exclude("ID", $this->ID)->First() ){
 			$this->Name = $this->i18n_singular_name();
 			if($i) {
 				$this->Name .= "_".$i;
@@ -167,12 +168,12 @@ class ProductAttributeType extends DataObject{
 		if(is_array($array) && count($array) ) {
 			foreach($array as $key => $productAttributeTypeID) {
 				//attribute type does not exist.
-				if(!DataObject::get_by_id("ProductAttributeType", $productAttributeTypeID)) {
+				if( ! ProductAttributeType::get()->byID($productAttributeTypeID) ) {
 					//delete non-existing combinations of Product_VariationAttributes (where the attribute does not exist)
 					//DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $productAttributeTypeID");
 					//non-existing product attribute values.
-					$productAttributeValues = DataObject::get("ProductAttributeValue", "\"TypeID\" = $productAttributeTypeID");
-					if($productAttributeValues) {
+					$productAttributeValues = ProductAttributeValue::get()->filter(array("TypeID" => $productAttributeTypeID));
+					if($productAttributeValues->count()) {
 						foreach($productAttributeValues as $productAttributeValue) {
 							$productAttributeValue->delete();
 						}

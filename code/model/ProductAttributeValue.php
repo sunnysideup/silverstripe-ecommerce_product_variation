@@ -114,7 +114,8 @@ class ProductAttributeValue extends DataObject{
 		if(!$this->Value) {
 			$this->Value = $this->i18n_singular_name();
 			$i = 0;
-			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
+			$className = $this->ClassName;
+			while( $className::get()->filter(array("Value" => $this->Value))->First() ) {
 				if($i) {
 					$this->Value = $this->i18n_singular_name()."_".$i;
 				}
@@ -130,7 +131,8 @@ class ProductAttributeValue extends DataObject{
 		if(!$this->Value) {
 			$this->Value = $this->i18n_single_name();
 			$i = 0;
-			while(DataObject::get_one($this->ClassName, "\"Value\" = '".$this->Value."'")) {
+			$className = $this->ClassName;
+			while($className::get()->filter(array("Value" => $this->Value))->First() ) {
 				$this->Value = $this->i18n_singular_name()."_".$i;
 				$i++;
 			}

@@ -49,7 +49,7 @@ class CreateEcommerceVariations extends Controller {
 			$this->_namefield = 'Value';
 		}
 		$this->_productID = $this->request->param("ProductID");
-		$this->_product = DataObject::get_by_id("Product", $this->_productID);
+		$this->_product = Product::get()->byID($this->_productID);
 		if(!$this->_product) {
 			user_error("could not find product for ID: ".$this->_productID, E_USER_WARNING);
 		}
@@ -61,7 +61,7 @@ class CreateEcommerceVariations extends Controller {
 		$missingTypesID = array(-1 => -1);
 		foreach($this->_selectedtypeid as $typeID) {
 			if(! isset($_GET[$typeID])) {
-				$type = DataObject::get_by_id('ProductAttributeType', $typeID);
+				$type = ProductAttributeType::get()->byID($typeID);
 				if($type) {
 					$missingTypes[] = $type->Name;
 				}
@@ -76,7 +76,7 @@ class CreateEcommerceVariations extends Controller {
 		}
 		*/
 		$missingTypes = array();
-		$types = DataObject::get('ProductAttributeType', "\"ProductAttributeType\".\"ID\" NOT IN (".implode(",", $missingTypesID).")");
+		ProductAttributeType::get()->exclude("ProductAttributeType.ID" => .implode(",", $missingTypesID));
 		if($types) {
 			$values = array();
 			foreach($types as $type) {
@@ -109,8 +109,8 @@ class CreateEcommerceVariations extends Controller {
 		}
 		$result['Message'] = $this->_message;
 		$result['MessageClass'] = $this->_messageclass;
-		$types = DataObject::get('ProductAttributeType');
-		if($types) {
+		$types = ProductAttributeType::get();
+		if($types->count()) {
 			foreach($types as $type) {
 				$resultType = array(
 					'ID' => $type->ID,
@@ -148,7 +148,8 @@ class CreateEcommerceVariations extends Controller {
 
 	function rename() {
 		//is it Type or Value?
-		$obj = DataObject::get_by_id($this->_classname, $this->_id);
+		$className = $this->_classname;
+		$obj = $className::get()->byID($this->_id);
 		if($obj) {
 			$name = $obj->{$this->_namefield};
 			if($obj instanceOf ProductAttributeType) {
@@ -189,7 +190,8 @@ class CreateEcommerceVariations extends Controller {
 
 	function remove() {
 		//is it Type or Value?
-		$obj = DataObject::get_by_id($this->_classname, $this->_id);
+		$className = $this->_classname;
+		$obj = $className::get()->byID($this->_id);
 		if($obj) {
 			$name = $obj->{$this->_namefield};
 			if($obj->canDelete()) {
@@ -224,15 +226,19 @@ class CreateEcommerceVariations extends Controller {
 	function cansavevariation() {
 		$variation = null;
 		if(isset($_GET['variation'])) {
-			$variation = DataObject::get_by_id('ProductVariation', $_GET['variation']);
+			$obj = ProductVariation::get()->byID(intval($_GET['variation']));
 		}
 		foreach($this->_selectedtypeid as $typeID) {
 			if(isset($_GET[$typeID])) {
 				$value = $_GET[$typeID];
 				if(! $variation && ! $value) return false;
-				if($value) $values[$typeID] = $value;
+				if($value) {
+					$values[$typeID] = $value;
+				}
 			}
-			else return false;
+			else {
+				return false;
+			}
 		}
 		$variations = $this->_product->getComponents('Variations', $variation ? "\"ProductVariation\".\"ID\" != '$variation->ID'" : '');
 		foreach($variations as $otherVariation) {
@@ -242,7 +248,9 @@ class CreateEcommerceVariations extends Controller {
 					INNER JOIN \"ProductAttributeValue\" ON \"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"
 				WHERE \"ProductVariationID\" = '$otherVariation->ID' ORDER BY \"TypeID\""
 			)->map();
-			if($otherValues == $values) return false;
+			if($otherValues == $values) {
+				return false;
+			}
 		}
 		return true;
 	}

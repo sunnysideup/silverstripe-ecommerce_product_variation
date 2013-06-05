@@ -3,25 +3,6 @@ E-commerce Product Variations
 Pre 0.1 proof of concept
 ###############################################
 
-Developers
------------------------------------------------
-Nicolaas Francken [at] sunnysideup.co.nz
-Romain [at] sunnysideup.co.nz
-Jeremy [at] burnbright.co.nz
-
-Requirements
------------------------------------------------
-Ecommerce 1.0+ / SSU Branch
-SilverStripe 2.4+
-
-Project Home
------------------------------------------------
-See http://code.google.com/p/silverstripe-ecommerce
-
-Demo
------------------------------------------------
-See http://www.silverstripe-ecommerce.com
-
 Installation Instructions
 -----------------------------------------------
 1. Find out how to add modules to SS and add module as per usual.

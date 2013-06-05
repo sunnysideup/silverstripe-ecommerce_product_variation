@@ -291,9 +291,9 @@ class ProductWithVariationDecorator extends DataExtension {
 			$where .= " AND \"$alias\".\"ProductAttributeValueID\" = $valueid";
 			$join .= " INNER JOIN \"ProductVariation_AttributeValues\" AS \"$alias\" ON \"ProductVariation\".\"ID\" = \"$alias\".\"ProductVariationID\" ";
 		}
+		//todo: change to ProductVariation::get()
 		$variations = DataObject::get('ProductVariation',$where, $sort = null, $join, $limit = "1");
-		if($variations) {
-			$variation = $variations->First();
+		if($variation = $variations->First()) {
 			return $variation;
 		}
 		return null;
@@ -353,7 +353,7 @@ class ProductWithVariationDecorator extends DataExtension {
 		}
 		if(is_array($array) && count($array) ) {
 			foreach($array as $key => $id) {
-				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
+				if(!ProductAttributeType::get()->byID($id)) {
 					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $id");
 					//unset($array[$key]);
 				}
@@ -374,7 +374,7 @@ class ProductWithVariationDecorator extends DataExtension {
 		return $array;
 		if(is_array($array) && count($array) ) {
 			foreach($array as $key => $id) {
-				if(!DataObject::get_by_id("ProductAttributeType", $id)) {
+				if(!ProductAttributeType::get()->byID($id)) {
 					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $id");
 					//unset($array[$key]);
 				}
@@ -621,7 +621,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		if($type instanceOf ProductAttributeType) {
 			$typeID = $type->ID;
 		}
-		elseif($type = DataObject::get_by_id("ProductAttributeType", intval($type))) {
+		elseif($type = ProductAttributeType::get()->byID(intval($type))) {
 			$typeID = $type->ID;
 		}
 		else {
@@ -631,7 +631,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		//TODO: is there a better place to obtain these joins?
 		$join = "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductAttributeValue\".\"ID\" = \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\"" .
 				" INNER JOIN \"ProductVariation\" ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"";
-		//die("Select * FROM ProductAttributeValue $join WHERE $where");
+		//@todo: fix this ... $vals = ProductAttributeValue::get()->where($where)->sort(array("ProductAttributeValue.Sort","ProductAttributeValue.Value"))->$join);
 		$vals = DataObject::get('ProductAttributeValue', $where, $sort = "\"ProductAttributeValue\".\"Sort\",\"ProductAttributeValue\".\"Value\"", $join);
 
 		return $vals;

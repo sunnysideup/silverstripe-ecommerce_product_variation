@@ -492,7 +492,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return Null | DataObjectSet
 	 **/
 	function Siblings(){
-		return DataObject::get("ProductVariation", "\"ProductID\" = ".$this->ProductID);
+		return ProductVariation::get()->Filter(array("ProductID" => $this->ProductID));
 	}
 
 
@@ -580,7 +580,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$this->redirect($product->Link("viewversion/".$product->ID."/".$version."/"));
 		}
 		else {
-			$page = DataObject::get_one("ErrorPage", "ErrorCode = '404'");
+			$page = ErrorPage::get()->Filter(array("ErrorCode" => '404')->First();
 			if($page) {
 				$this->redirect($page->Link());
 				return;
