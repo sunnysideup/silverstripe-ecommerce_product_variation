@@ -29,7 +29,6 @@
 	<% end_if %>
 			<td class="price">
 				<span class="price">$CalculatedPriceAsMoney.NiceDefaultFormat</span>
-				<% include Order_Content_DisplayPrice %>
 			</td>
 			<td class="actionCell">
 				<div class="actionOuter">
