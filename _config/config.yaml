@@ -1,0 +1,15 @@
+
+Product:
+  extension:
+    - ProductWithVariationDecorator
+
+Product_Controller:
+  extensions:
+    - ProductWithVariationDecorator_Controller
+  allowed_actions:
+    - VariationForm
+    - addvariation
+
+EcommerceDatabaseAdmin:
+  extensions:
+    - EcommerceProductVariationTaskDeleteVariations_EXT
