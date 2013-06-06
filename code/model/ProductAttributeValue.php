@@ -86,12 +86,9 @@ class ProductAttributeValue extends DataObject{
 	 **/
 	function ValueForDropdown() {return $this->getValueForDropdown();}
 	function getValueForDropdown() {
-		$v = $this->Value;
-		$update = $this->extend("updateValueForDropdown", $v, $force = false);
-		if(is_array($update) && count($update) == 1) {
-			$v = $update[0];
-		}
-		return $v;
+		$this->ValueForDropdownFinal = $this->Value;
+		$this->extend("updateValueForDropdown");
+		return $this->ValueForDropdownFinal;
 	}
 
 	/**
@@ -101,12 +98,9 @@ class ProductAttributeValue extends DataObject{
 	 **/
 	function ValueForTable() {return $this->getValueForTable();}
 	function getValueForTable() {
-		$v = $this->Value;
-		$update = $this->extend("updateValueForDropdown", $v, $force = true);
-		if(is_array($update) && count($update) == 1) {
-			$v = $update[0];
-		}
-		return $v;
+		$this->ValueForTableFinal = $this->Value;
+		$this->extend("updateValueForTable");
+		return $this->ValueForTableFinal;
 	}
 
 	function onBeforeDelete() {

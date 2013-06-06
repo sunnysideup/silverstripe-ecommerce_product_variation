@@ -206,7 +206,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 					new TextField('Description', _t("ProductVariation.DESCRIPTION", "Description (optional)"))
 				),
 				new Tab('Image',
-					new ImageField('Image')
+					new UploadField('Image')
 				)
 			)
 		);
@@ -249,21 +249,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 				}
 				$fields->addFieldToTab('Root.Attributes', $field);
 			}
-			$fields->addFieldToTab('Root.Orders',
-				new ComplexTableField(
-					$this,
-					'OrderItems',
-					'OrderItem',
-					array(
-						'Order.ID' => '#',
-						'Order.Created' => 'When',
-						'Quantity' => 'Quantity'
-					),
-					new FieldList(),
-					"\"BuyableID\" = '".$this->ID."' AND \"BuyableClassName\" = '".$this->ClassName."'",
-					"\"Created\" DESC"
-				)
-			);
 		}
 		else {
 			foreach($types as $type) {
@@ -580,7 +565,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$this->redirect($product->Link("viewversion/".$product->ID."/".$version."/"));
 		}
 		else {
-			$page = ErrorPage::get()->Filter(array("ErrorCode" => '404')->First();
+			$page = ErrorPage::get()->Filter(array("ErrorCode" => '404'))->First();
 			if($page) {
 				$this->redirect($page->Link());
 				return;
@@ -846,7 +831,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * Is the product for sale?
 	 * @return Boolean
 	 */
-	function canPurchase($member = null) {
+	function canPurchase(Member $member = null) {
 		$config = $this->EcomConfig();
 		if($config->ShopClosed) {
 			return false;
@@ -856,7 +841,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 			return false;
 		}
 		if($product = $this->Product()) {
-			$allowpurchase = $product->canPurchase($member, false);
+			$allowpurchase = $product->canPurchase($member);
 			if(!$allowpurchase) {
 				return false;
 			}
@@ -913,6 +898,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	public function canDeleteFromLive($member = null) {
 		return $this->canEdit($member);
 	}
+
 
 	/**
 	 * Standard SS method

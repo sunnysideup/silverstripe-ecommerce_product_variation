@@ -1,41 +1,31 @@
 <?php
 
-Director::addRules(50, array(
-	'createecommercevariations/$Action/$ProductID' => 'CreateEcommerceVariations',
-	'createecommercevariationsbatch/$Action' => 'CreateEcommerceVariations_Batch'
-));
 
-//Buyable::add_class("ProductVariation");
 Object::add_extension("Product", "ProductWithVariationDecorator");
 Object::add_extension("Product_Controller", "ProductWithVariationDecorator_Controller");
-Object::add_extension("ProductBulkLoader","ProductVariationBulkLoader");
+Object::add_extension("EcommerceDatabaseAdmin","EcommerceProductVariationTaskDeleteVariations_EXT");
 
-Product_Controller::$allowed_actions[] = 'VariationForm';
-Product_Controller::$allowed_actions[] = 'addvariation';
+
 LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 //Requirements::block(THIRDPARTY_DIR."/jquery/jquery.js");
 //Requirements::javascript(Director::protocol()."ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js");
 LeftAndMain::require_javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
 LeftAndMain::require_javascript("ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js");
-LeftAndMain::require_themed_css("CreateEcommerceVariationsField");
-
-ProductsAndGroupsModelAdmin::$model_importers['ProductVariation'] = null;
+LeftAndMain::require_themed_css("CreateEcommerceVariationsField", "ecommerce_product_variation");
 
 SS_Report::register("SideReport", "EcommerceSideReport_ProductsWithVariations");
 
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
-//____________HIGHLY RECOMMENDED
-/**
- * ADD TO ECOMMERCE.YAML:
+//TO ADD TO ECOMMERCE.YAML FILE
+/*
 ProductsAndGroupsModelAdmin:
-	managed_modules: [
-		...
-		ProductVariation,
-		ProductAttributeValue,
-		ProductAttributeType
-	]
+  managed_modules:
+    - ProductVariation
+    - ProductAttributeValue
+    - ProductAttributeType
+
 */
 
 //____________ADD TO CART FORM INTERACTION
@@ -57,8 +47,6 @@ ProductsAndGroupsModelAdmin:
 //$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPE']  = "Product Attribute Type";
 //$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPES']  = "Product Attribute Types";
 
-// ________________ CMS
-//Object::add_extension("EcommerceDatabaseAdmin","EcommerceProductVariationTaskDeleteVariations_EXT");
 
 
 

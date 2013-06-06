@@ -15,21 +15,18 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * standard SS method
 	 *
 	 */
-	function extraStatics($class = null  $extension = null){
-		return array(
-			"has_many" => array(
-				'Variations' => 'ProductVariation'
-			),
-			"many_many" => array(
-				'VariationAttributes' => 'ProductAttributeType'
-			),
-			"many_many_extraFields" => array(
-				'VariationAttributes' => array(
-					'Notes' => 'Varchar(200)'
-				)
-			)
-		);
-	}
+
+	static $has_many = array(
+		'Variations' => 'ProductVariation'
+	);
+
+	static $many_many = array(
+		'VariationAttributes' => 'ProductAttributeType'
+	);
+
+	static $many_many_extraFields = array(
+		'VariationAttributes' => array('Notes' => 'Varchar(200)')
+	);
 
 	/**
 	 * standard SS method
@@ -88,7 +85,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 */
 	function updateCMSFields(FieldList $fields) {
 		$tabName = ProductVariation::get_plural_name();
-		$fields->addFieldToTab('Root.Content', $tab = new Tab($tabName,
+		$fields->addFieldToTab('Root', $tab = new Tab($tabName,
 			new HeaderField("$tabName for {$this->owner->Title}"),
 			$this->owner->getVariationsTable(),
 			new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
@@ -105,10 +102,15 @@ class ProductWithVariationDecorator extends DataExtension {
 
 
 	/**
-	 * standard SS method
-	 * @return Object (ComplexTableField)
+	 * Field to add and edit product variations
+	 * @return GridField
 	 */
 	function getVariationsTable() {
+		$gridFieldConfig = GridFieldConfig_RecordEditor::create();
+		$source = $this->owner->Variations();
+		return new GridField("ProductVariations", _t("ProductVariation.PLURALNAME", "Product Variations"), $source , $gridFieldConfig);
+	}
+			/*
 		$singleton = singleton('ProductVariation');
 		$query = $singleton->buildVersionSQL("\"ProductID\" = '{$this->owner->ID}'");
 		$variations = $singleton->buildDataObjectSet($query->execute());
@@ -139,8 +141,9 @@ class ProductWithVariationDecorator extends DataExtension {
 		}
 		$tableField->setPermissions(array('edit', 'delete', 'export', 'show'));
 		return $tableField;
-	}
 
+	}
+*/
 
 	/**
 	 * tells us if any of the variations, related to this product,
@@ -278,21 +281,26 @@ class ProductWithVariationDecorator extends DataExtension {
 			user_error("attributes must be provided as an array of numeric keys and values IDs...", E_USER_NOTICE);
 			return null;
 		}
+		$variations = ProductVariation::get()->filter(
+			array("ProductID" => $this->owner->ID)
+		);
 		$keyattributes = array_keys($attributes);
 		$id = $keyattributes[0];
-		$where = "\"ProductID\" = ".$this->owner->ID;
-		$join = "";
 		foreach($attributes as $typeid => $valueid){
 			if(!is_numeric($typeid) || !is_numeric($valueid)) {
 				user_error("key and value ID must be numeric", E_USER_NOTICE);
 				return null;
 			}
 			$alias = "A$typeid";
-			$where .= " AND \"$alias\".\"ProductAttributeValueID\" = $valueid";
-			$join .= " INNER JOIN \"ProductVariation_AttributeValues\" AS \"$alias\" ON \"ProductVariation\".\"ID\" = \"$alias\".\"ProductVariationID\" ";
+			$variations = $variations->where(
+				"\"$alias\".\"ProductAttributeValueID\" = $valueid"
+			)
+			->innerJoin(
+				"ProductVariation_AttributeValues",
+				"\"ProductVariation\".\"ID\" = \"$alias\".\"ProductVariationID\"",
+				 $alias
+			);
 		}
-		//todo: change to ProductVariation::get()
-		$variations = DataObject::get('ProductVariation',$where, $sort = null, $join, $limit = "1");
 		if($variation = $variations->First()) {
 			return $variation;
 		}
@@ -311,13 +319,18 @@ class ProductWithVariationDecorator extends DataExtension {
 		$existingVariations = $this->owner->Variations();
 		$existingVariations->remove($attributeTypeObject);
 	}
+
 	function addAttributeType($attributeTypeObject) {
 		$existingTypes = $this->owner->VariationAttributes();
 		$existingTypes->add($attributeTypeObject);
 	}
 
 	function canRemoveAttributeType($type) {
-		$variations = $this->owner->getComponents('Variations', "\"TypeID\" = '$type->ID'", '', "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductVariationID\" = \"ProductVariation\".\"ID\" INNER JOIN \"ProductAttributeValue\" ON \"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"");
+		$variations = $this->owner->getComponents(
+			'Variations',
+			"\"TypeID\" = '$type->ID'");
+		$variations = $variations->innerJoin("ProductVariation_AttributeValues", "\"ProductVariationID\" = \"ProductVariation\".\"ID\"");
+		$variations = $variations->innerJoin("ProductAttributeValue", "\"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"");
 		return $variations->Count() == 0;
 	}
 
@@ -518,7 +531,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		if($attributes) {
 			foreach($attributes as $attribute){
 				$options = $this->possibleValuesForAttributeType($attribute);
-				if($options) {
+				if($options && $options->count()) {
 					$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
 					$requiredfields[] = "ProductAttributes[$attribute->ID]";
 				}
@@ -538,7 +551,6 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		$validator = new $requiredFieldsClass($requiredfields);
 		//variation options json generation
 		if(self::get_use_js_validation()){ //TODO: make javascript json inclusion optional
-			$validator->setJavascriptValidationHandler("none");
 			if(self::get_alternative_validator_class_name()) {
 				Requirements::javascript(self::get_alternative_validator_class_name());
 			}
@@ -627,13 +639,24 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		else {
 			return null;
 		}
-		$where = "\"TypeID\" = $typeID AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID."  AND \"ProductVariation\".\"AllowPurchase\" = 1";
-		//TODO: is there a better place to obtain these joins?
-		$join = "INNER JOIN \"ProductVariation_AttributeValues\" ON \"ProductAttributeValue\".\"ID\" = \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\"" .
-				" INNER JOIN \"ProductVariation\" ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"";
-		//@todo: fix this ... $vals = ProductAttributeValue::get()->where($where)->sort(array("ProductAttributeValue.Sort","ProductAttributeValue.Value"))->$join);
-		$vals = DataObject::get('ProductAttributeValue', $where, $sort = "\"ProductAttributeValue\".\"Sort\",\"ProductAttributeValue\".\"Value\"", $join);
-
+		$vals = ProductAttributeValue::get()
+			->where(
+				"\"TypeID\" = $typeID AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID."  AND \"ProductVariation\".\"AllowPurchase\" = 1"
+			)
+			->sort(
+				array(
+					"ProductAttributeValue.Sort" => "ASC",
+					"ProductAttributeValue.Value" => "ASC"
+				)
+			)
+			->innerJoin(
+				"ProductVariation_AttributeValues",
+				"\"ProductAttributeValue\".\"ID\" = \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\""
+			)
+			->innerJoin(
+				"ProductVariation",
+				"\"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\""
+			);
 		return $vals;
 	}
 

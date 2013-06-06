@@ -76,8 +76,8 @@ class CreateEcommerceVariations extends Controller {
 		}
 		*/
 		$missingTypes = array();
-		ProductAttributeType::get()->exclude("ProductAttributeType.ID" => .implode(",", $missingTypesID));
-		if($types) {
+		$types = ProductAttributeType::get()->exclude(array("ID" => implode(",", $missingTypesID)));
+		if($types->count()) {
 			$values = array();
 			foreach($types as $type) {
 				if(isset($_GET[$type->ID])) {
