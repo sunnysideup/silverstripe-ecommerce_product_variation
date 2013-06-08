@@ -27,9 +27,16 @@ class ProductAttributeValue extends DataObject{
 
 	static $summary_fields = array(
 		'Value' => 'Value',
+		'Type.Title' => 'Value'
 	);
+
+	static $searchable_fields = array(
+		'Title' => 'PartialMatchFilter',
+		'Value' => 'PartialMatchFilter'
+	);
+
 	static $casting = array(
-		'Title' => 'Text',
+		'Title' => 'Varchar',
 		'ValueForDropdown' => "HTMLText"
 	);
 

@@ -193,10 +193,17 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return FieldSet
 	 */
 	function getCMSFields() {
+		//backup in case there are no products.
+		if(Product::get()->count() == 0) {
+			return parent::getCMSFields();
+		}
 		$product = $this->Product();
+		$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title'));
+		$productField->setEmptyString('(Select one)');
 		$fields = new FieldList(
 			new TabSet('Root',
 				new Tab('Main',
+					$productField,
 					new ReadOnlyField('FullName', _t("ProductVariation.FULLNAME", 'Full Name')),
 					new NumericField('Price', _t("ProductVariation.PRICE", 'Price')),
 					new CheckboxField('AllowPurchase', _t("ProductVariation.ALLOWPURCHASE", 'Allow Purchase ?'))
@@ -220,40 +227,42 @@ class ProductVariation extends DataObject implements BuyableModel{
 			$fields->addFieldToTab('Root.Details',new TextField('Quantifier', _t('ProductVariation.QUANTIFIER', 'Quantifier (e.g. per kilo, per month, per dozen, each)')));
 		}
 		$fields->addFieldToTab('Root.Details',new ReadOnlyField('FullSiteTreeSort', _t('Product.FULLSITETREESORT', 'Full sort index')));
-		$types = $product->VariationAttributes();
-		if($this->ID) {
-			$hasBeenSold = $this->HasBeenSold();
-			$values = $this->AttributeValues();
-			foreach($types as $type) {
-				$field = $type->getDropDownField();
-				if($field) {
-					$value = $values->find('TypeID', $type->ID);
-					if($value) {
-						$field->setValue($value->ID);
-						if($hasBeenSold) {
-							$field = $field->performReadonlyTransformation();
-							$field->setName("Type{$type->ID}");
+		if($product) {
+			$types = $product->VariationAttributes();
+			if($this->ID) {
+				$hasBeenSold = $this->HasBeenSold();
+				$values = $this->AttributeValues();
+				foreach($types as $type) {
+					$field = $type->getDropDownField();
+					if($field) {
+						$value = $values->find('TypeID', $type->ID);
+						if($value) {
+							$field->setValue($value->ID);
+							if($hasBeenSold) {
+								$field = $field->performReadonlyTransformation();
+								$field->setName("Type{$type->ID}");
+							}
+						}
+						else {
+							if($hasBeenSold) {
+								$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.ALREADYPURCHASED", 'NOT SET (you can not select a value now because it has already been purchased).'));
+							}
+							else {
+								$field->setEmptyString('');
+							}
 						}
 					}
 					else {
-						if($hasBeenSold) {
-							$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.ALREADYPURCHASED", 'NOT SET (you can not select a value now because it has already been purchased).'));
-						}
-						else {
-							$field->setEmptyString('');
-						}
+						$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.NOVALUESTOSELECT", 'No values to select'));
 					}
+					$fields->addFieldToTab('Root.Attributes', $field);
 				}
-				else {
-					$field = new ReadonlyField("Type{$type->ID}", $type->Name, _t("ProductVariation.NOVALUESTOSELECT", 'No values to select'));
-				}
-				$fields->addFieldToTab('Root.Attributes', $field);
 			}
-		}
-		else {
-			foreach($types as $type) {
-				$field = $type->getDropDownField();
-				$fields->addFieldToTab('Root.Attributes', $field);
+			else {
+				foreach($types as $type) {
+					$field = $type->getDropDownField();
+					$fields->addFieldToTab('Root.Attributes', $field);
+				}
 			}
 		}
 		$this->extend('updateCMSFields', $fields);
@@ -864,7 +873,10 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return Boolean
 	 */
 	function canView($member = null){
-		return $this->Parent()->canEdit($member);
+		if($this->ProductID && $this->Product()->exists()) {
+			return $this->Product()->canEdit($member);
+		}
+		return $this->canEdit($member);
 	}
 
 	/**
@@ -872,11 +884,11 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return Boolean
 	 */
 	function canEdit($member = null) {
+		return true;
 		if(!$member) {
 			$member = Member::currentUser();
 		}
-		$shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
-		if($member && Permission::checkMember($member, $shopAdminCode)) {
+		if($member && $member->IsShopAdmin()) {
 			return true;
 		}
 		return parent::canEdit($member);

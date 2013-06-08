@@ -39,6 +39,11 @@ class ProductAttributeType extends DataObject{
 		'Name' => 'Name'
 	);
 
+	static $searchable_fields = array(
+		'Name' => 'PartialMatchFilter',
+		'Label' => 'PartialMatchFilter'
+	);
+
 	static $belongs_many_many = array(
 		'Products' => 'Product'
 	);
@@ -108,8 +113,8 @@ class ProductAttributeType extends DataObject{
 
 	function getDropDownField($emptystring = null, $values = null) {
 		//to do, why do switch to "all" the options if there are no values?
-		$values = ($values) ? $values : $this->Values('',"\"Sort\" ASC, \"Value\" ASC");
-		if($values->exists() && $values->count() > 0){
+		$values = ($values) ? $values : $this->Values();
+		if($values && $values->count() > 0){
 			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown'));
 			if($emptystring && $values->count() > 1) {
 				$field->setEmptyString($emptystring);
