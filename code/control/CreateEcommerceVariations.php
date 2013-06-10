@@ -262,7 +262,7 @@ class CreateEcommerceVariations extends Controller {
 class CreateEcommerceVariations_Field extends LiteralField {
 
 	function __construct($name, $additionalContent = '', $productID) {
-		Requirements::themedCSS("CreateEcommerceVariationsField");
+		Requirements::themedCSS("CreateEcommerceVariationsField", "ecommerce_product_variation");
 		$additionalContent .= $this->renderWith("CreateEcommerceVariations_Field");
 		parent::__construct($name, $additionalContent);
 	}

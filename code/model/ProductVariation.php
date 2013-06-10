@@ -286,21 +286,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 		return $result;
 	}
 
-	/**
-	 * add requirements for pop-up
-	 * TODO: what this is all about?
-	 */
-	function getRequirementsForPopup() {
-		$hasBeenSold = $this->HasBeenSold();
-		if(! $this->ID || ! $hasBeenSold) {
-			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-			//Requirements::block(THIRDPARTY_DIR."/jquery/jquery.js");
-			//Requirements::javascript(Director::protocol()."ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js");
-			Requirements::javascript('ecommerce_product_variation/javascript/productvariation.js');
-			Requirements::customScript("ProductVariation.set_url('createecommercevariations')", 'CreateEcommerceVariationsField_set_url');
-			Requirements::customCSS('#ComplexTableField_Popup_AddForm input.loading {background: url("cms/images/network-save.gif") no-repeat scroll left center #FFFFFF; padding-left: 16px;}');
-		}
-	}
 
 	/**
 	 * standard SS method

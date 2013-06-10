@@ -555,21 +555,22 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				Requirements::javascript(self::get_alternative_validator_class_name());
 			}
 
-			$vararray = array();
+			$varArray = array();
 			if($vars = $this->owner->Variations()){
 				foreach($vars as $var){
 					if($var->canPurchase()) {
-						$vararray[$var->ID] = $var->AttributeValues()->map('ID','ID');
+						$varArray[$var->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
 					}
 				}
 			}
-
-			$json = json_encode($vararray);
+			$json = json_encode($varArray);
 			$jsonscript = "var variationsjson = $json";
+
+
 			Requirements::customScript($jsonscript,'variationsjson');
 			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
 		}
-		Requirements::themedCSS('variationsform');
+		Requirements::themedCSS('variationsform', "ecommerce_product_variation");
 		$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
 		return $form;
 	}

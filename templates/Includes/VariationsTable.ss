@@ -9,7 +9,7 @@
 		<% else %>
 			<th scope="col" class="label">Variation</th>
 <% end_if %>
-			<th scope="col" class="price"><% _t("PRICE","Price") %> ($CurrencyUsed.Code)</th>
+			<th scope="col" class="price"><% _t("PRICE","Price") %> ($Cart.CurrencyUsed.Code.UpperCase)</th>
 			<th scope="col" class="actionCell">&nbsp;</th>
 		</tr>
 	</thead>

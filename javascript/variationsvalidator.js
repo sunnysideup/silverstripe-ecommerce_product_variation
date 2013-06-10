@@ -5,8 +5,9 @@
 
 		$changed = $(this);
 
-		if(!variationsjson || variationsjson.length <= 0)
+		if(!variationsjson || variationsjson.length <= 0) {
 			return false;
+		}
 
 		//get all selected values
 
