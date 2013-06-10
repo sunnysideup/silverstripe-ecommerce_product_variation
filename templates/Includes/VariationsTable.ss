@@ -3,9 +3,9 @@
 		<tr>
 			<th scope="col" class="description"><% _t("Product.VARIATIONDESCRIPTIONLABEL", "") %>&nbsp;</th>
 <% if VariationAttributes %>
-	<% control VariationAttributes %>
+	<% loop VariationAttributes %>
 			<th scope="col" class="label">$Label</th>
-	<% end_control %>
+	<% end_loop %>
 		<% else %>
 			<th scope="col" class="label">Variation</th>
 <% end_if %>
@@ -14,16 +14,16 @@
 		</tr>
 	</thead>
 	<tbody>
-<% control Variations %>
+<% loop Variations %>
 		<tr>
 			<th scope="row" class="<% if Description %>hasDescription<% else %>noDescription<% end_if %>">
 				<% include ProductVariationImage %>
 				$Description &nbsp;
 			</th>
 	<% if AttributeValuesSorted %>
-		<% control AttributeValues %>
+		<% loop AttributeValues %>
 			<td class="label"<% if RGBCode %> style="color: #{$ComputedRGBCode}; background-color: #{$ComputedContrastRGBCode}"<% end_if %> >$Value</td>
-		<% end_control %>
+		<% end_loop %>
 	<% else %>
 			<th scope="row" class="label">$Title.XML</th>
 	<% end_if %>
@@ -40,7 +40,7 @@
 				</div>
 			</td>
 		</tr>
-<% end_control %>
+<% end_loop %>
 	</tbody>
 </table>
 

@@ -4,11 +4,11 @@
 	</span>
 <% end_if %>
 <% if Values %> - <% if Values.count %>
-		<% control Values %>
+		<% loop Values %>
 			<span class="productVariationValues">
 				<strong>$Type.Label:</strong> <em>$Value</em><% if Last %>;<% else %>,<% end_if %>
 			</span>
-		<% end_control %>
+		<% end_loop %>
 	<% else %>
 		<span class="productVariationValues">
 		$InternalItemID;
