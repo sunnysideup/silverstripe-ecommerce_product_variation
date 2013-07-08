@@ -247,7 +247,7 @@ class CreateEcommerceVariations extends Controller {
 				FROM \"ProductVariation_AttributeValues\"
 					INNER JOIN \"ProductAttributeValue\" ON \"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"
 				WHERE \"ProductVariationID\" = '$otherVariation->ID' ORDER BY \"TypeID\""
-			)->map();
+			)->map()->toArray();
 			if($otherValues == $values) {
 				return false;
 			}

@@ -198,7 +198,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 			return parent::getCMSFields();
 		}
 		$product = $this->Product();
-		$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title'));
+		$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title')->toArray());
 		$productField->setEmptyString('(Select one)');
 		$fields = new FieldList(
 			new TabSet('Root',

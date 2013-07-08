@@ -40,12 +40,7 @@ ProductsAndGroupsModelAdmin:
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
 
 // ____________ IMPORTANT NAME CHANGES....
-//$lang['en_US']['ProductVariation']['PRODUCTVARIATION']  = "Product Variation";
-//$lang['en_US']['ProductVariation']['PRODUCTVARIATIONS']  = "Product Variations";
-//$lang['en_US']['ProductAttributeValue']['ATTRIBUTEVALUE']  = "Product Attribute";
-//$lang['en_US']['ProductAttributeValue']['ATTRIBUTEVALUES']  = "Product Attributes";
-//$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPE']  = "Product Attribute Type";
-//$lang['en_US']['ProductAttributeType']['ATTRIBUTETYPES']  = "Product Attribute Types";
+//
 
 
 

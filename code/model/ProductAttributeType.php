@@ -115,7 +115,7 @@ class ProductAttributeType extends DataObject{
 		//to do, why do switch to "all" the options if there are no values?
 		$values = ($values) ? $values : $this->Values();
 		if($values && $values->count() > 0){
-			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown'));
+			$field = new DropdownField('ProductAttributes['.$this->ID.']',$this->Name,$values->map('ID','ValueForDropdown')->toArray());
 			if($emptystring && $values->count() > 1) {
 				$field->setEmptyString($emptystring);
 			}

@@ -128,7 +128,7 @@ class ProductWithVariationDecorator extends DataExtension {
 		unset($summaryfields["Product.Title"]);
 		//unset($summaryfields["Title"]);
 
-		$tableField = new ComplexTableField(
+		$tableField = new GridField((
 			$this->owner,
 			'Variations',
 			'ProductVariation',
