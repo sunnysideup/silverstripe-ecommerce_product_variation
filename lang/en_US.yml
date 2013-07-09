@@ -1,10 +1,10 @@
 en_US:
-	ProductVariation:
-		PRODUCTVARIATION: "Product Variation"
-		PRODUCTVARIATIONS: "Product Variations"
-	ProductAttributeValue:
-		ATTRIBUTEVALUE: "Product Attribute"
-		ATTRIBUTEVALUES: "Product Attributes"
-	ProductAttributeType:
-		ATTRIBUTETYPE: "Product Attribute Type"
-		ATTRIBUTETYPES: "Product Attribute Types"
+  ProductVariation:
+    PRODUCTVARIATION: "Product Variation"
+    PRODUCTVARIATIONS: "Product Variations"
+  ProductAttributeValue:
+    ATTRIBUTEVALUE: "Product Attribute"
+    ATTRIBUTEVALUES: "Product Attributes"
+  ProductAttributeType:
+    ATTRIBUTETYPE: "Product Attribute Type"
+    ATTRIBUTETYPES: "Product Attribute Types"
