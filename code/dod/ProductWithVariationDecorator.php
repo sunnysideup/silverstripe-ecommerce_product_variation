@@ -107,6 +107,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 */
 	function getVariationsTable() {
 		$gridFieldConfig = GridFieldConfig_RecordEditor::create();
+		$gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
 		$source = $this->owner->Variations();
 		return new GridField("ProductVariations", _t("ProductVariation.PLURALNAME", "Product Variations"), $source , $gridFieldConfig);
 	}
