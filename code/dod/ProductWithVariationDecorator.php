@@ -16,15 +16,15 @@ class ProductWithVariationDecorator extends DataExtension {
 	 *
 	 */
 
-	static $has_many = array(
+	private static $has_many = array(
 		'Variations' => 'ProductVariation'
 	);
 
-	static $many_many = array(
+	private static $many_many = array(
 		'VariationAttributes' => 'ProductAttributeType'
 	);
 
-	static $many_many_extraFields = array(
+	private static $many_many_extraFields = array(
 		'VariationAttributes' => array('Notes' => 'Varchar(200)')
 	);
 
@@ -501,7 +501,7 @@ class ProductWithVariationDecorator extends DataExtension {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
-	static $allowed_actions = array(
+private static $allowed_actions = array(
 		"selectvariation",
 		"VariationForm"
 	);
@@ -511,19 +511,14 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	 * the product variation form.
 	 * @var Boolean
 	 */
-	protected static $use_js_validation = true;
-		static function set_use_js_validation($b) {self::$use_js_validation = $b;}
-		static function get_use_js_validation() {return self::$use_js_validation;}
-
+	private static $use_js_validation = true;
 
 	/**
 	 * tells us if Javascript should be used in validating
 	 * the product variation form.
 	 * @var String
 	 */
-	protected static $alternative_validator_class_name = "";
-		static function set_alternative_validator_class_name($s) {self::$alternative_validator_class_name = $s;}
-		static function get_alternative_validator_class_name() {return self::$alternative_validator_class_name;}
+	private static $alternative_validator_class_name = "";
 
 	function VariationForm(){
 		$farray = array();
@@ -546,14 +541,14 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		);
 		$requiredfields[] = 'Quantity';
 		$requiredFieldsClass = "RequiredFields";
-		if(self::get_alternative_validator_class_name()) {
-			$requiredFieldsClass = self::get_alternative_validator_class_name();
+		if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
+			$requiredFieldsClass = Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name');
 		}
 		$validator = new $requiredFieldsClass($requiredfields);
 		//variation options json generation
-		if(self::get_use_js_validation()){ //TODO: make javascript json inclusion optional
-			if(self::get_alternative_validator_class_name()) {
-				Requirements::javascript(self::get_alternative_validator_class_name());
+		if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')){ //TODO: make javascript json inclusion optional
+			if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
+				Requirements::javascript(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name'));
 			}
 
 			$varArray = array();

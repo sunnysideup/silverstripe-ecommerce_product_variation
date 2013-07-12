@@ -1,6 +1,10 @@
-
+---
+Name: ecommerce_product_variation
+Before: 'mysite/*'
+After: 'framework/*','cms/*','ecommerce/*'
+---
 Product:
-  extension:
+  extensions:
     - ProductWithVariationDecorator
 
 Product_Controller:

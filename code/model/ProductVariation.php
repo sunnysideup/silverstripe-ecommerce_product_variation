@@ -10,7 +10,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $api_access = array(
+	private static $api_access = array(
 		'view' => array(
 			"Title",
 			"Description",
@@ -29,7 +29,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $db = array(
+	private static $db = array(
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
 		'Weight' => 'Decimal(9,4)',
@@ -46,7 +46,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $has_one = array(
+	private static $has_one = array(
 		'Product' => 'Product',
 		'Image' => 'Product_Image'
 	);
@@ -54,14 +54,14 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $many_many = array(
+	private static $many_many = array(
 		'AttributeValues' => 'ProductAttributeValue'
 	);
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $casting = array(
+	private static $casting = array(
 		'Parent' => 'Product',
 		'Title' => 'HTMLText',
 		'Link' => 'Text',
@@ -73,28 +73,28 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $defaults = array(
+	private static $defaults = array(
 		"AllowPurchase" => 1
 	);
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $versioning = array(
+	private static $versioning = array(
 		'Stage'
 	);
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $extensions = array(
+	private static $extensions = array(
 		"Versioned('Stage')"
 	);
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $indexes = array(
+	private static $indexes = array(
 		"Sort" => true,
 		"FullName" => true,
 		"FullSiteTreeSort" => true
@@ -103,14 +103,14 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $field_labels = array(
+	private static $field_labels = array(
 		"Description" => "Title (optional)"
 	);
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'CMSThumbnail' => 'Image',
 		'Title' => 'Title',
 		'Price' => 'Price',
@@ -120,7 +120,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $searchable_fields = array(
+	private static $searchable_fields = array(
 		"FullName" => array(
 			'title' => 'Keyword',
 			'field' => 'TextField',
@@ -140,18 +140,18 @@ class ProductVariation extends DataObject implements BuyableModel{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $default_sort = "\"FullSiteTreeSort\" ASC, \"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
+	private static $default_sort = "\"FullSiteTreeSort\" ASC, \"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $singular_name = "Product Variation";
+	private static $singular_name = "Product Variation";
 		function i18n_singular_name() { return _t("ProductVariation.PRODUCTVARIATION", "Product Variation");}
 
 	/**
 	 * Standard SS variable.
 	 */
-	public static $plural_name = "Product Variations";
+	private static $plural_name = "Product Variations";
 		function i18n_plural_name() { return _t("ProductVariation.PRODUCTVARIATIONS", "Product Variations");}
 		public static function get_plural_name(){
 			$obj = Singleton("ProductVariation");
@@ -163,7 +163,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 *
 	 * @var Array
 	 **/
-	protected static $title_style_option = array(
+	private static $title_style_option = array(
 		"default" => array(
 			"ShowType" => true,
 			"BetweenTypeAndValue" => ": ",
@@ -176,16 +176,14 @@ class ProductVariation extends DataObject implements BuyableModel{
 				"BetweenTypeAndValue" => $betweenTypeAndValue,
 				"BetweenVariations" => $betweenVariations
 			);
-			self::set_current_style_option_code($code);
+			Config::inst()->update("ProductVariation", "current_style_option_code", $code);
 		}
 		public static function remove_title_style_option($code) {unset(self::$title_style_option[$code]);}
 
-	protected static $current_style_option_code = "default";
-		public static function set_current_style_option_code($v) {self::$current_style_option_code = $v;}
-		public static function get_current_style_option_code() {return self::$current_style_option_code;}
+	private static $current_style_option_code = "default";
 
 	public static function get_current_style_option_array() {
-		return self::$title_style_option[self::get_current_style_option_code()];
+		return self::$title_style_option[Config::inst()->get('ProductVariation', "current_style_option_code")];
 	}
 
 	/**

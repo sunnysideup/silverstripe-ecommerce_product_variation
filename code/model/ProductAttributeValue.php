@@ -5,37 +5,37 @@ class ProductAttributeValue extends DataObject{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $api_access = array(
+	private static $api_access = array(
 		'view' => array(
 			"Value",
 			"Type"
 		)
 	);
 
-	static $db = array(
+private static $db = array(
 		'Value' => 'Varchar(255)',
 		'Sort' => 'Int'
 	);
 
-	static $has_one = array(
+private static $has_one = array(
 		'Type' => 'ProductAttributeType'
 	);
 
-	static $belongs_many_many = array(
+private static $belongs_many_many = array(
 		'ProductVariation' => 'ProductVariation'
 	);
 
-	static $summary_fields = array(
+private static $summary_fields = array(
 		'Value' => 'Value',
 		'Type.Title' => 'Value'
 	);
 
-	static $searchable_fields = array(
+private static $searchable_fields = array(
 		'Title' => 'PartialMatchFilter',
 		'Value' => 'PartialMatchFilter'
 	);
 
-	static $casting = array(
+private static $casting = array(
 		'Title' => 'Varchar',
 		'ValueForDropdown' => "HTMLText"
 	);
@@ -45,12 +45,12 @@ class ProductAttributeValue extends DataObject{
 		return $this->Value;
 	}
 
-	static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
+private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 
-	public static $singular_name = "Attribute Value";
+	private static $singular_name = "Attribute Value";
 		function i18n_singular_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Attribute Value");}
 
-	public static $plural_name = "Attribute Values";
+	private static $plural_name = "Attribute Values";
 		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Attribute Values");}
 		public static function get_plural_name(){
 			$obj = Singleton("ProductAttributeValue");

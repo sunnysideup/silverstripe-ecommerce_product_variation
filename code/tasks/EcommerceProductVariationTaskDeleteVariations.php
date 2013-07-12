@@ -103,7 +103,7 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
 
 class EcommerceProductVariationTaskDeleteVariations_EXT extends Extension {
 
-	static $allowed_actions = array(
+	private static $allowed_actions = array(
 		"ecommerceproductvariationtaskdeletevariations" => true
 	);
 

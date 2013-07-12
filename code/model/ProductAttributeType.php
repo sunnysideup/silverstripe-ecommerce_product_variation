@@ -15,53 +15,53 @@ class ProductAttributeType extends DataObject{
 	/**
 	 * Standard SS variable.
 	 */
-	public static $api_access = array(
+	private static $api_access = array(
 		'view' => array(
 			"Name",
 			"Label",
 			"Values"
 		)
 	);
-	public static $db = array(
+	private static $db = array(
 		'Name' => 'Varchar', //for back-end use
 		'Label' => 'Varchar', //for front-end use
 		'Sort' => 'Int' //for front-end use
 		//'Unit' => 'Varchar' //TODO: for future use
 	);
 
-	static $has_one = array();
+private static $has_one = array();
 
-	static $has_many = array(
+private static $has_many = array(
 		'Values' => 'ProductAttributeValue'
 	);
 
-	static $summary_fields = array(
+private static $summary_fields = array(
 		'Name' => 'Name'
 	);
 
-	static $searchable_fields = array(
+private static $searchable_fields = array(
 		'Name' => 'PartialMatchFilter',
 		'Label' => 'PartialMatchFilter'
 	);
 
-	static $belongs_many_many = array(
+private static $belongs_many_many = array(
 		'Products' => 'Product'
 	);
 
 
-	static $indexes = array(
+private static $indexes = array(
 		"Sort" => true
 	);
 
-	static $default_sort = "\"Sort\" ASC, \"Name\"";
+private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
 	//We need this to make certain templates work (see ProductWithVariationDecorator::VariationsPerVariationType)
 	public $Variations = null;
 
-	public static $singular_name = "Attribute Type";
+	private static $singular_name = "Attribute Type";
 		function i18n_singular_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Attribute Type");}
 
-	public static $plural_name = "Attribute Types";
+	private static $plural_name = "Attribute Types";
 		function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Attribute Types");}
 		public static function get_plural_name(){
 			$obj = Singleton("ProductAttributeType");

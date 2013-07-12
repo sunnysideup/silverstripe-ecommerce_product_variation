@@ -1,8 +1,0 @@
----
-Name: ecommerceproductvariationroutes
-After: framework/routes#coreroutes
----
-Director:
-  rules:
-    'createecommercevariations/$Action/$ProductID' : 'CreateEcommerceVariations'
-    'createecommercevariationsbatch/$Action' : 'CreateEcommerceVariations_Batch'

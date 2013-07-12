@@ -3,8 +3,8 @@
 
 class CreateEcommerceVariations extends Controller {
 
-	static $allowed_actions = array(
-		"jsonforform",
+	private static $allowed_actions = array(
+		"jsonforform" => "ADMIN",
 		"createvariations",
 		"select",
 		"rename",
@@ -27,8 +27,9 @@ class CreateEcommerceVariations extends Controller {
 	protected $_messageclass = "good"; //use -1 to distinguish it from 0 (first in sorting order)
 	protected $_selectedtypeid = array(); //use -1 to distinguish it from 0 (first in sorting order)
 	protected $_selectedvalueid = array(); //use -1 to distinguish it from 0 (first in sorting order)
+	protected $output = "";
 
-	protected static $session_name_for_selected_values = "SelectecedValues";
+	private static $session_name_for_selected_values = "SelectecedValues";
 
 	function init() {
 		parent::init();
@@ -55,6 +56,14 @@ class CreateEcommerceVariations extends Controller {
 		}
 		$this->_selectedtypeid = $this->_product->getArrayOfLinkedProductAttributeTypeIDs();
 		$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
+	}
+
+	public function index() {
+		return 10;
+	}
+
+	public function Output() {
+		return $this->output;
 	}
 
 	function createvariations() {
@@ -100,10 +109,11 @@ class CreateEcommerceVariations extends Controller {
 		else {
 			$this->_message = 'No attribute types';
 		}
-		return $this->jsonforform();
+		$this->output = $this->jsonforform();
+		return $this->output;
 	}
 
-	function jsonforform() {
+	function jsonforform() {	
 		if(! $this->_message) {
 			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
 		}
@@ -133,7 +143,8 @@ class CreateEcommerceVariations extends Controller {
 				$result['Types'][] = $resultType;
 			}
 		}
-		return Convert::array2json($result);
+		$this->output =  Convert::array2json($result);
+		return $this->output;
 	}
 
 	function select() {
@@ -143,7 +154,8 @@ class CreateEcommerceVariations extends Controller {
 		$this->_product->addAttributeType($obj);
 		$this->_product->removeAttributeType($obj);
 		die("not completed yet");
-		return $this->jsonforform();
+		$this->output =  $this->jsonforform();
+		return $this->output;
 	}
 
 	function rename() {
@@ -164,7 +176,8 @@ class CreateEcommerceVariations extends Controller {
 			$this->_message = _t("CreateEcommerceVariations.CANNOTBEFOUND","Entry can not be found.");
 			$this->_messageclass = "bad";
 		}
-		return $this->jsonforform();
+		$this->output =  $this->jsonforform();
+		return $this->output;
 	}
 
 	function add() {
@@ -185,7 +198,8 @@ class CreateEcommerceVariations extends Controller {
 			}*/
 		}
 		$this->_message = $this->_value.' '._t("CreateEcommerceVariations.HASBEENADDED",'has been added.');
-		return $this->jsonforform();
+		$this->output =  $this->jsonforform();
+		return $this->output;
 	}
 
 	function remove() {
@@ -213,14 +227,16 @@ class CreateEcommerceVariations extends Controller {
 			$this->_message = _t("CreateEcommerceVariations.CANNOTBEFOUND","Entry can not be found.");
 			$this->_messageclass = "bad";
 		}
-		return $this->jsonforform();
+		$this->output =  $this->jsonforform();
+		return $this->output;
 	}
 
 	function move() {
 		//is it Type or Value?
 		//move Item
 		die("not completed yet");
-		return "ok";
+		$this->output =  "ok";
+		return $this->output;
 	}
 
 	function cansavevariation() {
@@ -231,13 +247,17 @@ class CreateEcommerceVariations extends Controller {
 		foreach($this->_selectedtypeid as $typeID) {
 			if(isset($_GET[$typeID])) {
 				$value = $_GET[$typeID];
-				if(! $variation && ! $value) return false;
+				if(! $variation && ! $value) { 
+					$this->output =  false;
+					return $this->output;
+				}
 				if($value) {
 					$values[$typeID] = $value;
 				}
 			}
 			else {
-				return false;
+				$this->output =  false;
+				return $this->output;
 			}
 		}
 		$variations = $this->_product->getComponents('Variations', $variation ? "\"ProductVariation\".\"ID\" != '$variation->ID'" : '');
@@ -249,10 +269,13 @@ class CreateEcommerceVariations extends Controller {
 				WHERE \"ProductVariationID\" = '$otherVariation->ID' ORDER BY \"TypeID\""
 			)->map()->toArray();
 			if($otherValues == $values) {
-				return false;
+				$this->output =  false;
+				return $this->output;
 			}
 		}
-		return true;
+		$this->output =  true;
+		return $this->output;
+
 	}
 
 
