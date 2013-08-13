@@ -13,7 +13,6 @@ LeftAndMain::require_themed_css("CreateEcommerceVariationsField", "ecommerce_pro
 //copy the lines between the START AND END line to your /mysite/_config.php file and choose the right settings
 
 // __________________________________ START ECOMMERCE PRODUCT VARIATIONS MODULE CONFIG __________________________________
-//TO ADD TO ECOMMERCE.YAML FILE
 
 //____________CUSTOMISED CMS INTERACTION
 //LeftAndMain::require_javascript("mysite/javascript/MyCreateEcommerceVariationsField.js");
