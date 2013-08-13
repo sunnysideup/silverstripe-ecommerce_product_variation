@@ -3,16 +3,16 @@ E-commerce Product Variations
 Pre 0.1 proof of concept
 ###############################################
 
+Create product variations within e-commerce (e.g. if you have a sock you can now sell a red XL sock or a small blue sock).
+
 Developers
 -----------------------------------------------
 Nicolaas Francken [at] sunnysideup.co.nz
-Romain [at] sunnysideup.co.nz
-Jeremy [at] burnbright.co.nz
+
 
 Requirements
 -----------------------------------------------
-Ecommerce 1.0+ / SSU Branch
-SilverStripe 2.4+
+see composer.json
 
 Project Home
 -----------------------------------------------
@@ -33,4 +33,3 @@ it from your mysite folder, so that you can upgrade the module without redoing t
 If you just want one or two things from this module
 then of course you are free to copy them to your
 mysite folder and delete the rest of this module.
-
