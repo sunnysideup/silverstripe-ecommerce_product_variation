@@ -976,4 +976,26 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		return $tableSubTitle;
 	}
 
+
+	/**
+	 * Check if this variation is new - that is, if it has yet to have been written
+	 * to the database.
+	 *
+	 * @return boolean True if this page is new.
+	 */
+	public function isNew() {
+		/**
+		 * This check was a problem for a self-hosted site, and may indicate a
+		 * bug in the interpreter on their server, or a bug here
+		 * Changing the condition from empty($this->ID) to
+		 * !$this->ID && !$this->record['ID'] fixed this.
+		 */
+		if(empty($this->ID)) return true;
+
+		if(is_numeric($this->ID)) return false;
+
+		return stripos($this->ID, 'new') === 0;
+	}
+
+
 }
