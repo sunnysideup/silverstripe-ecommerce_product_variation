@@ -20,5 +20,8 @@
 		"sunnysideup/ecommerce": "~3.0",
 		"silverstripe/restfulserver": ">=3.0.0",
 		"silverstripe/soapserver": ">=3.0.0"
+	},
+	"extra": {
+		"installer-name": "ecommerce_product_variation"
 	}
 }
