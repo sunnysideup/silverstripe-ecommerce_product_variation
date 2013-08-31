@@ -2,8 +2,8 @@
 # START ECOMMERCE PRODUCT VARIATION
 #########################################
 
-#These are examples; edit as you require.
 
+#These are examples; edit as you require.
 ProductsAndGroupsModelAdmin:
   managed_modules:
     - ProductVariation

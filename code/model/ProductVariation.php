@@ -298,7 +298,9 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * @return String
 	 */
 	function Title(){return $this->getTitle();}
-	function TitleWithHTML(){return $this->getTitle(TRUE);}
+	function TitleWithHTML($noProductTitle = false){
+		return $this->getTitle(TRUE, $noProductTitle);
+	}
 	function getTitle($withHTML = false, $noProductTitle = false){
 		$array = array(
 			"Values" => $this->AttributeValues(),
