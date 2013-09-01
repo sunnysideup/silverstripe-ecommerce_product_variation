@@ -28,6 +28,11 @@ class ProductWithVariationDecorator extends DataExtension {
 		'VariationAttributes' => array('Notes' => 'Varchar(200)')
 	);
 
+	private static $casting = array(
+		'LowestVariationPrice' => 'Currency',
+		'LowestVariationPriceAsMoney' => 'Money'
+	);
+
 	/**
 	 * standard SS method
 	 *
@@ -171,6 +176,29 @@ class ProductWithVariationDecorator extends DataExtension {
 	 */
 	function VariationOrProductIsInCart() {
 		return ($this->owner->IsInCart() || $this->VariationIsInCart());
+	}
+
+	public function LowestVariationPrice(){
+		$currentPrice = 9999999999999999999;
+		$variations = $this->owner->Variations();
+		if($variations && $variations->count()) {
+			foreach($variations as $variation) {
+				if($variation->canPurchase()) {
+					$variationPrice = $variation->getCalculatedPrice();
+					if($variationPrice < $currentPrice) {
+						$currentPrice = $variationPrice;
+					}
+				}
+			}
+		}
+		if($currentPrice < 9999999999999999999) {
+			return $currentPrice;
+		}
+	}
+
+
+	public function LowestVariationPriceAsMoney(){
+		return EcommerceCurrency::get_money_object_from_order_currency($this->LowestVariationPrice());
 	}
 
 	/*
@@ -672,5 +700,7 @@ private static $allowed_actions = array(
 		}
 		return array();
 	}
+
+
 
 }
