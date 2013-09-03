@@ -113,7 +113,7 @@ class CreateEcommerceVariations extends Controller {
 		return $this->output;
 	}
 
-	function jsonforform() {	
+	function jsonforform() {
 		if(! $this->_message) {
 			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
 		}
@@ -247,7 +247,7 @@ class CreateEcommerceVariations extends Controller {
 		foreach($this->_selectedtypeid as $typeID) {
 			if(isset($_GET[$typeID])) {
 				$value = $_GET[$typeID];
-				if(! $variation && ! $value) { 
+				if(! $variation && ! $value) {
 					$this->output =  false;
 					return $this->output;
 				}
@@ -291,14 +291,14 @@ class CreateEcommerceVariations_Field extends LiteralField {
 	}
 
 	function ProductVariationGetPluralName() {
-		return Convert::raw2att(ProductVariation::get_plural_name());
+		return Convert::raw2att(singleton("ProductVariation")->plural_name());
 	}
 
 	function ProductAttributeTypeGetPluralName() {
-		return Convert::raw2att(ProductAttributeType::get_plural_name());
+		return Convert::raw2att(singleton("ProductAttributeType")->plural_name());
 	}
 	function ProductAttributeValueGetPluralName() {
-		return Convert::raw2att(ProductAttributeValue::get_plural_name());
+		return Convert::raw2att(singleton("ProductAttributeValue")->plural_name());
 	}
 
 	function CheckboxField($name, $title) {

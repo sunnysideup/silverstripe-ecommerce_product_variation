@@ -89,7 +89,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 *
 	 */
 	function updateCMSFields(FieldList $fields) {
-		$tabName = ProductVariation::get_plural_name();
+		$tabName = singleton("ProductVariation")->plural_name();
 		$fields->addFieldToTab('Root', $tab = new Tab($tabName,
 			new HeaderField("$tabName for {$this->owner->Title}"),
 			$this->owner->getVariationsTable(),
@@ -97,7 +97,8 @@ class ProductWithVariationDecorator extends DataExtension {
 		));
 		$variations = $this->owner->Variations();
 		if($variations && $variations->Count()){
-			$fields->addFieldToTab('Root.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.ProductVariation::get_plural_name().'" tab. You set the default price here.'), 'Price');
+			$productVariationName = singleton("ProductVariation")->plural_name();
+			$fields->addFieldToTab('Root.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.$productVariationName.'" tab. You set the default price here.'), 'Price');
 			if(class_exists('DataObjectOneFieldUpdateController')) {
 				$link = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'Price', "ProductID = {$this->owner->ID}", '', 'update variation prices ...');
 				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good"> ' . $link . '</p>'), 'Variations');
