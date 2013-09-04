@@ -1,5 +1,5 @@
 ---
-Name: ecommerceproductvariationroutes
+Name: ecommerce_product_variation_routes
 After: framework/routes#coreroutes
 ---
 Director:
