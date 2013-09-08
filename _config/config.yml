@@ -25,10 +25,8 @@ ProductsAndGroupsModelAdmin:
     - ProductAttributeType
 
 ---
-
 Only:
   classexists: 'DataObjectSorterDOD'
-
 ---
 
 ProductAttributeValue:

@@ -14,12 +14,8 @@
 		}
 	],
 	"require":{
-		"php": ">=5.3.2",
-		"silverstripe/framework": "~3.0",
-		"silverstripe/cms": "~3.0",
-		"sunnysideup/ecommerce": "~3.0",
-		"silverstripe/restfulserver": ">=3.0.0",
-		"silverstripe/soapserver": ">=3.0.0"
+		"sunnysideup/ecommerce": "dev-master",
+		"sunnysideup/dataobjectsorter": "dev-master"
 	},
 	"extra": {
 		"installer-name": "ecommerce_product_variation"
