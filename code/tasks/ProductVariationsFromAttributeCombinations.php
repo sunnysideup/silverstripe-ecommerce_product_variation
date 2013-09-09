@@ -14,5 +14,13 @@ class ProductVariationsFromAttributeCombinations extends CliController{
 		}
 	}
 
+	public function Link($action = null) {
+		$link = "dataobjectsorter/";
+		if($action) {
+			$link .= "$action/";
+		}
+		return $link;
+	}
+
 }
 
