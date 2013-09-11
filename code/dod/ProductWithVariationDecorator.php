@@ -46,11 +46,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return Int
 	 */
 	function NumberOfVariations() {
-		$vars = $this->owner->Variations();
-		if($vars) {
-			return count($vars);
-		}
-		return 0;
+		return $this->owner->Variations()->count();
 	}
 
 	/**
