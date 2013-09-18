@@ -12,30 +12,29 @@ class ProductAttributeValue extends DataObject{
 		)
 	);
 
-private static $db = array(
+	private static $db = array(
 		'Value' => 'Varchar(255)',
 		'Sort' => 'Int'
 	);
 
-private static $has_one = array(
+	private static $has_one = array(
 		'Type' => 'ProductAttributeType'
 	);
 
-private static $belongs_many_many = array(
+	private static $belongs_many_many = array(
 		'ProductVariation' => 'ProductVariation'
 	);
 
-private static $summary_fields = array(
+	private static $summary_fields = array(
 		'Value' => 'Value',
 		'Type.Title' => 'Value'
 	);
 
-private static $searchable_fields = array(
-		'Title' => 'PartialMatchFilter',
+	private static $searchable_fields = array(
 		'Value' => 'PartialMatchFilter'
 	);
 
-private static $casting = array(
+	private static $casting = array(
 		'Title' => 'Varchar',
 		'ValueForDropdown' => "HTMLText"
 	);
