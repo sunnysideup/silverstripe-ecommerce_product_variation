@@ -79,7 +79,7 @@ private static $default_sort = "\"Sort\" ASC, \"Name\"";
 		return $fields;
 	}
 
-	static function find_or_make($name){
+	public static function find_or_make($name){
 		$name = strtolower($name);
 		if($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
 			return $type;
