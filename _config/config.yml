@@ -14,6 +14,16 @@ Product_Controller:
     - VariationForm
     - addvariation
 
+
+LeftAndMain:
+  extra_requirements_javascript:
+    - framework/thirdparty/jquery/jquery.js
+    - framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js
+    - ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js
+  extra_requirements_themedCss:
+    - CreateEcommerceVariationsField
+
+
 EcommerceDatabaseAdmin:
   extensions:
     - EcommerceProductVariationTaskDeleteVariations_EXT

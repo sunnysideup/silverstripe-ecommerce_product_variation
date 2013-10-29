@@ -1,13 +1,5 @@
 
 
-;(function($) {
-	$(document).ready(
-		function() {
-			CreateEcommerceVariationsField.init();
-		}
-	);
-
-})(jQuery);
 
 (function($) {
 	$.entwine('ecommerce', function($) {
