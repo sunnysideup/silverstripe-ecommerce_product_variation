@@ -9,6 +9,17 @@
 
 })(jQuery);
 
+(function($) {
+	$.entwine('ecommerce', function($) {
+		$('#CreateEcommerceVariationsInner').entwine({
+			onmatch : function() {
+				CreateEcommerceVariationsField.init();
+				this._super();
+			}
+		});
+	});
+}(jQuery));
+
 
 var CreateEcommerceVariationsField = {
 
