@@ -19,10 +19,10 @@ EcommerceDatabaseAdmin:
     - EcommerceProductVariationTaskDeleteVariations_EXT
 
 ProductsAndGroupsModelAdmin:
-  managed_modules:
+  managed_models:
     - ProductVariation
-    - ProductAttributeValue
     - ProductAttributeType
+    - ProductAttributeValue
 
 ---
 Only:
