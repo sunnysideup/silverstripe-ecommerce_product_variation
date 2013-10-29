@@ -6,7 +6,6 @@
 		$('#CreateEcommerceVariationsInner').entwine({
 			onmatch : function() {
 				CreateEcommerceVariationsField.init();
-				this._super();
 			}
 		});
 	});
@@ -424,7 +423,7 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 		return a;
-	},
+	}
 
 
 
@@ -434,7 +433,11 @@ var CreateEcommerceVariationsField = {
 
 /*
 CONFIG - CAN BE OVERRIDEN BY YOUR OWN JS FILE
-//LeftAndMain::require_javascript("mysite/javascript/CreateEcommerceVariationsField.js");
+LeftAndMain:
+  extra_requirements_javascript:
+    - framework/thirdparty/jquery/jquery.js
+    - framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js
+    - ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js
 */
 CreateEcommerceVariationsField.set_url('createecommercevariations')
 CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner')
