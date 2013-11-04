@@ -399,7 +399,7 @@ var CreateEcommerceVariationsField = {
 		else {
 			a.typeorvalue = "type";
 		}
-		a.value = escape(jQuery(inputElement).val());
+		a.value = jQuery(inputElement).val();
 		a.id = jQuery(inputElement).attr("rel");
 		return a;
 	},
