@@ -40,8 +40,6 @@ class CreateEcommerceVariations extends Controller {
 		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = $_GET["typeorvalue"];}
 		if(isset($_GET["id"])) { $this->_id = intval($_GET["id"]);}
 		if(isset($_GET["value"])) { $this->_value = urldecode($_GET["value"]);}
-		//die($_GET["value"]);
-		//die($this->_value);
 		if(isset($_GET["position"])) { $this->_position = intval($_GET["_position"]);}
 		if($this->_typeorvalue == "type") {
 			$this->_classname = 'ProductAttributeType';
