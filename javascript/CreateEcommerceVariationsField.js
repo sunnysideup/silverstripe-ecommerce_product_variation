@@ -47,6 +47,8 @@ var CreateEcommerceVariationsField = {
 
 	createButtonHolderHTML: "",
 
+	attached: false,
+
 	init: function() {
 		CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
 		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
@@ -88,16 +90,19 @@ var CreateEcommerceVariationsField = {
 	},
 
 	attachFunctions: function() {
-		CreateEcommerceVariationsField.productID = jQuery(CreateEcommerceVariationsField.getProductIDSelector).val();
-		CreateEcommerceVariationsField.addAddLinkToggles();
-		CreateEcommerceVariationsField.addEditLinkToggles();
-		CreateEcommerceVariationsField.addGroupItemLinkedClicks();
-		CreateEcommerceVariationsField.add();
-		CreateEcommerceVariationsField.rename();
-		CreateEcommerceVariationsField.move();
-		CreateEcommerceVariationsField.select();
-		CreateEcommerceVariationsField.remove();
-		CreateEcommerceVariationsField.createVariations();
+		if(!CreateEcommerceVariationsField.attached) {
+			CreateEcommerceVariationsField.productID = jQuery(CreateEcommerceVariationsField.getProductIDSelector).val();
+			CreateEcommerceVariationsField.addAddLinkToggles();
+			CreateEcommerceVariationsField.addEditLinkToggles();
+			CreateEcommerceVariationsField.addGroupItemLinkedClicks();
+			CreateEcommerceVariationsField.add();
+			CreateEcommerceVariationsField.rename();
+			CreateEcommerceVariationsField.move();
+			CreateEcommerceVariationsField.select();
+			CreateEcommerceVariationsField.remove();
+			CreateEcommerceVariationsField.createVariations();
+			CreateEcommerceVariationsField.attached = true;
+		}
 	},
 
 	addAddLinkToggles: function() {
@@ -330,7 +335,7 @@ var CreateEcommerceVariationsField = {
 					html += '</ul></div>';
 					CreateEcommerceVariationsField.removeOldStuff();
 					jQuery('#' + CreateEcommerceVariationsField.fieldID).html(html);
-					//CreateEcommerceVariationsField.attachFunctions();
+					CreateEcommerceVariationsField.attachFunctions();
 					jQuery("#CreateEcommerceVariationsInner a").each (
 						function (i, el) {
 							var title = jQuery(el).text();
