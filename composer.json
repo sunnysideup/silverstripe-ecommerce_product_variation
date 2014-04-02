@@ -3,7 +3,7 @@
 	"type": "silverstripe-module",
 	"description": "create product variations within e-commerce (e.g. if you have a sock you can now sell a red XL sock or a small blue sock).",
 	"homepage": "http://www.silverstripe-ecommerce.com",
-	"keywords": ["ecommerce", "e-commerce", "shop", "product variation","variation", "silverstripe"],
+	"keywords": ["ecommerce", "e-commerce", "shop", "product variation","variation", "silverstripe", "sizes", "colours", "sub-types", "types"],
 	"license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
 	"authors":[
 		{
