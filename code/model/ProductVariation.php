@@ -825,7 +825,7 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * Is the product for sale?
 	 * @return Boolean
 	 */
-	function canPurchase(Member $member = null) {
+	function canPurchase(Member $member = null, $checkPrice = true) {
 		$config = $this->EcomConfig();
 		if($config->ShopClosed) {
 			return false;
