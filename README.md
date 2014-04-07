@@ -1,7 +1,6 @@
-###############################################
+
 E-commerce Product Variations
-Pre 0.1 proof of concept
-###############################################
+================================================================================
 
 Create product variations within e-commerce (e.g. if you have a sock you can now sell a red XL sock or a small blue sock).
 
