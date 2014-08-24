@@ -61,11 +61,11 @@ class CreateEcommerceVariations extends Controller {
 	private static $url_segment = "createecommercevariations";
 
 	public function Link($action = null) {
-		$link = $this->Config()->get("url_segment")."/";
-		if($action) {
-			$link .= "$action/";
-		}
-		return $link;
+		return Controller::join_links(
+			Director::baseURL(), 
+			$this->Config()->get("url_segment"),
+			$action
+		);
 	}
 
 	public function index() {

@@ -15,11 +15,11 @@ class ProductVariationsFromAttributeCombinations extends CliController{
 	}
 
 	public function Link($action = null) {
-		$link = "dataobjectsorter/";
-		if($action) {
-			$link .= "$action/";
-		}
-		return $link;
+		return Controller::join_links(
+			Director::baseURL(), 
+			"dataobjectsorter",
+			$action
+		);
 	}
 
 }
