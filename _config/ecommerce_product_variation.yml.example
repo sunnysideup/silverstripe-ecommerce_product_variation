@@ -5,6 +5,12 @@
 
 #These are examples; edit as you require.
 
+ProductsAndGroupsModelAdmin:
+  managed_models:
+    - ProductVariation
+    - ProductAttributeType
+    - ProductAttributeValue
+
 ProductWithVariationDecorator_Controller:
   use_js_validation: false
   alternative_validator_class_name: ""

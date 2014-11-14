@@ -28,11 +28,7 @@ EcommerceDatabaseAdmin:
   extensions:
     - EcommerceProductVariationTaskDeleteVariations_EXT
 
-ProductsAndGroupsModelAdmin:
-  managed_models:
-    - ProductVariation
-    - ProductAttributeType
-    - ProductAttributeValue
+
 
 ---
 Only:

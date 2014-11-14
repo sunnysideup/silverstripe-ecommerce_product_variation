@@ -526,7 +526,7 @@ class ProductWithVariationDecorator extends DataExtension {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
-private static $allowed_actions = array(
+	private static $allowed_actions = array(
 		"selectvariation",
 		"VariationForm"
 	);
@@ -539,61 +539,68 @@ private static $allowed_actions = array(
 	private static $use_js_validation = true;
 
 	/**
-	 * tells us if Javascript should be used in validating
-	 * the product variation form.
+	 * Alternative class name for Validation of Form
+	 * in PHP
 	 * @var String
 	 */
 	private static $alternative_validator_class_name = "";
 
+	/**
+	 * returns a form of the product if it can be purchased.
+	 *
+	 * @return Form | NULL
+	 */
 	function VariationForm(){
-		$farray = array();
-		$requiredfields = array();
-		$attributes = $this->owner->VariationAttributes();
-		if($attributes) {
-			foreach($attributes as $attribute){
-				$options = $this->possibleValuesForAttributeType($attribute);
-				if($options && $options->count()) {
-					$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
-					$requiredfields[] = "ProductAttributes[$attribute->ID]";
-				}
-			}
-		}
-		$fields = new FieldList($farray);
-		$fields->push(new NumericField('Quantity','Quantity',1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
-
-		$actions = new FieldList(
-			new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add to cart"))
-		);
-		$requiredfields[] = 'Quantity';
-		$requiredFieldsClass = "RequiredFields";
-		if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
-			$requiredFieldsClass = Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name');
-		}
-		$validator = new $requiredFieldsClass($requiredfields);
-		//variation options json generation
-		if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')){ //TODO: make javascript json inclusion optional
-			if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
-				Requirements::javascript(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name'));
-			}
-
-			$varArray = array();
-			if($vars = $this->owner->Variations()){
-				foreach($vars as $var){
-					if($var->canPurchase()) {
-						$varArray[$var->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
+		if($this->owner->canPurchase(null, true)) {
+			$farray = array();
+			$requiredfields = array();
+			$attributes = $this->owner->VariationAttributes();
+			if($attributes) {
+				foreach($attributes as $attribute){
+					$options = $this->possibleValuesForAttributeType($attribute);
+					if($options && $options->count()) {
+						$farray[] = $attribute->getDropDownField(_t("ProductWithVariationDecorator.CHOOSE","choose")." $attribute->Label "._t("ProductWithVariationDecorator.DOTDOTDOT","..."),$options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+						$requiredfields[] = "ProductAttributes[$attribute->ID]";
 					}
 				}
 			}
-			$json = json_encode($varArray);
-			$jsonscript = "var variationsjson = $json";
+			$fields = new FieldList($farray);
+			$fields->push(new NumericField('Quantity','Quantity',1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
+
+			$actions = new FieldList(
+				new FormAction('addVariation', _t("ProductWithVariationDecorator.ADDLINK","Add to cart"))
+			);
+			$requiredfields[] = 'Quantity';
+			$requiredFieldsClass = "RequiredFields";
+			if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
+				$requiredFieldsClass = Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name');
+			}
+			$validator = new $requiredFieldsClass($requiredfields);
+			//variation options json generation
+			if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')){ //TODO: make javascript json inclusion optional
+				if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
+					Requirements::javascript(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name'));
+				}
+
+				$varArray = array();
+				if($vars = $this->owner->Variations()){
+					foreach($vars as $var){
+						if($var->canPurchase()) {
+							$varArray[$var->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
+						}
+					}
+				}
+				$json = json_encode($varArray);
+				$jsonscript = "var variationsjson = $json";
 
 
-			Requirements::customScript($jsonscript,'variationsjson');
-			Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+				Requirements::customScript($jsonscript,'variationsjson');
+				Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+			}
+			Requirements::themedCSS('variationsform', "ecommerce_product_variation");
+			$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
+			return $form;
 		}
-		Requirements::themedCSS('variationsform', "ecommerce_product_variation");
-		$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
-		return $form;
 	}
 
 	function addVariation($data, $form){
@@ -607,7 +614,7 @@ private static $allowed_actions = array(
 					if(!$quantity) {
 						$quantity = 1;
 					}
-					ShoppingCart::singleton()->addBuyable($variation,$quantity);
+					ShoppingCart::singleton()->addBuyable($variation,$quantity, $form);
 					if($variation->IsInCart()) {
 						$msg = _t("ProductWithVariationDecorator.SUCCESSFULLYADDED","Added to cart.");
 						$status = "good";
