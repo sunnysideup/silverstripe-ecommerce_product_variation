@@ -139,7 +139,7 @@ class ProductWithVariationDecorator extends DataExtension {
 			null,
 			$filter
 		);
-		if(method_exists($tableField, 'setRelationAutoSetting')) {
+		if($tableField->hasMethod(setRelationAutoSetting')) {
 			$tableField->setRelationAutoSetting(true);
 		}
 		$tableField->setPermissions(array('edit', 'delete', 'export', 'show'));
