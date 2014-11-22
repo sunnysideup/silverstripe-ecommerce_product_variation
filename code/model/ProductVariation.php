@@ -355,8 +355,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 	 * sets the FullName + FullSiteTreeSort of the variation
 	 */
 	function onBeforeWrite(){
-		$this->currentStageOfRequest = Versioned::current_stage();
-		Versioned::set_reading_mode("");
+		//$this->currentStageOfRequest = Versioned::current_stage();
+		//Versioned::set_reading_mode("");
 		$this->prepareFullFields();
 		parent::onBeforeWrite();
 	}
