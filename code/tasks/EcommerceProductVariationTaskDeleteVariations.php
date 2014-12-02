@@ -8,11 +8,14 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
 
 	function run($request){
 		$productVariationArrayID = array();
-		if(empty($_GET["ProductID"])) {
+		if(empty($_GET["productid"])) {
 			$productID = 0;
 		}
+		elseif($_GET["productid"] == 'all') {
+			$productID = -1;
+		}
 		else {
-			$productID = intval($_GET["ProductID"]);
+			$productID = intval($_GET["productid"]);
 		}
 		if(empty($_GET["live"])) {
 			$live = false;
@@ -24,79 +27,93 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
 			DB::alteration_message("this is a live task", "deleted");
 		}
 		else {
-			DB::alteration_message("this is a test only", "created");
+			DB::alteration_message("this is a test only. If you add a live=1 get variable then you can make it for real ;-)", "created");
 		}
-		$product = Product::get()->byID($productID);
-		if($product) {
-			DB::alteration_message("Deleting variations for ".$product->Title, "deleted");
-			$variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
-			if($variations->count()) {
-				DB::alteration_message("PRE DELETE COUNT: ".$variations->count());
-				foreach($variations as $variation) {
-					DB::alteration_message("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Deleting Variation: ".$variation->Title(), "deleted");
-					if($live) {
-						$variation->delete();
-					}
-					$productVariationArrayID[$variation->ID] = $variation->ID;
-				}
-				$variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
-				if($live) {
+		if($productID == -1) {
+			$products = Product::get();
+		}
+		else {
+			$products = null;
+			$product = Product::get()->byID($productID);
+			if($product) {
+				$products= new ArrayList();
+				$products->push($product);
+			}
+		}
+		if($products && $products->count()) {
+			foreach($products as $product) {
+				$productID = $product->ID;
+				if($products->count()) {
+					DB::alteration_message("Deleting variations for ".$product->Title, "deleted");
+					$variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
 					if($variations->count()) {
-						DB::alteration_message("POST DELETE COUNT: ".$variations->count());
+						DB::alteration_message("PRE DELETE COUNT: ".$variations->count());
+						foreach($variations as $variation) {
+							DB::alteration_message("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Deleting Variation: ".$variation->Title(), "deleted");
+							if($live) {
+								$variation->delete();
+							}
+							$productVariationArrayID[$variation->ID] = $variation->ID;
+						}
+						$variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
+						if($live) {
+							if($variations->count()) {
+								DB::alteration_message("POST DELETE COUNT: ".$variations->count());
+							}
+							else {
+								DB::alteration_message("All variations have been deleted: ", "created");
+							}
+						}
+						else {
+							DB::alteration_message("This was a test only", "created");
+						}
 					}
 					else {
-						DB::alteration_message("All variations have been deleted: ", "created");
+						DB::alteration_message("There are no variations to delete", "created");
+					}
+					DB::alteration_message("Starting cleanup", "created");
+					if($live) {
+						$sql = "
+									DELETE
+									FROM \"Product_VariationAttributes\"
+									WHERE \"ProductID\" = ".$productID;
+						DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+						DB::query($sql);
+						$sql = "
+									DELETE \"ProductVariation_AttributeValues\"
+									FROM \"ProductVariation_AttributeValues\"
+										LEFT JOIN \"ProductVariation\"
+											ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+									WHERE \"ProductVariation\".\"ID\" IS NULL";
+						DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+						DB::query($sql);
+					}
+					else {
+						$sql = "
+									SELECT COUNT(Product_VariationAttributes.ID)
+									FROM \"Product_VariationAttributes\"
+									WHERE \"ProductID\" = ".$productID;
+						DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+						$result = DB::query($sql);
+						DB::alteration_message("Would have deleted ".$result->value()." rows");
+						$sql = "
+									SELECT COUNT (\"ProductVariation_AttributeValues\".\"ID\")
+									FROM \"ProductVariation_AttributeValues\"
+										LEFT JOIN \"ProductVariation\"
+											ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+									WHERE
+										\"ProductVariation\".\"ID\" IS NULL OR
+										\"ProductVariation\".\"ID\" IN(".implode(",", $productVariationArrayID).") ";
+						DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+						$result = DB::query($sql);
+						DB::alteration_message("Would have deleted ".$result->value()." rows");
 					}
 				}
-				else {
-					DB::alteration_message("This was a test only", "created");
-				}
-			}
-			else {
-				DB::alteration_message("There are no variations to delete", "created");
-			}
-			DB::alteration_message("Starting cleanup", "created");
-			if($live) {
-				$sql = "
-							DELETE
-							FROM \"Product_VariationAttributes\"
-							WHERE \"ProductID\" = ".$productID;
-				DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
-				DB::query($sql);
-				$sql = "
-							DELETE \"ProductVariation_AttributeValues\"
-							FROM \"ProductVariation_AttributeValues\"
-								LEFT JOIN \"ProductVariation\"
-									ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
-							WHERE \"ProductVariation\".\"ID\" IS NULL";
-				DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
-				DB::query($sql);
-			}
-			else {
-				$sql = "
-							SELECT COUNT(Product_VariationAttributes.ID)
-							FROM \"Product_VariationAttributes\"
-							WHERE \"ProductID\" = ".$productID;
-				DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
-				$result = DB::query($sql);
-				DB::alteration_message("Would have deleted ".$result->value()." rows");
-				$sql = "
-							SELECT COUNT (\"ProductVariation_AttributeValues\".\"ID\")
-							FROM \"ProductVariation_AttributeValues\"
-								LEFT JOIN \"ProductVariation\"
-									ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
-							WHERE
-								\"ProductVariation\".\"ID\" IS NULL OR
-								\"ProductVariation\".\"ID\" IN(".implode(",", $productVariationArrayID).") ";
-				DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
-				$result = DB::query($sql);
-				DB::alteration_message("Would have deleted ".$result->value()." rows");
 			}
 		}
 		else {
-			DB::alteration_message("Product does not exist", "deleted");
+			DB::alteration_message("Product does not exist. You can set the product by adding it productid=XXX as a GET variable.  You can also add <i>all</i> to delete ALL product Variations.", "deleted");
 		}
-
 	}
 
 }

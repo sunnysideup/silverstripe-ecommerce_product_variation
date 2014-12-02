@@ -27,7 +27,7 @@ class ProductAttributeValue extends DataObject{
 
 	private static $summary_fields = array(
 		'Value' => 'Value',
-		'Type.Title' => 'Value'
+		'Type.Title' => 'Type'
 	);
 
 	private static $searchable_fields = array(
@@ -44,7 +44,31 @@ class ProductAttributeValue extends DataObject{
 		return $this->Value;
 	}
 
-private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
+
+	/**
+	 * finds or makes a ProductAttributeType, based on the lower case Name.
+	 *
+	 * @param ProductAttributeType | Int $type
+	 * @param String $value
+	 *
+	 * @return ProductAttributeType
+	 */
+	public static function find_or_make($type, $value){
+		if($type instanceof ProductAttributeType) {
+			$type = $type->ID;
+		}
+		$value = strtolower($value);
+		if($valueObj = ProductAttributeValue::get()->where("LOWER(\"Value\") = '$value' AND TypeID = ".$type)->First()) {
+			return $valueObj;
+		}
+		$valueObj = new ProductAttributeValue();
+		$valueObj->Value = $value;
+		$valueObj->TypeID = $type;
+		$valueObj->write();
+		return $valueObj;
+	}
+
+	private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 
 	private static $singular_name = "Attribute Value";
 		function i18n_singular_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Attribute Value");}
@@ -64,8 +88,6 @@ private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 			WHERE \"ProductAttributeValueID\" = ".$this->ID
 		)->value() == 0;
 	}
-
-
 
 	function getCMSFields(){
 		$fields = parent::getCMSFields();

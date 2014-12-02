@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * this class helps to create/edit/delete variations
+ *
+ *
+ */
 
 class CreateEcommerceVariations extends Controller {
 
@@ -14,28 +19,112 @@ class CreateEcommerceVariations extends Controller {
 		'cansavevariation'
 	);
 
+	/**
+	 * The selected Product (ID)
+	 * @var Int
+	 */
 	protected $_productID = 0;
+
+	/**
+	 * The select Product (Object)
+	 * @var Product
+	 */
 	protected $_product = null;
+
+	/**
+	 * type | value
+	 * @var String
+	 */
 	protected $_typeorvalue = "type"; // or value!
+
+	/**
+	 * ProductAttributeValue | ProductAttributeType
+	 * @var String
+	 */
 	protected $_classname = "type"; // or value!
+
+	/**
+	 * Name of the Name field
+	 * @var String
+	 */
 	protected $_namefield = "Name";
-	protected $_labelfield = "Label"; // only for ProductAttributeType
+
+	/**
+	 * Name of the Label field
+	 * only for ProductAttributeType
+	 * @var String
+	 */
+	protected $_labelfield = "Label";
+
+	/**
+	 * Id of the item being altered
+	 * or its parent...
+	 * @var Int
+	 */
 	protected $_id = 0;
+
+	/**
+	 * Value of the item being altered
+	 * @var String
+	 */
 	protected $_value = "";
-	protected $_position = -1; //use -1 to distinguish it from 0 (first in sorting order)
-	protected $_message = ""; //use -1 to distinguish it from 0 (first in sorting order)
-	protected $_messageclass = "good"; //use -1 to distinguish it from 0 (first in sorting order)
-	protected $_selectedtypeid = array(); //use -1 to distinguish it from 0 (first in sorting order)
-	protected $_selectedvalueid = array(); //use -1 to distinguish it from 0 (first in sorting order)
+
+	/**
+	 * Position in the sorting order
+	 * use -1 to distinguish it from 0 (first in sorting order)
+	 * @var Int
+	 */
+	protected $_position = -1;
+
+	/**
+	 * Return message
+	 * @var String
+	 */
+	protected $_message = "";
+
+	/**
+	 * Type of message
+	 * good | bad | warning
+	 * @var String
+	 */
+	protected $_messageclass = "good";
+
+	/**
+	 * Type IDs that are selected in the PRODUCT
+	 * @var Array
+	 */
+	protected $_selectedtypeid = array();
+
+	/**
+	 * Value IDs that are selected in the PRODUCT
+	 * @var Array
+	 */
+	protected $_selectedvalueid = array();
+
+	/**
+	 * What is going to be sent back.
+	 * @var String
+	 */
 	protected $output = "";
 
+	/**
+	 * The name for the session varilable.
+	 * @var String
+	 */
 	private static $session_name_for_selected_values = "SelectecedValues";
+
+	/**
+	 *
+	 * @var String
+	 */
+	private static $url_segment = "createecommercevariations";
 
 	function init() {
 		parent::init();
+		Versioned::set_reading_mode("Stage.Stage");
 		$shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
 		if(!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check($shopAdminCode)) {
-			Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
+			return Security::permissionFailure($this, _t('Security.PERMFAILURE',' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
 		}
 		if(isset($_GET["typeorvalue"])) { $this->_typeorvalue = $_GET["typeorvalue"];}
 		if(isset($_GET["id"])) { $this->_id = intval($_GET["id"]);}
@@ -49,6 +138,7 @@ class CreateEcommerceVariations extends Controller {
 			$this->_classname = 'ProductAttributeValue';
 			$this->_namefield = 'Value';
 		}
+
 		$this->_productID = $this->request->param("ProductID");
 		$this->_product = Product::get()->byID($this->_productID);
 		if(!$this->_product) {
@@ -58,11 +148,10 @@ class CreateEcommerceVariations extends Controller {
 		$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
 	}
 
-	private static $url_segment = "createecommercevariations";
 
 	public function Link($action = null) {
 		return Controller::join_links(
-			Director::baseURL(), 
+			Director::baseURL(),
 			$this->Config()->get("url_segment"),
 			$action
 		);
@@ -76,36 +165,33 @@ class CreateEcommerceVariations extends Controller {
 		return $this->output;
 	}
 
+	/**
+	 *
+	 * checks the selected types and values and
+	 * makes variations from it...
+	 */
 	function createvariations() {
+		//lazy array
 		$missingTypesID = array(-1 => -1);
+		$missingTypes = array();
 		foreach($this->_selectedtypeid as $typeID) {
 			if(! isset($_GET[$typeID])) {
-				$type = ProductAttributeType::get()->byID($typeID);
-				if($type) {
-					$missingTypes[] = $type->Name;
-				}
-				$missingTypesID[] = $typeID;
+				$missingTypesID[$typeID] = $typeID;
 			}
 		}
-		/*
-		if(isset($missingTypes)) {
-			$this->_message = 'No variations has been created because you\'ve not selected values for the type' . (count($missingTypes) > 1 ? 's ' : ' ') . implode(', ', $missingTypes) . '.';
-			$this->_messageclass = 'bad';
-			return $this->jsonforform();
-		}
-		*/
-		$missingTypes = array();
-		$types = ProductAttributeType::get()->exclude(array("ID" => implode(",", $missingTypesID)));
+		$types = ProductAttributeType::get()->exclude(array("ID" => $missingTypesID));
 		if($types->count()) {
-			$values = array();
+			$allTypesAndValues = array();
 			foreach($types as $type) {
 				if(isset($_GET[$type->ID])) {
-					$values[$type->ID] = explode(',', $_GET[$type->ID]);
+					$allTypesAndValues[$type->ID] = explode(',', $_GET[$type->ID]);
 				}
 			}
 			$cpt = 0;
-			if(count($values) > 0) {
-				$cpt = $this->_product->generateVariationsFromAttributeValues($values);
+			if(count($allTypesAndValues) > 0) {
+				//create the variations...
+				$cpt = $this->_product->generateVariationsFromAttributeValues($allTypesAndValues);
+				//reset values in this class ...
 				$this->_selectedtypeid = $this->_product->getArrayOfLinkedProductAttributeTypeIDs();
 				$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
 			}
@@ -123,6 +209,11 @@ class CreateEcommerceVariations extends Controller {
 		return $this->output;
 	}
 
+
+	/**
+	 *
+	 * @return String
+	 */
 	function jsonforform() {
 		if(! $this->_message) {
 			$this->_message = _t("CreateEcommerceVariations.STARTEDITING", "Start editing the list below to create variations.");
@@ -174,7 +265,7 @@ class CreateEcommerceVariations extends Controller {
 		$obj = $className::get()->byID($this->_id);
 		if($obj) {
 			$name = $obj->{$this->_namefield};
-			if($obj instanceOf ProductAttributeType) {
+			if($obj instanceof ProductAttributeType) {
 				$obj->{$this->_labelfield} = $this->_value;
 				$name .= " (".$obj->{$this->_labelfield}.")";
 			}
@@ -190,6 +281,9 @@ class CreateEcommerceVariations extends Controller {
 		return $this->output;
 	}
 
+	/**
+	 * add a Type or a Value
+	 */
 	function add() {
 		//is it Type or Value?
 		$obj = new $this->_classname();
@@ -200,18 +294,20 @@ class CreateEcommerceVariations extends Controller {
 		}
 		else {
 			$obj->write();
-			/*if($obj instanceOf ProductAttributeType) {
+			if($obj instanceOf ProductAttributeType) {
 				$this->_product->addAttributeType($obj);
 			}
-			else {
-				user_error($obj->Title ." should be an instance of ProductAttributeType", E_USER_WARNING);
-			}*/
 		}
+		$this->_selectedtypeid = $this->_product->getArrayOfLinkedProductAttributeTypeIDs();
+		$this->_selectedvalueid = $this->_product->getArrayOfLinkedProductAttributeValueIDs();
 		$this->_message = $this->_value.' '._t("CreateEcommerceVariations.HASBEENADDED",'has been added.');
 		$this->output =  $this->jsonforform();
 		return $this->output;
 	}
 
+	/**
+	 * remove a Type or a Value
+	 */
 	function remove() {
 		//is it Type or Value?
 		$className = $this->_classname;
@@ -249,6 +345,11 @@ class CreateEcommerceVariations extends Controller {
 		return $this->output;
 	}
 
+	/**
+	 *
+	 *
+	 * @return Boolean
+	 */
 	function cansavevariation() {
 		$variation = null;
 		if(isset($_GET['variation'])) {

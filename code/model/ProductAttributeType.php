@@ -29,31 +29,30 @@ class ProductAttributeType extends DataObject{
 		//'Unit' => 'Varchar' //TODO: for future use
 	);
 
-private static $has_one = array();
 
-private static $has_many = array(
-		'Values' => 'ProductAttributeValue'
-	);
+	private static $has_many = array(
+			'Values' => 'ProductAttributeValue'
+		);
 
-private static $summary_fields = array(
-		'Name' => 'Name'
-	);
+	private static $summary_fields = array(
+			'Name' => 'Name'
+		);
 
-private static $searchable_fields = array(
-		'Name' => 'PartialMatchFilter',
-		'Label' => 'PartialMatchFilter'
-	);
+	private static $searchable_fields = array(
+			'Name' => 'PartialMatchFilter',
+			'Label' => 'PartialMatchFilter'
+		);
 
-private static $belongs_many_many = array(
-		'Products' => 'Product'
-	);
+	private static $belongs_many_many = array(
+			'Products' => 'Product'
+		);
 
 
-private static $indexes = array(
-		"Sort" => true
-	);
+	private static $indexes = array(
+			"Sort" => true
+		);
 
-private static $default_sort = "\"Sort\" ASC, \"Name\"";
+	private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
 	//We need this to make certain templates work (see ProductWithVariationDecorator::VariationsPerVariationType)
 	public $Variations = null;
@@ -68,6 +67,25 @@ private static $default_sort = "\"Sort\" ASC, \"Name\"";
 			return $obj->i18n_plural_name();
 		}
 
+	/**
+	 * finds or makes a ProductAttributeType, based on the lower case Name.
+	 *
+	 * @param String $name
+	 *
+	 * @return ProductAttributeType
+	 */
+	public static function find_or_make($name){
+		$name = strtolower($name);
+		if($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
+			return $type;
+		}
+		$type = new ProductAttributeType();
+		$type->Name = $name;
+		$type->Label = $name;
+		$type->write();
+		return $type;
+	}
+
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
@@ -79,24 +97,20 @@ private static $default_sort = "\"Sort\" ASC, \"Name\"";
 		return $fields;
 	}
 
-	public static function find_or_make($name){
-		$name = strtolower($name);
-		if($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
-			return $type;
-		}
-		$type = new ProductAttributeType();
-		$type->Name = $name;
-		$type->Label = $name;
-		$type->write();
-
-		return $type;
-	}
 
 	function addValues(array $values){
 		$avalues = $this->convertArrayToValues($values);
 		$this->Values()->addMany($avalues);
 	}
 
+	/**
+	 * takes an array of values
+	 * and finds them or creates them.
+	 *
+	 * @param Array
+	 * @return ArrayList
+	 *
+	 */
 	function convertArrayToValues(array $values){
 		$set = new ArrayList();
 		foreach($values as $value){
@@ -111,6 +125,11 @@ private static $default_sort = "\"Sort\" ASC, \"Name\"";
 		return $set;
 	}
 
+	/**
+	 *
+	 *
+	 * @return DropdownField
+	 */
 	function getDropDownField($emptystring = null, $values = null) {
 		//to do, why do switch to "all" the options if there are no values?
 		$values = ($values) ? $values : $this->Values();
@@ -125,8 +144,11 @@ private static $default_sort = "\"Sort\" ASC, \"Name\"";
 		return null;
 	}
 
-
-
+	/**
+	 * It can be deleted if all its Values can be deleted only...
+	 *
+	 * @return Boolean
+	 */
 	public function canDelete($member = null) {
 		$values = $this->Values();
 		foreach($values as $value) {
@@ -151,6 +173,12 @@ private static $default_sort = "\"Sort\" ASC, \"Name\"";
 		}
 	}
 
+	/**
+	 * Delete all the values
+	 * that are related to this type.
+	 *
+	 *
+	 */
 	function onBeforeDelete() {
 		parent::onBeforeDelete();
 		$values = $this->Values();

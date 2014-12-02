@@ -12,30 +12,55 @@
 class ProductWithVariationDecorator extends DataExtension {
 
 	/**
-	 * standard SS method
-	 *
+	 * standard SS Var
 	 */
-
 	private static $has_many = array(
 		'Variations' => 'ProductVariation'
 	);
 
+	/**
+	 * standard SS Var
+	 */
 	private static $many_many = array(
 		'VariationAttributes' => 'ProductAttributeType'
 	);
 
+	/**
+	 * standard SS Var
+	 */
 	private static $many_many_extraFields = array(
 		'VariationAttributes' => array('Notes' => 'Varchar(200)')
 	);
 
+	/**
+	 * standard SS Var
+	 */
 	private static $casting = array(
 		'LowestVariationPrice' => 'Currency',
 		'LowestVariationPriceAsMoney' => 'Money'
 	);
 
 	/**
-	 * standard SS method
+	 * what class do we use for Variations.
+	 * This class has to extend ProductVariation.
 	 *
+	 * @var String
+	 */
+	protected $classNameOfVariations = "ProductVariation";
+
+	/**
+	 * returns what class do we use for Variations.
+	 * In general, that is ProductVariation, but you can change it to something else!
+	 * @return String
+	 */
+	public function getClassNameOfVariations(){
+		return $this->owner->classNameOfVariations;
+	}
+
+	/**
+	 * standard SS method
+	 * @param Member $member
+	 * @return Boolean
 	 */
 	function canDelete($member  = null) {
 		return (bool)!$this->owner->Variations();
@@ -82,7 +107,6 @@ class ProductWithVariationDecorator extends DataExtension {
 
 	/**
 	 * standard SS method
-	 *
 	 */
 	function updateCMSFields(FieldList $fields) {
 		$tabName = singleton("ProductVariation")->plural_name();
@@ -102,7 +126,6 @@ class ProductWithVariationDecorator extends DataExtension {
 		}
 	}
 
-
 	/**
 	 * Field to add and edit product variations
 	 * @return GridField
@@ -113,40 +136,6 @@ class ProductWithVariationDecorator extends DataExtension {
 		$source = $this->owner->Variations();
 		return new GridField("ProductVariations", _t("ProductVariation.PLURALNAME", "Product Variations"), $source , $gridFieldConfig);
 	}
-			/*
-		$singleton = singleton('ProductVariation');
-		$query = $singleton->buildVersionSQL("\"ProductID\" = '{$this->owner->ID}'");
-		$variations = $singleton->buildDataObjectSet($query->execute());
-		$filter = $variations ? "\"ID\" IN ('" . implode("','", $variations->column('RecordID')) . "') " : "\"ID\" < '0'";
-		//$filter = "\"ProductID\" = '{$this->owner->ID}'";
-
-		$summaryfields = array();
-
-		$attributes = $this->owner->VariationAttributes();
-		foreach($attributes as $attribute){
-			$summaryfields["AttributeProxy.Val$attribute->ID"] = $attribute->Title;
-		}
-
-		$summaryfields = array_merge($summaryfields, $singleton->summaryFields());
-		unset($summaryfields["Product.Title"]);
-		//unset($summaryfields["Title"]);
-
-		$tableField = new GridField((
-			$this->owner,
-			'Variations',
-			'ProductVariation',
-			$summaryfields,
-			null,
-			$filter
-		);
-		if($tableField->hasMethod('setRelationAutoSetting')) {
-			$tableField->setRelationAutoSetting(true);
-		}
-		$tableField->setPermissions(array('edit', 'delete', 'export', 'show'));
-		return $tableField;
-
-	}
-*/
 
 	/**
 	 * tells us if any of the variations, related to this product,
@@ -175,6 +164,11 @@ class ProductWithVariationDecorator extends DataExtension {
 		return ($this->owner->IsInCart() || $this->VariationIsInCart());
 	}
 
+	/**
+	 * returns lowest cost variation price
+	 * for use in FROM XXX.
+	 * @return Float
+	 */
 	public function LowestVariationPrice(){
 		$currentPrice = 9999999999999999999;
 		$variations = $this->owner->Variations();
@@ -194,6 +188,10 @@ class ProductWithVariationDecorator extends DataExtension {
 	}
 
 
+	/**
+	 * @see self::LowestVariationPrice
+	 * @return Money
+	 */
 	public function LowestVariationPriceAsMoney(){
 		return EcommerceCurrency::get_money_object_from_order_currency($this->LowestVariationPrice());
 	}
@@ -201,26 +199,28 @@ class ProductWithVariationDecorator extends DataExtension {
 	/*
 	 * Generates variations based on selected attributes.
 	 * TODO: work out how it works!
+	 * @param ProductAttributeType $attributetype
+	 * @param Array $values
 	 */
 	function generateVariationsFromAttributes(ProductAttributeType $attributetype, array $values){
-
+		die("this needs to be completed");
 		//TODO: introduce transactions here, in case objects get half made etc
 
 		//if product has variation attribute types
 		if(is_array($values)){
 			//TODO: get values dataobject set
-			$avalues = $attributetype->convertArrayToValues($values);
+			$arrayValues = $attributetype->convertArrayToValues($values);
 			$existingvariations = $this->owner->Variations();
-			if($existingvariations->exists()){
+			if($existingvariations->count()){
 				//delete old variation, and create new ones - to prevent modification of exising variations
 				foreach($existingvariations as $oldvariation){
 					$oldvalues = $oldvariation->AttributeValues();
 					if($oldvalues) {
-						foreach($avalues as $value){
+						foreach($arrayValues as $attributeValueObject){
 							$newvariation = $oldvariation->duplicate();
 							$newvariation->InternalItemID = $this->owner->InternalItemID.'-'.$newvariation->ID;
 							$newvariation->AttributeValues()->addMany($oldvalues);
-							$newvariation->AttributeValues()->add($value);
+							$newvariation->AttributeValues()->add($attributeValueObject);
 							$newvariation->write();
 							$existingvariations->add($newvariation);
 						}
@@ -229,18 +229,19 @@ class ProductWithVariationDecorator extends DataExtension {
 					$oldvariation->AttributeValues()->removeAll();
 					$oldvariation->delete();
 					$oldvariation->destroy();
-					//TODO: check that old variations actually stick around, as they will be needed for past orders etc
+					//TODO: check that old variations actually stick around,
+					//as they will be needed for past orders etc
 				}
 			}
 			else {
-				if($avalues) {
-					foreach($avalues as $value){
+				if($arrayValues) {
+					foreach($arrayValues as $attributeValueObject){
 						$variation = new ProductVariation();
 						$variation->ProductID = $this->owner->ID;
 						$variation->Price = $this->owner->Price;
 						$variation->write();
 						$variation->InternalItemID = $this->owner->InternalItemID.'-'.$variation->ID;
-						$variation->AttributeValues()->add($value); //TODO: find or create actual value
+						$variation->AttributeValues()->add($attributeValueObject);
 						$variation->write();
 						$existingvariations->add($variation);
 					}
@@ -250,57 +251,78 @@ class ProductWithVariationDecorator extends DataExtension {
 	}
 
 	/**
-	 * TO DO: work out how it works...
+	 * The array provided needs to be
+	 *     TypeID => arrayOfValueIDs
+	 *     TypeID => arrayOfValueIDs
+	 *     TypeID => arrayOfValueIDs
+	 * you can also make it
+	 *     NameOfAttritbuteType => arrayOfValueIDs
 	 *
+	 * TypeID is the ID of the ProductAttributeType.  You can also make
+	 * it a string in which case it will be found / created
+	 * arrayOfValueIDs is an array of IDs of the already created ProductAttributeValue.
+	 * You can also make it an array of strings in which case they will be found / created...
+	 *
+	 * @param array $values
+	 * @return Int
 	 */
-
 	function generateVariationsFromAttributeValues(array $values) {
 		set_time_limit(0);
-		$cpt = 0;
-		$variations = array();
+		$count = 0;
+		$valueCombos = array();
 		foreach($values as $typeID => $typeValues) {
-			$this->owner->addAttributeType($typeID);
-			$copyVariations = $variations;
-			$variations = array();
-			foreach($typeValues as $value) {
-				$value = array($value);
+			$typeObject = $this->owner->addAttributeType($typeID);
+			//we use the copy variations to merge all of them together...
+			$copyVariations = $valueCombos;
+			$valueCombos = array();
+			foreach($typeValues as $valueID) {
+				$obj = ProductAttributeValue::get()->byID(intval($valueID));
+				if(!$obj) {
+					$obj = ProductAttributeValue::find_or_make($typeObject, $valueID);
+					$valueID = $obj->write();
+				}
+				$valueID = array($valueID);
 				if(count($copyVariations) > 0) {
-					foreach($copyVariations as $variation) {
-						$variations[] = array_merge($variation, $value);
+					foreach($copyVariations as $copyVariation) {
+						$valueCombos[] = array_merge($copyVariation, $valueID);
 					}
 				}
 				else {
-					$variations[] = $value;
+					$valueCombos[] = $valueID;
 				}
 			}
 		}
-		foreach($variations as $variation) {
-			sort($variation);
-			$str = implode(',', $variation);
+		foreach($valueCombos as $valueArray) {
+			sort($valueArray);
+			$str = implode(',', $valueArray);
 			$add = true;
 			$productVariationIDs = DB::query("SELECT \"ID\" FROM \"ProductVariation\" WHERE \"ProductID\" = '{$this->owner->ID}'")->column();
 			if(count($productVariationIDs) > 0) {
 				$productVariationIDs = implode(',', $productVariationIDs);
 				$variationValues = DB::query("SELECT GROUP_CONCAT(\"ProductAttributeValueID\" ORDER BY \"ProductAttributeValueID\" SEPARATOR ',') FROM \"ProductVariation_AttributeValues\" WHERE \"ProductVariationID\" IN ($productVariationIDs) GROUP BY \"ProductVariationID\"")->column();
-				if(in_array($str, $variationValues)) $add = false;
+				if(in_array($str, $variationValues)) {
+					$add = false;
+				}
 			}
 			if($add) {
-				$cpt++;
+				$count++;
 				$newVariation = new ProductVariation(array(
 					'ProductID' => $this->owner->ID,
 					'Price' => $this->owner->Price
 				));
 				$newVariation->setSaveParentProduct(false);
 				$newVariation->write();
-				$newVariation->AttributeValues()->addMany($variation);
+				$newVariation->AttributeValues()->addMany($valueArray);
 			}
 		}
-		return $cpt;
+		return $count;
 	}
 
 	/**
 	 * TO DO: work out how it works...
-	 *
+	 * Get a
+	 * @param array $attributes
+	 * @return ProductVariation $variation
 	 */
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
@@ -346,36 +368,59 @@ class ProductWithVariationDecorator extends DataExtension {
 		$existingVariations->remove($attributeTypeObject);
 	}
 
+	/**
+	 * add an attribute type to the product
+	 *
+	 * @param ProductAttributeType | String | Int
+	 * @return ProductAttributeType
+	 */
 	function addAttributeType($attributeTypeObject) {
-		$existingTypes = $this->owner->VariationAttributes();
-		$existingTypes->add($attributeTypeObject);
+		if(intval($attributeTypeObject) === $attributeTypeObject ) {
+			$attributeTypeObject = ProductAttributeType::get()->byID(intval($attributeTypeObject));
+		}
+		if(is_string($attributeTypeObject)) {
+			$attributeTypeObject = ProductAttributeType::find_or_make($attributeTypeObject);
+		}
+		if($attributeTypeObject && $attributeTypeObject instanceof ProductAttributeType) {
+			$existingTypes = $this->owner->VariationAttributes();
+			$existingTypes->add($attributeTypeObject);
+			return $attributeTypeObject;
+		}
+		else {
+			user_error($attributeTypeObject ." is broken");
+		}
 	}
 
-	function canRemoveAttributeType($type) {
+	/**
+	 *
+	 * @param ProductAttributeType $attributeTypeObject
+	 * @return Boolean
+	 */
+	function canRemoveAttributeType($attributeTypeObject) {
 		$variations = $this->owner->getComponents(
 			'Variations',
-			"\"TypeID\" = '$type->ID'");
+			"\"TypeID\" = '$attributeTypeObject->ID'");
 		$variations = $variations->innerJoin("ProductVariation_AttributeValues", "\"ProductVariationID\" = \"ProductVariation\".\"ID\"");
 		$variations = $variations->innerJoin("ProductAttributeValue", "\"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"");
 		return $variations->Count() == 0;
 	}
 
+	/**
+	 *
+	 * @param ProductAttributeType $attributeTypeObject
+	 */
 	function removeAttributeType($attributeTypeObject) {
 		$existingTypes = $this->owner->VariationAttributes();
 		$existingTypes->remove($attributeTypeObject);
 	}
 
+	/**
+	 * return an array of IDs of the Attribute Types linked to this product.
+	 * @return Array
+	 */
 	function getArrayOfLinkedProductAttributeTypeIDs() {
-		/*
-		PROPER WAY - SLOW
-		$components = $this->owner->getManyManyComponents('VariationAttributes');
-		if($components && $components->count()) {
-			return $components->column("ID");
-		}
-		else {
-			return array();
-		}
-		*/
+		return $this->owner->VariationAttributes()->map("ID", "ID")->toArray();
+		//old way...
 		$sql = "
 			Select \"ProductAttributeTypeID\"
 			FROM \"Product_VariationAttributes\"
@@ -383,24 +428,12 @@ class ProductWithVariationDecorator extends DataExtension {
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
 		return $array;
-		/*$array = array();
-		if($data && count($data)) {
-			foreach($data as $key => $row) {
-				$id = $row["ProductAttributeTypeID"];
-				$array[$id] = $id;
-			}
-		}
-		if(is_array($array) && count($array) ) {
-			foreach($array as $key => $id) {
-				if(!ProductAttributeType::get()->byID($id)) {
-					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeTypeID\" = $id");
-					//unset($array[$key]);
-				}
-			}
-		}
-		return $array;*/
 	}
 
+	/**
+	 * return an array of IDs of the Attribute Types linked to this product.
+	 * @return Array
+	 */
 	function getArrayOfLinkedProductAttributeValueIDs() {
 		$sql = "
 			Select \"ProductAttributeValueID\"
@@ -411,14 +444,6 @@ class ProductWithVariationDecorator extends DataExtension {
 		$data = DB::query($sql);
 		$array = $data->keyedColumn();
 		return $array;
-		if(is_array($array) && count($array) ) {
-			foreach($array as $key => $id) {
-				if(!ProductAttributeType::get()->byID($id)) {
-					//DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductAttributeValueID\" = $id");
-					//unset($array[$key]);
-				}
-			}
-		}
 	}
 
 
@@ -438,6 +463,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * based on the ProductVariations for the products
 	 * removing non-existing Product_VariationAttributes
 	 * adding existing Product_VariationAttributes
+	 * @param Boolean $verbose - output outcome
 	 */
 	public function cleaningUpVariationData($verbose = false) {
 		$changes = false;

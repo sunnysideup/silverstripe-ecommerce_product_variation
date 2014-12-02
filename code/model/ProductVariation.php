@@ -346,8 +346,20 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	protected $currentStageOfRequest = "";
 
+	/**
+	 * when we save this object, should we save the parent
+	 * as well?
+	 *
+	 * @var Boolean
+	 */
 	protected $saveParentProduct = false;
 
+	/**
+	 * By setting this to TRUE
+	 * the parent (product) will be save when this object will be saved.
+	 *
+	 * @param Boolean $b
+	 */
 	function setSaveParentProduct($b) {$this->saveParentProduct = $b;}
 
 	/**
@@ -413,7 +425,6 @@ class ProductVariation extends DataObject implements BuyableModel{
 				$product->publish('Stage', 'Live');
 			}
 		}
-		Versioned::set_reading_mode($this->currentStageOfRequest);
 	}
 
 	/**
