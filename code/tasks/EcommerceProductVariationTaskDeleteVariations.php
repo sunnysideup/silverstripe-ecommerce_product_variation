@@ -4,7 +4,7 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
 
 	protected $title = "Deletes all the variations and associated data from a product";
 
-	protected $description = "CAREFUL: the developer will need to supply the ID as a get variable (?ProductID=XXX) as well as a test / live flag (?live=1, default is test) for the product and variations will be deleted without keeping a history.";
+	protected $description = "CAREFUL: the developer will need to supply the ID as a get variable (?productid=XXX) as well as a test / live flag (?live=1, default is test) for the product and variations will be deleted without keeping a history.";
 
 	function run($request){
 		$productVariationArrayID = array();
