@@ -1,6 +1,6 @@
 <?php
 
-class EcommerceProductVariationTaskDeleteVariations extends BuildTask{
+class EcommerceProductVariationTaskDeleteAll extends BuildTask{
 
 	protected $title = "Deletes all the variations and associated data";
 
