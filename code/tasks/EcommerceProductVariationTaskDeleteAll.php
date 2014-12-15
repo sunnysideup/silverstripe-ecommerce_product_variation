@@ -40,7 +40,7 @@ class EcommerceProductVariationTaskDeleteAll extends BuildTask{
 
 }
 
-class EcommerceProductVariationTaskDeleteVariations_EXT extends Extension {
+class EcommerceProductVariationTaskDeleteAll_EXT extends Extension {
 
 	private static $allowed_actions = array(
 		"ecommerceproductvariationtaskdeletevariations" => true
@@ -49,12 +49,12 @@ class EcommerceProductVariationTaskDeleteVariations_EXT extends Extension {
 	//NOTE THAT updateEcommerceDevMenuConfig adds to Config options
 	//but you can als have: updateEcommerceDevMenuDebugActions
 	function updateEcommerceDevMenuRegularMaintenance($buildTasks){
-		$buildTasks[] = "ecommerceproductvariationtaskdeletevariations";
+		$buildTasks[] = "ecommerceproductvariationtaskdeleteall";
 		return $buildTasks;
 	}
 
-	function ecommerceproductvariationtaskdeletevariations($request){
-		$this->owner->runTask("EcommerceProductVariationTaskDeleteVariations", $request);
+	function ecommerceproductvariationtaskdeleteall($request){
+		$this->owner->runTask("ecommerceproductvariationtaskdeleteall", $request);
 	}
 
 }
