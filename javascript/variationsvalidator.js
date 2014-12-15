@@ -20,7 +20,7 @@
 
 			$("#Form_VariationForm select").each(function(){
 				if($changed[0] !== $(this)[0]){
-					$(this).val(''); 		// diable other selections based on impossible selection
+					$(this).val(''); 		// disable other selections based on impossible selection
 				}
 			});
 			selected = getSelectedValues(); //re-get selected

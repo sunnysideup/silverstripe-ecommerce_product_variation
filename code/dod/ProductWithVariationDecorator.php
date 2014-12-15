@@ -552,9 +552,13 @@ class ProductWithVariationDecorator extends DataExtension {
 
 class ProductWithVariationDecorator_Controller extends Extension {
 
+	/**
+	 * standard SS Var
+	 */
 	private static $allowed_actions = array(
 		"selectvariation",
-		"VariationForm"
+		"VariationForm",
+		'filterforvariations' => true
 	);
 
 	/**
@@ -570,6 +574,25 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	 * @var String
 	 */
 	private static $alternative_validator_class_name = "";
+
+	/**
+	 * array of IDs of variations that should be shown
+	 * if count(array) == 0 then all of them will be shown
+	 * @var Array
+	 */
+	protected $variationFilter = array();
+
+	/**
+	 * return the variations and aplu filter if one has been set.
+	 * @return DataList
+	 */
+	function Variations(){
+		$variations = $this->owner->dataRecord->Variations();
+		if($this->variationFilter && count($this->variationFilter)) {
+			$variations = $variations->filter(array("ID" => $this->variationFilter));
+		}
+		return $variations;
+	}
 
 	/**
 	 * returns a form of the product if it can be purchased.
@@ -607,9 +630,9 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
 					Requirements::javascript(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name'));
 				}
-
-				$varArray = array();
-				if($vars = $this->owner->Variations()){
+				//todo: change JS so that we dont have to add this default array.
+				$varArray = array(-1 => -1);
+				if($vars = $this->Variations()){
 					foreach($vars as $var){
 						if($var->canPurchase()) {
 							$varArray[$var->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
@@ -618,8 +641,6 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				}
 				$json = json_encode($varArray);
 				$jsonscript = "var variationsjson = $json";
-
-
 				Requirements::customScript($jsonscript,'variationsjson');
 				Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
 			}
@@ -716,12 +737,13 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	}
 
 
+
 	/**
 	 * action!
 	 * this action is for selecting product variations
-	 *
+	 * @param HTTPRequest $request
 	 */
-	function selectvariation(){
+	function selectvariation($request){
 		if(Director::is_ajax()) {
 			return $this->owner->renderWith("SelectVariationFromProductGroup");
 		}
@@ -731,6 +753,14 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		return array();
 	}
 
+	/**
+	 *
+	 * @param HTTPRequest $request
+	 */
+	function filterforvariations($request){
+		$this->variationFilter = explode(",", $request->param("ID"));
+		return array();
+	}
 
 
 }

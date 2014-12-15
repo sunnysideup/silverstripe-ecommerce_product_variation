@@ -71,18 +71,21 @@ class ProductAttributeType extends DataObject{
 	 * finds or makes a ProductAttributeType, based on the lower case Name.
 	 *
 	 * @param String $name
+	 * @param Boolean $create
 	 *
 	 * @return ProductAttributeType
 	 */
-	public static function find_or_make($name){
+	public static function find_or_make($name, $create = true){
 		$name = strtolower($name);
 		if($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
 			return $type;
 		}
-		$type = new ProductAttributeType();
+		$type = ProductAttributeType::create();
 		$type->Name = $name;
 		$type->Label = $name;
-		$type->write();
+		if($create) {
+			$type->write();
+		}
 		return $type;
 	}
 

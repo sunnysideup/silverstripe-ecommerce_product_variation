@@ -28,8 +28,6 @@ EcommerceDatabaseAdmin:
   extensions:
     - EcommerceProductVariationTaskDeleteVariations_EXT
 
-
-
 ---
 Only:
   classexists: 'DataObjectSorterDOD'

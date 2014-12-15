@@ -13,6 +13,7 @@ class ProductAttributeValue extends DataObject{
 	);
 
 	private static $db = array(
+		'Code' => 'Varchar(255)',
 		'Value' => 'Varchar(255)',
 		'Sort' => 'Int'
 	);
@@ -39,6 +40,11 @@ class ProductAttributeValue extends DataObject{
 		'ValueForDropdown' => "HTMLText"
 	);
 
+	private static $indexes = array(
+		'Sort' => true,
+		'Code' => true
+	);
+
 	function Title() {return $this->getTitle();}
 	function getTitle() {
 		return $this->Value;
@@ -50,21 +56,25 @@ class ProductAttributeValue extends DataObject{
 	 *
 	 * @param ProductAttributeType | Int $type
 	 * @param String $value
+	 * @param Boolean $create
 	 *
 	 * @return ProductAttributeType
 	 */
-	public static function find_or_make($type, $value){
+	public static function find_or_make($type, $value, $create = true){
 		if($type instanceof ProductAttributeType) {
 			$type = $type->ID;
 		}
 		$value = strtolower($value);
-		if($valueObj = ProductAttributeValue::get()->where("LOWER(\"Value\") = '$value' AND TypeID = ".$type)->First()) {
+		if($valueObj = ProductAttributeValue::get()->where("(LOWER(\"Code\") = '$value' OR LOWER(\"Value\") = '$value') AND TypeID = ".intval($type))->First()) {
 			return $valueObj;
 		}
 		$valueObj = new ProductAttributeValue();
+		$valueObj->Code = $value;
 		$valueObj->Value = $value;
 		$valueObj->TypeID = $type;
-		$valueObj->write();
+		if($create) {
+			$valueObj->write();
+		}
 		return $valueObj;
 	}
 
@@ -75,10 +85,6 @@ class ProductAttributeValue extends DataObject{
 
 	private static $plural_name = "Attribute Values";
 		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Attribute Values");}
-		public static function get_plural_name(){
-			$obj = Singleton("ProductAttributeValue");
-			return $obj->i18n_plural_name();
-		}
 
 	public function canDelete($member = null) {
 		return DB::query("
