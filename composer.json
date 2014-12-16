@@ -14,8 +14,11 @@
 		}
 	],
 	"require":{
-		"sunnysideup/ecommerce": "dev-master",
-		"sunnysideup/dataobjectsorter": "dev-master"
+		"sunnysideup/ecommerce": "dev-master"
+	},
+	"suggest":{
+		"sunnysideup/dataobjectsorter": "dev-master",
+		"ajshort/silverstripe-gridfieldextensions": "dev-master"
 	},
 	"extra": {
 		"installer-name": "ecommerce_product_variation"

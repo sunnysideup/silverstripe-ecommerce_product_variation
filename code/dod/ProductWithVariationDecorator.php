@@ -120,8 +120,10 @@ class ProductWithVariationDecorator extends DataExtension {
 			$productVariationName = singleton("ProductVariation")->plural_name();
 			$fields->addFieldToTab('Root.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.$productVariationName.'" tab. You set the default price here.'), 'Price');
 			if(class_exists('DataObjectOneFieldUpdateController')) {
-				$link = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'Price', "ProductID = {$this->owner->ID}", '', 'update variation prices ...');
-				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good"> ' . $link . '</p>'), 'Variations');
+				$linkForPrice = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'Price', "ProductID = {$this->owner->ID}", '', 'quick update variation prices ...');
+				$linkForAllowSale = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'AllowPurchase', "ProductID = {$this->owner->ID}", '', 'quick update allow purchase settings ...');
+				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good"> ' . $linkForPrice . '</p>'), 'VariationMaker');
+				$tab->insertBefore(new LiteralField('AllowSaleUpdateLink', '<p class="message good"> ' . $linkForAllowSale . '</p>'), 'VariationMaker');
 			}
 		}
 	}
@@ -131,10 +133,33 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return GridField
 	 */
 	function getVariationsTable() {
-		$gridFieldConfig = GridFieldConfig_RecordEditor::create();
-		$gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
+		if(class_exists("GridFieldEditableColumns")) {
+			$oldSummaryFields = Config::inst()->get("ProductVariation", "summary_fields");
+			unset($oldSummaryFields["AllowPurchaseNice"]);
+			$oldSummaryFields["AllowPurchase"] = "For Sale";
+			Config::inst()->Update("ProductVariation", "summary_fields", $oldSummaryFields);
+			$gridFieldConfig = GridFieldConfig_RecordEditor::create();
+			$gridFieldConfig->removeComponentsByType('GridFieldDataColumns');
+			$gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
+			$gridFieldConfig->addComponent(new GridFieldEditableColumns());
+
+		}
+		else {
+			$gridFieldConfig = GridFieldConfig_RecordEditor::create();
+			$gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
+		}
 		$source = $this->owner->Variations();
-		return new GridField("ProductVariations", _t("ProductVariation.PLURALNAME", "Product Variations"), $source , $gridFieldConfig);
+		$types = $this->owner->VariationAttributes();
+		if($types && $types->count()) {
+			$title = _t("ProductVariation.PLURALNAME", "Product Variations").
+					" "._t("ProductVariation.by", "by").": ".
+					implode(" "._t("ProductVariation.TIMES", "/")." ", $types->map("ID", "Title")->toArray());
+		}
+		else {
+			$title = _t("ProductVariation.PLURALNAME", "Product Variations");
+		}
+		$gridField = new GridField("ProductVariations", $title, $source , $gridFieldConfig);
+		return $gridField;
 	}
 
 	/**
@@ -255,8 +280,12 @@ class ProductWithVariationDecorator extends DataExtension {
 	 *     TypeID => arrayOfValueIDs
 	 *     TypeID => arrayOfValueIDs
 	 *     TypeID => arrayOfValueIDs
-	 * you can also make it
+	 * you can also make it:
 	 *     NameOfAttritbuteType => arrayOfValueIDs
+	 * OR:
+	 *     NameOfAttritbuteType => arrayOfValueNames
+	 * e.g.
+	 *     Colour => array(Red, Orange, Blue )
 	 *
 	 * TypeID is the ID of the ProductAttributeType.  You can also make
 	 * it a string in which case it will be found / created
@@ -275,20 +304,24 @@ class ProductWithVariationDecorator extends DataExtension {
 			//we use the copy variations to merge all of them together...
 			$copyVariations = $valueCombos;
 			$valueCombos = array();
-			foreach($typeValues as $valueID) {
-				$obj = ProductAttributeValue::get()->byID(intval($valueID));
-				if(!$obj) {
-					$obj = ProductAttributeValue::find_or_make($typeObject, $valueID);
-					$valueID = $obj->write();
-				}
-				$valueID = array($valueID);
-				if(count($copyVariations) > 0) {
-					foreach($copyVariations as $copyVariation) {
-						$valueCombos[] = array_merge($copyVariation, $valueID);
+			if($typeObject) {
+				foreach($typeValues as $valueID) {
+					$obj = ProductAttributeValue::get()->byID(intval($valueID));
+					if(!$obj) {
+						$obj = ProductAttributeValue::find_or_make($typeObject, $valueID);
+						$valueID = $obj->write();
 					}
-				}
-				else {
-					$valueCombos[] = $valueID;
+					if($valueID = intval($valueID)) {
+						$valueID = array($valueID);
+						if(count($copyVariations) > 0) {
+							foreach($copyVariations as $copyVariation) {
+								$valueCombos[] = array_merge($copyVariation, $valueID);
+							}
+						}
+						else {
+							$valueCombos[] = $valueID;
+						}
+					}
 				}
 			}
 		}
@@ -371,7 +404,8 @@ class ProductWithVariationDecorator extends DataExtension {
 	/**
 	 * add an attribute type to the product
 	 *
-	 * @param ProductAttributeType | String | Int
+	 * @param String | Int | ProductAttributeType $attributeTypeObject
+	 *
 	 * @return ProductAttributeType
 	 */
 	function addAttributeType($attributeTypeObject) {
