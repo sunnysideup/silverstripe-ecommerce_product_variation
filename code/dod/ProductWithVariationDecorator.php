@@ -135,14 +135,18 @@ class ProductWithVariationDecorator extends DataExtension {
 	function getVariationsTable() {
 		if(class_exists("GridFieldEditableColumns")) {
 			$oldSummaryFields = Config::inst()->get("ProductVariation", "summary_fields");
+			$oldSummaryFields["AllowPurchase"] = $oldSummaryFields["AllowPurchaseNice"];
 			unset($oldSummaryFields["AllowPurchaseNice"]);
-			$oldSummaryFields["AllowPurchase"] = "For Sale";
 			Config::inst()->Update("ProductVariation", "summary_fields", $oldSummaryFields);
-			$gridFieldConfig = GridFieldConfig_RecordEditor::create();
-			$gridFieldConfig->removeComponentsByType('GridFieldDataColumns');
-			$gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
+			$gridFieldConfig = GridFieldConfig::create();
+			$gridFieldConfig->addComponent(new GridFieldToolbarHeader());
+			$gridFieldConfig->addComponent($sort = new GridFieldSortableHeader());
+			$gridFieldConfig->addComponent($filter = new GridFieldFilterHeader());
+			$gridFieldConfig->addComponent(new GridFieldEditButton());
+			$gridFieldConfig->addComponent($pagination = new GridFieldPaginator(100));
+			$gridFieldConfig->addComponent(new GridFieldDetailForm());
+			//add the editable columns.
 			$gridFieldConfig->addComponent(new GridFieldEditableColumns());
-
 		}
 		else {
 			$gridFieldConfig = GridFieldConfig_RecordEditor::create();
@@ -592,7 +596,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	private static $allowed_actions = array(
 		"selectvariation",
 		"VariationForm",
-		'filterforvariations' => true
+		'filterforvariations'
 	);
 
 	/**
@@ -788,11 +792,15 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	}
 
 	/**
+	 * You can specificy one or MORE
 	 *
 	 * @param HTTPRequest $request
 	 */
 	function filterforvariations($request){
-		$this->variationFilter = explode(",", $request->param("ID"));
+		$array = explode(",", $request->param("ID"));
+		if(is_array($array) && count($array)) {
+			$this->variationFilter = array_map("intval", $array);
+		}
 		return array();
 	}
 

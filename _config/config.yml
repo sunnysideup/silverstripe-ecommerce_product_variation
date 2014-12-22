@@ -28,6 +28,11 @@ EcommerceDatabaseAdmin:
   extensions:
     - EcommerceProductVariationTaskDeleteVariations_EXT
 
+ProductConfigModelAdmin:
+  managed_models:
+    - ProductVariation
+    - ProductAttributeType
+    - ProductAttributeValue
 ---
 Only:
   classexists: 'DataObjectSorterDOD'

@@ -678,10 +678,17 @@ class ProductVariation extends DataObject implements BuyableModel{
 	//LINKS
 
 	/**
+	 * Takes you to the Product and filters
+	 * for the provided variation.
+	 *
+	 * @param String $action - OPTIONAL
 	 *
 	 * @return String
 	 */
 	function Link($action = null){
+		if(!$action) {
+			$action = "filterforvariations/".$this->ID."/";
+		}
 		return $this->Product()->Link($action);
 	}
 
