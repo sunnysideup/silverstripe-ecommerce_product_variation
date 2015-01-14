@@ -50,15 +50,15 @@ var CreateEcommerceVariationsField = {
 	attached: false,
 
 	init: function() {
+		CreateEcommerceVariationsField.attachFunctions();
 		CreateEcommerceVariationsField.startLinkSelector = "#"+this.fieldID+" a#StartCreateEcommerceVariationsField";
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			CreateEcommerceVariationsField.startLinkSelector,
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			'click',
+			CreateEcommerceVariationsField.startLinkSelector,
 			function() {
 				return CreateEcommerceVariationsField.startup();
 			}
 		);
-		CreateEcommerceVariationsField.attachFunctions();
 	},
 
 	startup: function() {
@@ -106,9 +106,9 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addAddLinkToggles: function() {
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"click",
+			"#"+CreateEcommerceVariationsField.fieldID+" .addLabelLink",
 			function() {
 				jQuery(this).parent("label").next("div").slideToggle();
 			}
@@ -116,9 +116,9 @@ var CreateEcommerceVariationsField = {
 	},
 
 	addEditLinkToggles: function() {
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" .editNameLink",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"click",
+			"#"+CreateEcommerceVariationsField.fieldID+" .editNameLink",
 			function() {
 				var rel = "#editFieldFor"+jQuery(this).attr("rel");
 				jQuery(rel).slideToggle();
@@ -139,9 +139,9 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" .typeCheckHolder input.dataForType",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"change",
+			"#"+CreateEcommerceVariationsField.fieldID+" .typeCheckHolder input.dataForType",
 			function() {
 				if(jQuery(this).is(':checked')) {
 					jQuery(this).parents("li.typeHolder").find(".valuesHolder").slideDown();
@@ -157,9 +157,9 @@ var CreateEcommerceVariationsField = {
 			}
 		);
 		//if all the children are unticked then untick the parent
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" .valuesHolder input.dataForValue",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"change",
+			"#"+CreateEcommerceVariationsField.fieldID+" .valuesHolder input.dataForValue",
 			function() {
 				if(!CreateEcommerceVariationsField.reminderProvided) {
 					jQuery("#MainReminderMessage").slideDown();
@@ -192,9 +192,9 @@ var CreateEcommerceVariationsField = {
 	},
 
 	add:function() {
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"change",
+			"#"+CreateEcommerceVariationsField.fieldID+" .addInputHolder input",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("add", data);
@@ -204,9 +204,9 @@ var CreateEcommerceVariationsField = {
 
 	rename:function() {
 		//reset form
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"change",
+			"#"+CreateEcommerceVariationsField.fieldID+" .editFieldHolder input",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("rename", data);
@@ -240,9 +240,9 @@ var CreateEcommerceVariationsField = {
 
 	remove:function() {
 		//reset form
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" a.deleteLink",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"click",
+			"#"+CreateEcommerceVariationsField.fieldID+" a.deleteLink",
 			function() {
 				data = CreateEcommerceVariationsField.createGetVariables(this);
 				CreateEcommerceVariationsField.reset("remove", data);
@@ -254,9 +254,9 @@ var CreateEcommerceVariationsField = {
 	deleteValue:function() {
 
 		//reset form
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+" #A",
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"click",
+			"#"+CreateEcommerceVariationsField.fieldID+" #A",
 			function() {
 				CreateEcommerceVariationsField.reset();
 				return false;
@@ -265,9 +265,9 @@ var CreateEcommerceVariationsField = {
 	},
 
 	createVariations: function() {
-		jQuery(CreateEcommerceVariationsField.delegateRootSelector).delegate(
-			"#"+CreateEcommerceVariationsField.fieldID+' li.createButtonHolder input',
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"click",
+			"#"+CreateEcommerceVariationsField.fieldID+' li.createButtonHolder input',
 			function() {
 				data = CreateEcommerceVariationsField.selectGetVariables();
 				var mandatoryTypes = jQuery('#' + CreateEcommerceVariationsField.fieldID + ' input.dataForType:disabled:checked');
@@ -444,8 +444,8 @@ LeftAndMain:
     - framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js
     - ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js
 */
-CreateEcommerceVariationsField.set_url('createecommercevariations')
-CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner')
+CreateEcommerceVariationsField.set_url('createecommercevariations');
+CreateEcommerceVariationsField.set_fieldID('CreateEcommerceVariationsInner');
 
 /*
 {

@@ -20,6 +20,7 @@ LeftAndMain:
     - framework/thirdparty/jquery/jquery.js
     - framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js
     - ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js
+    - ecommerce_product_variation/javascript/DeleteEcommerceVariations.js
   extra_requirements_themedCss:
     - CreateEcommerceVariationsField
 

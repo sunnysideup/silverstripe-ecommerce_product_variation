@@ -810,8 +810,8 @@ class ProductVariation extends DataObject implements BuyableModel{
 
 	/**
 	 * returns the actual price worked out after discounts, currency conversions, etc...
-	 * TODO: return as Money
-	 * @return Money
+	 * @casted
+	 * @return Float
 	 */
 	function CalculatedPrice() {return $this->getCalculatedPrice();}
 	function getCalculatedPrice() {

@@ -125,6 +125,24 @@ class ProductWithVariationDecorator extends DataExtension {
 				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good"> ' . $linkForPrice . '</p>'), 'VariationMaker');
 				$tab->insertBefore(new LiteralField('AllowSaleUpdateLink', '<p class="message good"> ' . $linkForAllowSale . '</p>'), 'VariationMaker');
 			}
+			$link = EcommerceProductVariationTaskDeleteVariations::create_link($this->owner);
+			if($link) {
+				$tab->insertBefore(
+					new LiteralField(
+						"DeleteVariations",
+						"<p class=\"bad message\"><a href=\"$link\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"".
+								Convert::raw2att(
+									_t("Product.ARE_YOU_SURE_YOU_WANT_TO_DELETE_ALL_VARIATIONS",
+									"are you sure you want to delete all variations from this product? ")
+								).
+							"\">"
+							._t("Product.DELETE_ALL_VARIATIONS_FROM", "Delete all variations from <i>").$this->owner->Title. "</i>".
+						"</a></p>"
+					),
+					"VariationMaker"
+				);
+			}
+
 		}
 	}
 
