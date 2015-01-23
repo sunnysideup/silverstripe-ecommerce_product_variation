@@ -118,16 +118,36 @@ class ProductWithVariationDecorator extends DataExtension {
 		$variations = $this->owner->Variations();
 		if($variations && $variations->Count()){
 			$productVariationName = singleton("ProductVariation")->plural_name();
-			$fields->addFieldToTab('Root.Main',new LabelField('variationspriceinstructions','Price - Because you have one or more variations, you can vary the price in the "'.$productVariationName.'" tab. You set the default price here.'), 'Price');
+			$fields->addFieldToTab(
+				'Root.Details',
+				new LabelField(
+					'variationspriceinstructions',
+					sprintf(
+						_t("ProductVariation.PRICE_EXPLANATION", 'Price - Because you have one or more variations, you can vary the price in the <strong>%s</strong> tab. You set the default price here.'),
+						$productVariationName
+					)
+				)
+			);
 			if(class_exists('DataObjectOneFieldUpdateController')) {
-				$linkForPrice = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'Price', "ProductID = {$this->owner->ID}", '', 'quick update variation prices ...');
-				$linkForAllowSale = DataObjectOneFieldUpdateController::popup_link('ProductVariation', 'AllowPurchase', "ProductID = {$this->owner->ID}", '', 'quick update allow purchase settings ...');
-				$tab->insertBefore(new LiteralField('PriceUpdateLink', '<p class="message good"> ' . $linkForPrice . '</p>'), 'VariationMaker');
-				$tab->insertBefore(new LiteralField('AllowSaleUpdateLink', '<p class="message good"> ' . $linkForAllowSale . '</p>'), 'VariationMaker');
+				$linkForAllowSale = DataObjectOneFieldUpdateController::popup_link(
+					'ProductVariation',
+					'AllowPurchase',
+					"ProductID = {$this->owner->ID}",
+					'',
+					_t("ProductVariation.QUICK_UPDATE_VARIATION_ALLOW_PURCHASE", 'for sale')
+				);
+				$linkForPrice = DataObjectOneFieldUpdateController::popup_link(
+					'ProductVariation',
+					'Price',
+					"ProductID = {$this->owner->ID}",
+					'',
+					_t("ProductVariation.QUICK_UPDATE_VARIATION_RRICES", 'prices')
+				);
+				$tab->insertAfter(new LiteralField('QuickActions', '<p class="message good">'._t("ProductVariation.QUICK_UPDATE", 'Quick update').': ' . $linkForAllowSale.", ".$linkForPrice  . '</p>'), 'ProductVariations');
 			}
 			$link = EcommerceProductVariationTaskDeleteVariations::create_link($this->owner);
 			if($link) {
-				$tab->insertBefore(
+				$tab->push(
 					new LiteralField(
 						"DeleteVariations",
 						"<p class=\"bad message\"><a href=\"$link\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"".
@@ -138,8 +158,7 @@ class ProductWithVariationDecorator extends DataExtension {
 							"\">"
 							._t("Product.DELETE_ALL_VARIATIONS_FROM", "Delete all variations from <i>").$this->owner->Title. "</i>".
 						"</a></p>"
-					),
-					"VariationMaker"
+					)
 				);
 			}
 

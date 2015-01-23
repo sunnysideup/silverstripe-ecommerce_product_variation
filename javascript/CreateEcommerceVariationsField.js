@@ -128,27 +128,27 @@ var CreateEcommerceVariationsField = {
 
 	addGroupItemLinkedClicks: function() {
 		//if the parent is unticked then untick the children
-		jQuery(".typeCheckHolder input.dataForType").each(
-			function(i, el) {
-				if(jQuery(el).is(":checked") || jQuery(el).attr("disabled") == "disabled") {
-					jQuery(el).parents("li.typeHolder").find(".valuesHolder").slideDown();
-				}
-				else {
-					jQuery(el).parents("li.typeHolder").find(".valuesHolder").slideUp();
-				}
-			}
-		);
-
 		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"change",
 			"#"+CreateEcommerceVariationsField.fieldID+" .typeCheckHolder input.dataForType",
 			function() {
+				var parent = jQuery(this).parents("li.typeHolder");
+				if(!CreateEcommerceVariationsField.reminderProvided) {
+					jQuery("#MainReminderMessage").slideDown();
+					jQuery("#InitMessage").removeClass("message");
+					CreateEcommerceVariationsField.reminderProvided = true;
+				}
 				if(jQuery(this).is(':checked')) {
-					jQuery(this).parents("li.typeHolder").find(".valuesHolder").slideDown();
+					parent.find(".valuesHolder").slideDown();
+					parent.find(".valuesHolder input.dataForValue").each(
+						function(i, el) {
+							jQuery(el).attr("checked", "checked");
+						}
+					);
 				}
 				else {
-					jQuery(this).parent().parent().parent().find(".valuesHolder").slideUp();
-					jQuery(this).parent().parent().parent().find(".valuesHolder input.dataForValue").each(
+					parent.find(".valuesHolder").slideUp();
+					parent.find(".valuesHolder input.dataForValue").each(
 						function(i, el) {
 							jQuery(el).attr("checked", "");
 						}
@@ -161,34 +161,36 @@ var CreateEcommerceVariationsField = {
 			"change",
 			"#"+CreateEcommerceVariationsField.fieldID+" .valuesHolder input.dataForValue",
 			function() {
+				var parent = jQuery(this).parents("li.typeHolder");
 				if(!CreateEcommerceVariationsField.reminderProvided) {
 					jQuery("#MainReminderMessage").slideDown();
 					jQuery("#InitMessage").removeClass("message");
 					CreateEcommerceVariationsField.reminderProvided = true;
 				}
-				if(jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input.dataForType").attr("disabled") == "disabled") {
+				if(parent.find(".typeCheckHolder input.dataForType").attr("disabled") == "disabled") {
 					//do nothing
 				}
 				else {
 					var hasTickedSibling = false;
-					jQuery(this).parents(".valuesHolder").find("input.dataForValue").each(
+					parent.find("input.dataForValue").each(
 						function(i, el) {
 							if(jQuery(el).is(":checked")) {
 								hasTickedSibling = true;
 							}
 						}
 					);
-					if(jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input").attr("disabled") != "disabled"){
+					if(parent.find(".typeCheckHolder input").attr("disabled") != "disabled"){
 						if(!hasTickedSibling) {
-							jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input").attr("checked", "");
+							parent.find(".typeCheckHolder input").attr("checked", "");
 						}
 						else {
-							jQuery(this).parents("li.typeHolder").find(".typeCheckHolder input").attr("checked", "checked");
+							parent.find(".typeCheckHolder input").attr("checked", "checked");
 						}
 					}
 				}
 			}
-		)
+		);
+
 	},
 
 	add:function() {
@@ -357,6 +359,9 @@ var CreateEcommerceVariationsField = {
 		if(! type.Checked) {
 			html = html.replace(' checked="checked"', '');
 		}
+		else {
+			html = html.replace('<ul class="valuesHolder" style="display: none;">', '<ul class="valuesHolder">');
+		}
 		if(! type.Disabled) {
 			html = html.replace(' disabled="disabled"', '');
 		}
@@ -384,7 +389,7 @@ var CreateEcommerceVariationsField = {
 		html = html.replace(/ID/g, value.ID);
 		html = html.replace(/NAME/g, value.Name);
 		if(! value.Checked) {
-			html = html.replace(' checked="checked"', '');
+			html = html.replace(' checked="checked" ', '');
 		}
 		if(value.CanDelete) {
 			html = html.replace(/DELETE/g, '');

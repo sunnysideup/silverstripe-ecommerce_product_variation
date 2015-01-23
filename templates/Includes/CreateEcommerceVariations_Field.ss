@@ -20,7 +20,7 @@
 					<input type="text" class="text dataForType" id="typeTextID" value="NAME" name="typeTextID" rel="ID" />
 				</div>
 			</div>
-			<ul class="valuesHolder">
+			<ul class="valuesHolder" style="display: none;">
 				<li>VALUEHOLDER</li>
 				<li class="valueAddHolder">
 					$ValueSorterLink

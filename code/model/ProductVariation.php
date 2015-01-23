@@ -263,6 +263,13 @@ class ProductVariation extends DataObject implements BuyableModel{
 				}
 			}
 		}
+		$fields->addFieldToTab(
+			'Root.Main',
+			new LiteralField(
+				'AddToCartLink',
+				"<p class=\"message good\"><a href=\"".$this->AddLink()."\">"._t("Product.ADD_TO_CART", "add to cart")."</a></p>"
+			)
+		);
 		$this->extend('updateCMSFields', $fields);
 		return $fields;
 	}
