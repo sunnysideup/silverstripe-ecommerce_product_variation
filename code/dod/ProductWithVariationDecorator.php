@@ -111,7 +111,6 @@ class ProductWithVariationDecorator extends DataExtension {
 	function updateCMSFields(FieldList $fields) {
 		$tabName = singleton("ProductVariation")->plural_name();
 		$fields->addFieldToTab('Root', $tab = new Tab($tabName,
-			new HeaderField("$tabName for {$this->owner->Title}"),
 			$this->owner->getVariationsTable(),
 			new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
 		));
@@ -128,6 +127,23 @@ class ProductWithVariationDecorator extends DataExtension {
 					)
 				)
 			);
+			$link = EcommerceProductVariationTaskDeleteVariations::create_link($this->owner);
+			if($link) {
+				$tab->insertAfter(
+					new LiteralField(
+						"DeleteVariations",
+						"<p class=\"bad message\"><a href=\"$link\"  class=\"action ss-ui-button\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"".
+								Convert::raw2att(
+									_t("Product.ARE_YOU_SURE_YOU_WANT_TO_DELETE_ALL_VARIATIONS",
+									"are you sure you want to delete all variations from this product? ")
+								).
+							"\">"
+							._t("Product.DELETE_ALL_VARIATIONS_FROM", "Delete all variations from <i>").$this->owner->Title. "</i>".
+						"</a></p>"
+					),
+					'ProductVariations'
+				);
+			}
 			if(class_exists('DataObjectOneFieldUpdateController')) {
 				$linkForAllowSale = DataObjectOneFieldUpdateController::popup_link(
 					'ProductVariation',
@@ -143,24 +159,20 @@ class ProductWithVariationDecorator extends DataExtension {
 					'',
 					_t("ProductVariation.QUICK_UPDATE_VARIATION_RRICES", 'prices')
 				);
-				$tab->insertAfter(new LiteralField('QuickActions', '<p class="message good">'._t("ProductVariation.QUICK_UPDATE", 'Quick update').': ' . $linkForAllowSale.", ".$linkForPrice  . '</p>'), 'ProductVariations');
-			}
-			$link = EcommerceProductVariationTaskDeleteVariations::create_link($this->owner);
-			if($link) {
-				$tab->push(
+				$tab->insertAfter(
 					new LiteralField(
-						"DeleteVariations",
-						"<p class=\"bad message\"><a href=\"$link\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"".
-								Convert::raw2att(
-									_t("Product.ARE_YOU_SURE_YOU_WANT_TO_DELETE_ALL_VARIATIONS",
-									"are you sure you want to delete all variations from this product? ")
-								).
-							"\">"
-							._t("Product.DELETE_ALL_VARIATIONS_FROM", "Delete all variations from <i>").$this->owner->Title. "</i>".
-						"</a></p>"
-					)
+						'QuickActions',
+						'<p class="message good">'
+							._t("ProductVariation.QUICK_UPDATE", 'Quick update')
+							.': '
+							."<span class=\"action ss-ui-button\">$linkForAllowSale</span> "
+							."<span class=\"action ss-ui-button\">$linkForPrice</span>"
+							."</p>"
+					),
+					'ProductVariations'
 				);
 			}
+
 
 		}
 	}

@@ -1,5 +1,5 @@
 <div id="CreateEcommerceVariationsInner" class="createEcommerceVariations">
-	<h3><a href="#" id="StartCreateEcommerceVariationsField">Organise $ProductVariationGetPluralName</a></h3>
+	<h3><a href="#" id="StartCreateEcommerceVariationsField" class="action ss-ui-button">Organise $ProductVariationGetPluralName</a></h3>
 </div>
 <div id="CreateEcommerceVariationsTemplate" class="createEcommerceVariations">
 	<ul>
