@@ -759,11 +759,38 @@ class ProductVariation extends DataObject implements BuyableModel{
 	}
 
 	/**
+	 *
+	 * @return String
+	 */
+	function AddToCartAndGoToCheckoutLink(){
+		$array = $this->linkParameters();
+		$array["BackURL"] = urlencode(CheckoutPage::find_link());
+		return ShoppingCart_Controller::add_item_link($this->ID, $this->ClassName, $array);
+	}
+
+	/**
+	 * Here you can add additional information to your product
+	 * links such as the AddLink and the RemoveLink.
+	 * One useful parameter you can add is the BackURL link.
+	 *
+	 * Usage would be by means of
+	 * 1. decorating product
+	 * 2. adding a updateLinkParameters method
+	 * 3. adding items to the array.
+	 *
+	 * You can also extend Product and override this method...
+	 *
 	 * @return Array
 	 **/
 	protected function linkParameters(){
 		$array = array();
-		$this->extend('updateLinkParameters',$array);
+		$extendedArray = $this->extend('updateLinkParameters', $array, $type);
+		if($extendedArray) {
+			if(!is_array($extendedArray)) {
+				user_error("decoration method updateLinkParameters should return an array");
+			}
+			return $extendedArray;
+		}
 		return $array;
 	}
 
