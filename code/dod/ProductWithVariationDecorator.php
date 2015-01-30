@@ -717,18 +717,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
 					Requirements::javascript(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name'));
 				}
-				//todo: change JS so that we dont have to add this default array.
-				$varArray = array(-1 => -1);
-				if($vars = $this->Variations()){
-					foreach($vars as $var){
-						if($var->canPurchase()) {
-							$varArray[$var->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
-						}
-					}
-				}
-				$json = json_encode($varArray);
-				$jsonscript = "var variationsjson = $json";
-				Requirements::customScript($jsonscript,'variationsjson');
+				Requirements::customScript($this->owner->VariationsForSaleJSON(),'variationsjson');
 				Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
 			}
 			Requirements::themedCSS('variationsform', "ecommerce_product_variation");
@@ -737,7 +726,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		}
 	}
 
-	function addVariation($data, $form){
+	public function addVariation($data, $form){
 		//TODO: save form data to session so selected values are not lost
 		if(isset($data['ProductAttributes'])){
 			$data['ProductAttributes'] = Convert::raw2sql($data['ProductAttributes']);
@@ -779,6 +768,32 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			ShoppingCart::singleton()->setMessageAndReturn($msg, $status, $form);
 			$this->owner->redirectBack();
 		}
+	}
+
+	/**
+	 * returns a list of variations for sale as JSON.
+	 * the output is as follows:
+	 *   VariationID: [
+	 *     AttributeValueID: AttributeValueID,
+	 *     AttributeValueID: AttributeValueID
+	 *   ]
+	 *
+	 * @param String $variableName
+	 *
+	 * @return String (JSON)
+	 */
+	public function VariationsForSaleJSON($variableName = "variationsjson"){
+		//todo: change JS so that we dont have to add this default array.
+		$varArray = array(-1 => -1);
+		if($variations = $this->Variations()){
+			foreach($variations as $variation){
+				if($variation->canPurchase()) {
+					$varArray[$variation->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
+				}
+			}
+		}
+		$json = json_encode($varArray);
+		return "var $variableName = $json";
 	}
 
 	function VariationsPerVariationType() {

@@ -26,7 +26,6 @@
 			selected = getSelectedValues(); //re-get selected
 		}
 
-
 		//find all possible attributes
 		$("#Form_VariationForm select").each(function(el){
 
