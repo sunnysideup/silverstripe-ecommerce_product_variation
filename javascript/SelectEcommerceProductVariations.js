@@ -8,7 +8,7 @@
  */
 
 
-var EcomProductVariationSelection = function(RootSelector) {
+var SelectEcommerceProductVariations = function(RootSelector) {
 
 	/**
 	 * holds all the functions and variables
@@ -39,7 +39,7 @@ var EcomProductVariationSelection = function(RootSelector) {
 		 *
 		 * @var String
 		 */
-		changeItemsSelector: "",
+		changeItemsSelector: "select",
 
 		/**
 		 * available variations
@@ -60,6 +60,12 @@ var EcomProductVariationSelection = function(RootSelector) {
 		possible: [],
 
 		/**
+		 * items that are possible
+		 * @var array
+		 */
+		submitSelector: "input.action",
+
+		/**
 		 * set up
 		 *
 		 */
@@ -67,9 +73,9 @@ var EcomProductVariationSelection = function(RootSelector) {
 
 			AvailAttr.rootjQueryObject = jQuery("#" + AvailAttr.rootSelector)
 
-			$(AvailAttr.changeItemsSelector).change(function(){
+			AvailAttr.rootjQueryObject.find(AvailAttr.changeItemsSelector).change(function(){
 
-				$changed = jQuery(this);
+				var $changed = jQuery(this);
 
 				if(!AvailAttr.variationsJSON || AvailAttr.variationsJSON.length <= 0) {
 					return false;
@@ -100,7 +106,7 @@ var EcomProductVariationSelection = function(RootSelector) {
 
 					if(jQuery(this).find(":selected[value!=\"\"]").length <= 0){
 						AvailAttr.disableOption($(this).find("option[value!=\"\"]"));
-						var enableme = getAttributesNotJoinedWith(AvailAttr.selected);
+						var enableme = AvailAttr.getAttributesNotJoinedWith(AvailAttr.selected);
 
 						for(var i = 0; i < enableme.length; i++){
 							if(enableme[i]){
@@ -112,14 +118,13 @@ var EcomProductVariationSelection = function(RootSelector) {
 				});
 
 				//TODO: supply appropriate error message
-				if(!AvailAttr.possible){
-					AvailAttr.enableOption(AvailAttr.rootjQueryObject.find('input.action'));
-				}
-				else{
-					AvailAttr.disableOption(AvailAttr.find('input.action').removeClass('disabled'));
-				}
-
-
+				//$o = AvailAttr.rootjQueryObject.find(AvailAttr.submitSelector);
+				//if(!AvailAttr.possible){
+				//	AvailAttr.enableOption($o);
+				//}
+				//else{
+				//	AvailAttr.disableOption($o);
+				//}
 			});
 		},
 
@@ -144,6 +149,7 @@ var EcomProductVariationSelection = function(RootSelector) {
 		 */
 		disableOption: function($o){
 			$o.addClass('disabled');
+			$o.attr("disabled", "disabled");
 		},
 
 		/**
@@ -152,6 +158,7 @@ var EcomProductVariationSelection = function(RootSelector) {
 		 */
 		enableOption: function($o){
 			$o.removeClass('disabled');
+			$o.removeAttr("disabled");
 		},
 
 		/**
@@ -210,14 +217,17 @@ var EcomProductVariationSelection = function(RootSelector) {
 
 		setVar: function(variableName, value) {
 			AvailAttr[variableName] = value;
+			return this;
 		},
 
 		setJSON: function(json) {
 			AvailAttr["variationsJSON"] = json;
+			return this;
 		},
 
 		init: function(){
 			AvailAttr.init();
+			return this;
 		}
 
 	}

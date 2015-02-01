@@ -656,13 +656,6 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	private static $use_js_validation = true;
 
 	/**
-	 * Alternative class name for Validation of Form
-	 * in PHP
-	 * @var String
-	 */
-	private static $alternative_validator_class_name = "";
-
-	/**
 	 * array of IDs of variations that should be shown
 	 * if count(array) == 0 then all of them will be shown
 	 * @var Array
@@ -708,20 +701,19 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			);
 			$requiredfields[] = 'Quantity';
 			$requiredFieldsClass = "RequiredFields";
-			if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
-				$requiredFieldsClass = Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name');
-			}
 			$validator = new $requiredFieldsClass($requiredfields);
+			$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
+			Requirements::themedCSS('variationsform', "ecommerce_product_variation");
 			//variation options json generation
 			if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')){ //TODO: make javascript json inclusion optional
-				if(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name')) {
-					Requirements::javascript(Config::inst()->get('ProductWithVariationDecorator_Controller', 'alternative_validator_class_name'));
-				}
-				Requirements::customScript($this->owner->VariationsForSaleJSON(),'variationsjson');
-				Requirements::javascript('ecommerce_product_variation/javascript/variationsvalidator.js');
+				Requirements::javascript('ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
+				$jsObjectName = $form->FormName()."Object";
+				Requirements::customScript(
+					"var $jsObjectName = new SelectEcommerceProductVariations('".$form->FormName()."')
+						.setJSON(".$this->owner->VariationsForSaleJSON().")
+						.init();"
+				);
 			}
-			Requirements::themedCSS('variationsform', "ecommerce_product_variation");
-			$form = new Form($this->owner,'VariationForm',$fields,$actions,$validator);
 			return $form;
 		}
 	}
@@ -778,22 +770,20 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	 *     AttributeValueID: AttributeValueID
 	 *   ]
 	 *
-	 * @param String $variableName
-	 *
 	 * @return String (JSON)
 	 */
-	public function VariationsForSaleJSON($variableName = "variationsjson"){
+	public function VariationsForSaleJSON(){
 		//todo: change JS so that we dont have to add this default array.
 		$varArray = array(-1 => -1);
 		if($variations = $this->Variations()){
 			foreach($variations as $variation){
 				if($variation->canPurchase()) {
-					$varArray[$variation->ID] = $var->AttributeValues()->map('ID','ID')->toArray();
+					$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
 				}
 			}
 		}
 		$json = json_encode($varArray);
-		return "var $variableName = $json";
+		return $json;
 	}
 
 	function VariationsPerVariationType() {
