@@ -35,10 +35,6 @@ ProductConfigModelAdmin:
     - ProductAttributeType
     - ProductAttributeValue
 
-ProductsAndGroupsModelAdmin:
-  managed_models:
-    - Product
-
 ---
 Only:
   classexists: 'DataObjectSorterDOD'
