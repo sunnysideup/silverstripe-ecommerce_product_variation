@@ -60,8 +60,8 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 		possible: [],
 
 		/**
-		 * items that are possible
-		 * @var array
+		 * selector for the submit button
+		 * @var String
 		 */
 		submitSelector: "input.action",
 
@@ -74,23 +74,20 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 			AvailAttr.rootjQueryObject = jQuery("#" + AvailAttr.rootSelector)
 
 			AvailAttr.rootjQueryObject.find(AvailAttr.changeItemsSelector).change(function(){
-
-				var $changed = jQuery(this);
-
-				if(!AvailAttr.variationsJSON || AvailAttr.variationsJSON.length <= 0) {
+				//dont bother if there are less than two options...
+				if(!AvailAttr.variationsJSON || AvailAttr.variationsJSON.length <= 1) {
 					return false;
 				}
-
+				var $changed = jQuery(this);
 				//get all selected values
 				AvailAttr.selected = AvailAttr.getSelectedValues();
-
 				//find what is possible with the current selection
 				AvailAttr.possible = AvailAttr.findVariation(AvailAttr.selected);
 
-				//break the impossibles by resetting other fields
+				//reset all the other items selected
+				//if the current selection is NOT possible...
 				if(!AvailAttr.possible){
 					//TODO: display - you cannot have a x,y,z
-
 					jQuery(AvailAttr.changeItemsSelector).each(
 						function(){
 							if($changed[0] !== $(this)[0]){
@@ -102,22 +99,24 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 				}
 
 				//find all possible attributes
-				jQuery(AvailAttr.changeItemsSelector).each(function(el){
-
-					if(jQuery(this).find(":selected[value!=\"\"]").length <= 0){
-						AvailAttr.disableOption($(this).find("option[value!=\"\"]"));
-						var enableme = AvailAttr.getAttributesNotJoinedWith(AvailAttr.selected);
-
-						for(var i = 0; i < enableme.length; i++){
-							if(enableme[i]){
-								var object = AvailAttr.rootjQueryObject.find("option[value=\""+enableme[i]+"\"]");
-								AvailAttr.enableOption(object);
+				jQuery(AvailAttr.changeItemsSelector).each(
+					function(el){
+						//dont do this for the selected item...
+						if(jQuery(this).find(":selected[value!=\"\"]").length <= 0){
+							//first set everything to disabled
+							AvailAttr.disableOption(jQuery(this).find("option[value!=\"\"]"));
+							var enableme = AvailAttr.getAttributesNotJoinedWith(AvailAttr.selected);
+							//then enable the ones that are possible..
+							for(var i = 0; i < enableme.length; i++){
+								if(enableme[i]){
+									var object = AvailAttr.rootjQueryObject.find("option[value=\""+enableme[i]+"\"]");
+									AvailAttr.enableOption(object);
+								}
 							}
 						}
 					}
-				});
+				);
 
-				//TODO: supply appropriate error message
 				//$o = AvailAttr.rootjQueryObject.find(AvailAttr.submitSelector);
 				//if(!AvailAttr.possible){
 				//	AvailAttr.enableOption($o);
@@ -135,11 +134,13 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 		 */
 		getSelectedValues: function(){
 			var selected = new Array();
-			AvailAttr.rootjQueryObject.find("select option:selected").each(function(el){
-				if(jQuery(this).val() && jQuery(this).val() != ''){
-					selected.push(jQuery(this).val());
+			AvailAttr.rootjQueryObject.find("select option:selected").each(
+				function(i, el){
+					if(jQuery(this).val() && jQuery(this).val() != ''){
+						selected.push(jQuery(this).val());
+					}
 				}
-			});
+			);
 			return selected;
 		},
 

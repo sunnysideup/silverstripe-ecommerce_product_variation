@@ -54,7 +54,6 @@ class ProductAttributeType extends DataObject{
 
 	private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
-	//We need this to make certain templates work (see ProductWithVariationDecorator::VariationsPerVariationType)
 	public $Variations = null;
 
 	private static $singular_name = "Attribute Type";

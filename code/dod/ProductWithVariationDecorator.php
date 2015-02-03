@@ -248,7 +248,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return Float
 	 */
 	public function LowestVariationPrice(){
-		$currentPrice = 9999999999999999999;
+		$currentPrice = 99999999;
 		$variations = $this->owner->Variations();
 		if($variations && $variations->count()) {
 			foreach($variations as $variation) {
@@ -260,7 +260,7 @@ class ProductWithVariationDecorator extends DataExtension {
 				}
 			}
 		}
-		if($currentPrice < 9999999999999999999) {
+		if($currentPrice < 99999999) {
 			return $currentPrice;
 		}
 	}
@@ -775,7 +775,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	public function VariationsForSaleJSON(){
 		//todo: change JS so that we dont have to add this default array.
 		$varArray = array(-1 => -1);
-		if($variations = $this->Variations()){
+		if($variations = $this->owner->Variations()){
 			foreach($variations as $variation){
 				if($variation->canPurchase()) {
 					$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
@@ -786,17 +786,35 @@ class ProductWithVariationDecorator_Controller extends Extension {
 		return $json;
 	}
 
-	function VariationsPerVariationType() {
+
+	/**
+	 * returns a list of VariationAttributes (e.g. colour, size)
+	 * and the possible Atrribute Values for each type (e.g. RED, ORANGE, XL)
+	 * @return ArrayList
+	 */
+	function AttributeValuesPerAttributeType() {
 		$types = $this->owner->VariationAttributes();
-		if($types) {
+		$arrayListOuter = new ArrayList();
+		if($types->count()) {
 			foreach($types as $type) {
-				$type->Variations = $this->possibleValuesForAttributeType($type);
+				$values = $this->possibleValuesForAttributeType($type);
+				$arrayListInner = new ArrayList();
+				foreach($values as $value) {
+					$arrayListInner->push($value);
+				}
+				$type->AttributeValues = $arrayListInner;
+				$arrayListOuter->push($type);
 			}
 		}
-		return $types;
+		return $arrayListOuter;
 	}
 
-
+	/**
+	 *
+	 * @param Int | ProductAttributeType
+	 *
+	 * @return DataList of ProductAttributeValues
+	 */
 	function possibleValuesForAttributeType($type){
 		if($type instanceOf ProductAttributeType) {
 			$typeID = $type->ID;
