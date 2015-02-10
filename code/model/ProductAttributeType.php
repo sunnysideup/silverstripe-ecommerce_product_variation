@@ -11,7 +11,7 @@
  *
  */
 
-class ProductAttributeType extends DataObject{
+class ProductAttributeType extends DataObject implements EditableEcommerceObject{
 	/**
 	 * Standard SS variable.
 	 */
@@ -31,36 +31,40 @@ class ProductAttributeType extends DataObject{
 
 
 	private static $has_many = array(
-			'Values' => 'ProductAttributeValue'
-		);
+		'Values' => 'ProductAttributeValue'
+	);
 
 	private static $summary_fields = array(
-			'Name' => 'Name'
-		);
+		'FullName' => 'Type'
+	);
 
 	private static $searchable_fields = array(
-			'Name' => 'PartialMatchFilter',
-			'Label' => 'PartialMatchFilter'
-		);
+		'Name' => 'PartialMatchFilter',
+		'Label' => 'PartialMatchFilter'
+	);
 
 	private static $belongs_many_many = array(
-			'Products' => 'Product'
-		);
+		'Products' => 'Product'
+	);
+
+	private static $casting = array(
+		'FullName' => 'Varchar'
+	);
 
 
 	private static $indexes = array(
-			"Sort" => true
-		);
+		"Sort" => true
+	);
 
 	private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
 	public $Variations = null;
 
-	private static $singular_name = "Attribute Type";
-		function i18n_singular_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Attribute Type");}
+	private static $singular_name = "Variation Attribute Type";
+		function i18n_singular_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Variation Attribute Type");}
 
-	private static $plural_name = "Attribute Types";
-		function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Attribute Types");}
+	private static $plural_name = "Variation Attribute Types";
+		function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Variation Attribute Types");}
 		public static function get_plural_name(){
 			$obj = Singleton("ProductAttributeType");
 			return $obj->i18n_plural_name();
@@ -92,13 +96,21 @@ class ProductAttributeType extends DataObject{
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
-		if(class_exists("DataObjectSorterController") && $this->hasExtension("DataObjectSorterDOD")) {
-			$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
-			$fields->addFieldToTab("Root.Sort", new LiteralField("SortTypes", $sortLink));
-		}
 		return $fields;
 	}
 
+	/**
+	 * link to edit the record
+	 * @param String | Null $action - e.g. edit
+	 * @return String
+	 */
+	public function CMSEditLink($action = null) {
+		return Controller::join_links(
+			Director::baseURL(),
+			"/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
+			$action
+		);
+	}
 
 	function addValues(array $values){
 		$avalues = $this->convertArrayToValues($values);
@@ -218,6 +230,9 @@ class ProductAttributeType extends DataObject{
 		}
 	}
 
+	function getFullName(){
+		return $this->Name." (".$this->Values()->count().")";
+	}
 }
 
 

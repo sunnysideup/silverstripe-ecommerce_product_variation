@@ -100,7 +100,7 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 
 				//find all possible attributes
 				jQuery(AvailAttr.changeItemsSelector).each(
-					function(el){
+					function(pos, el){
 						//dont do this for the selected item...
 						if(jQuery(this).find(":selected[value!=\"\"]").length <= 0){
 							//first set everything to disabled

@@ -1,6 +1,6 @@
 <?php
 
-class ProductAttributeValue extends DataObject{
+class ProductAttributeValue extends DataObject implements EditableEcommerceObject{
 
 	/**
 	 * Standard SS variable.
@@ -27,8 +27,8 @@ class ProductAttributeValue extends DataObject{
 	);
 
 	private static $summary_fields = array(
-		'Value' => 'Value',
-		'Type.Title' => 'Type'
+		'Type.Title' => 'Type',
+		'Value' => 'Value'
 	);
 
 	private static $searchable_fields = array(
@@ -80,11 +80,11 @@ class ProductAttributeValue extends DataObject{
 
 	private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
 
-	private static $singular_name = "Attribute Value";
-		function i18n_singular_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Attribute Value");}
+	private static $singular_name = "Variation Attribute Value";
+		function i18n_singular_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Variation Attribute Value");}
 
-	private static $plural_name = "Attribute Values";
-		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Attribute Values");}
+	private static $plural_name = "Variation Attribute Values";
+		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Variation Attribute Values");}
 
 	public function canDelete($member = null) {
 		return DB::query("
@@ -99,10 +99,6 @@ class ProductAttributeValue extends DataObject{
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
-		if(class_exists("DataObjectSorterController") && $this->hasExtension("DataObjectSorterDOD")) {
-			$sortLink = DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeID", $filterValue = $this->TypeID, $linkText = "Sort Values");
-			$fields->addFieldToTab("Root.Sort", new LiteralField("SortValues", $sortLink));
-		}
 		// TO DO: the code below does not work...
 		//$fields->removeFieldFromTab("Root.Product Variation", "ProductVariation");
 		//$fields->removeFieldFromTab("Root", "Product Variation");
@@ -111,6 +107,19 @@ class ProductAttributeValue extends DataObject{
 			$table->setPermissions("edit", "view");
 		}
 		return $fields;
+	}
+
+	/**
+	 * link to edit the record
+	 * @param String | Null $action - e.g. edit
+	 * @return String
+	 */
+	public function CMSEditLink($action = null) {
+		return Controller::join_links(
+			Director::baseURL(),
+			"/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
+			$action
+		);
 	}
 
 	/**
