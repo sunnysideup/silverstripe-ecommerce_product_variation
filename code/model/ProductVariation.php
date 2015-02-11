@@ -971,6 +971,32 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	}
 
 
+	/**
+	 * finds similar ("siblings") variations where one
+	 * attribute value is NOT the same.
+	 *
+	 * @return DataList
+	 */
+	public function MostLikeMe(){
+		$idArray = array();
+		foreach($this->AttributeValues() as $excludeValue) {
+			unset($getAnyArray);
+			$getAnyArray = array();
+			foreach($this->AttributeValues() as $innerValue) {
+				if($excludeValue->ID != $innerValue->ID) {
+					$getAnyArray[$innerValue->ID] = $innerValue->ID;
+				}
+				//find a product variation that has the getAnyArray Values
+				$items = ProductVariation::get()
+					->innerJoin("ProductVariation_AttributeValues", "\"ProductVariation\".\"ID\" = \"ProductVariationID\" ")
+					->filter(array("ProductAttributeValueID" => $getAnyArray, "ProductID" => $this->ProductID))
+					->exclude(array("ID" => $this->ID));
+				$idArray += $items->map("ID", "ID")->toArray();
+			}
+		}
+		return ProductVariation::get()->filter(array("ID" => $idArray));
+	}
+
 }
 
 
