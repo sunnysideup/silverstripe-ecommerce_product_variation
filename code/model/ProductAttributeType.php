@@ -145,7 +145,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 			"Root.Main",
 			new OptionalTreeDropdownField(
 				"MoreInfoLinkID",
-				_t("ProductAttributeType.MORE_INFO_LINK", "More info page")
+				_t("ProductAttributeType.MORE_INFO_LINK", "More info page"),
+				"SiteTree"
 			)
 		);
 		//TODO: make this a really fast editing interface. Table list field??
