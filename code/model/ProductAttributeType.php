@@ -12,6 +12,7 @@
  */
 
 class ProductAttributeType extends DataObject implements EditableEcommerceObject{
+
 	/**
 	 * Standard SS variable.
 	 */
@@ -22,6 +23,10 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 			"Values"
 		)
 	);
+
+	/**
+	 * Standard SS variable.
+	 */
 	private static $db = array(
 		'Name' => 'Varchar', //for back-end use
 		'Label' => 'Varchar', //for front-end use
@@ -29,40 +34,68 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		//'Unit' => 'Varchar' //TODO: for future use
 	);
 
-
+	/**
+	 * Standard SS variable.
+	 */
 	private static $has_many = array(
 		'Values' => 'ProductAttributeValue'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $summary_fields = array(
 		'FullName' => 'Type'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $searchable_fields = array(
 		'Name' => 'PartialMatchFilter',
 		'Label' => 'PartialMatchFilter'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $belongs_many_many = array(
 		'Products' => 'Product'
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $casting = array(
 		'FullName' => 'Varchar'
 	);
 
-
+	/**
+	 * Standard SS variable.
+	 */
 	private static $indexes = array(
 		"Sort" => true
 	);
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
+	/**
+	 * Standard SS variable.
+	 */
 	public $Variations = null;
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $singular_name = "Variation Attribute Type";
 		function i18n_singular_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Variation Attribute Type");}
 
+	/**
+	 * Standard SS variable.
+	 */
 	private static $plural_name = "Variation Attribute Types";
 		function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Variation Attribute Types");}
 		public static function get_plural_name(){
@@ -92,6 +125,9 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		return $type;
 	}
 
+	/**
+	 * Standard SS Methodd.
+	 */
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
 		//TODO: make this a really fast editing interface. Table list field??
@@ -112,18 +148,22 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		);
 	}
 
+	/**
+	 * add more values to a type
+	 * array should be an something like red, blue, orange (strings NOT objects)
+	 * @param Array
+	 */
 	function addValues(array $values){
 		$avalues = $this->convertArrayToValues($values);
-		$this->Values()->addMany($avalues);
+		$this->Values()->addMany($values);
 	}
 
 	/**
 	 * takes an array of values
 	 * and finds them or creates them.
 	 *
-	 * @param Array
+	 * @param Array $values
 	 * @return ArrayList
-	 *
 	 */
 	function convertArrayToValues(array $values){
 		$set = new ArrayList();
@@ -141,8 +181,10 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 
 	/**
 	 *
+	 * @param String $emptyString
+	 * @param DataList $values
 	 *
-	 * @return DropdownField
+	 * @return DropdownField | Null
 	 */
 	function getDropDownField($emptystring = null, $values = null) {
 		//to do, why do switch to "all" the options if there are no values?
@@ -171,6 +213,12 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		return true;
 	}
 
+	/**
+	 * standard SS method
+	 * Adds a name if there is no name.
+	 * Adds a label is there is no label.
+	 *
+	 */
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		$i = 0;
@@ -190,8 +238,6 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	/**
 	 * Delete all the values
 	 * that are related to this type.
-	 *
-	 *
 	 */
 	function onBeforeDelete() {
 		parent::onBeforeDelete();
@@ -230,6 +276,10 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		}
 	}
 
+	/**
+	 * useful for GridField
+	 * @return String
+	 */
 	function getFullName(){
 		return $this->Name." (".$this->Values()->count().")";
 	}
