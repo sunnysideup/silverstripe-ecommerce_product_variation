@@ -37,6 +37,13 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	/**
 	 * Standard SS variable.
 	 */
+	private static $has_one = array(
+		'MoreInfoLink' => 'SiteTree'
+	);
+
+	/**
+	 * Standard SS variable.
+	 */
 	private static $has_many = array(
 		'Values' => 'ProductAttributeValue'
 	);
@@ -130,6 +137,17 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 */
 	function getCMSFields(){
 		$fields = parent::getCMSFields();
+		$nameField = $fields->dataFieldByName("Name");
+		$nameField->SetRightTitle(_t("ProductAttributeType.NAME_RIGHT_TITLE", "Mainly used for easy recognition in the CMS"));
+		$valueField = $fields->dataFieldByName("Label");
+		$valueField->SetRightTitle(_t("ProductAttributeType.VALUE_RIGHT_TITLE", "Mainly used for site users"));
+		$fields->addFieldToTab(
+			"Root.Main",
+			new OptionalTreeDropdownField(
+				"MoreInfoLinkID",
+				_t("ProductAttributeType.MORE_INFO_LINK", "More info page")
+			)
+		);
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
 		return $fields;
@@ -281,7 +299,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * @return String
 	 */
 	function getFullName(){
-		return $this->Name." (".$this->Values()->count().")";
+		return $this->Name." (".$this->Values()->count()."), label: ".$this->Label;
 	}
 }
 
