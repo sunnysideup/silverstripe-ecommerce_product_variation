@@ -629,10 +629,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	public function OrderItem() {
 		//work out the filter
 		$filter = "";
-		$this->extend('updateItemFilter',$filter);
+		$this->extend('updateItemFilter', $filter);
 		//make the item and extend
 		$item = ShoppingCart::singleton()->findOrMakeItem($this, $filter);
-		$this->extend('updateDummyItem',$item);
+		$this->extend('updateDummyItem', $item);
 		return $item;
 	}
 
@@ -649,7 +649,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 **/
 	public function classNameForOrderItem() {
 		$className = $this->defaultClassNameForOrderItem;
-		$update = $this->extend("updateClassNameForOrderItem", $className);
+		$update = implode("", $this->extend("updateClassNameForOrderItem", $className));
 		if(is_string($update) && class_exists($update)) {
 			$className = $update;
 		}
@@ -691,9 +691,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			"
 		)->value();
 	}
-
-
-
 
 	//LINKS
 
@@ -911,7 +908,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($extended !== null) {
-			$allowpurchase = $extended;
+			$allowpurchase = $extended[0];
 		}
 		return $allowpurchase;
 	}
@@ -1048,7 +1045,10 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 				$tableTitle = $product->Title;
 			}
 		}
-		$this->extend('updateTableTitle',$tableTitle);
+		$extendedTitle = $this->extend('updateTableTitle',$tableTitle);
+		if($extendedTitle !== null) {
+			return implode("", $extendedTitle);
+		}
 		return $tableTitle;
 	}
 
@@ -1065,7 +1065,10 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 				$tableSubTitle = $variation->getTitle(true, true);
 			}
 		}
-		$this->extend('updateTableSubTitle',$tableSubTitle);
+		$extendedSubTitle = $this->extend('updateTableSubTitle', $tableSubTitle);
+		if($extendedSubTitle !== null) {
+			return implode("", $extendedSubTitle);
+		}
 		return $tableSubTitle;
 	}
 
@@ -1083,10 +1086,8 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		 * Changing the condition from empty($this->ID) to
 		 * !$this->ID && !$this->record['ID'] fixed this.
 		 */
-		if(empty($this->ID)) return true;
-
-		if(is_numeric($this->ID)) return false;
-
+		if(empty($this->ID)) {return true;}
+		if(is_numeric($this->ID)) {return false;}
 		return stripos($this->ID, 'new') === 0;
 	}
 

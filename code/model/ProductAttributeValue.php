@@ -36,20 +36,15 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 	);
 
 	private static $casting = array(
-		'Title' => 'Varchar',
-		'ValueForDropdown' => "HTMLText"
+		'Title' => 'HTMLText',
+		'ValueForDropdown' => "HTMLText",
+		'ValueForTable' => "HTMLText"
 	);
 
 	private static $indexes = array(
 		'Sort' => true,
 		'Code' => true
 	);
-
-	function Title() {return $this->getTitle();}
-	function getTitle() {
-		return $this->Value;
-	}
-
 
 	/**
 	 * finds or makes a ProductAttributeType, based on the lower case Name.
@@ -125,25 +120,41 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 	/**
 	 * casted variable
 	 * returns the value for the option in the select dropdown box.
-	 *@return String
+	 * @return String (HTML)
 	 **/
 	function ValueForDropdown() {return $this->getValueForDropdown();}
 	function getValueForDropdown() {
-		$this->ValueForDropdownFinal = $this->Value;
-		$this->extend("updateValueForDropdown");
-		return $this->ValueForDropdownFinal;
+		$value = $this->Value;
+		$extensionValue = $this->extend("updateValueForDropdown");
+		if($extensionValue !== null) {
+			$value = implode("", $extensionValue);
+		}
+		return $value;
 	}
 
 	/**
 	 * casted variable
 	 * returns the value for the variations table
-	 *@return String
+	 * @return String (HTML)
 	 **/
 	function ValueForTable() {return $this->getValueForTable();}
 	function getValueForTable() {
-		$this->ValueForTableFinal = $this->Value;
-		$this->extend("updateValueForTable");
-		return $this->ValueForTableFinal;
+		$value = $this->Value;
+		$extensionValue = $this->extend("updateValueForTable");
+		if($extensionValue !== null) {
+			$value = implode("", $extensionValue);
+		}
+		return $value;
+	}
+
+	/**
+	 * casted variable
+	 * returns the value for the variations table
+	 * @return String
+	 **/
+	function Title() {return $this->getTitle();}
+	function getTitle() {
+		return $this->getValueForTable();
 	}
 
 	function onBeforeDelete() {
