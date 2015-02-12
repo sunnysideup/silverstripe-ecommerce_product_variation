@@ -118,6 +118,17 @@ var CreateEcommerceVariationsField = {
 	addEditLinkToggles: function() {
 		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
 			"click",
+			"#"+CreateEcommerceVariationsField.fieldID+" .editInCMSLink",
+			function(event) {
+				jQuery(this).attr("target", jQuery(this).attr("rel"));
+				return true;
+			}
+		);
+	},
+
+	addEditInCMSLinks: function() {
+		jQuery(CreateEcommerceVariationsField.delegateRootSelector).on(
+			"click",
 			"#"+CreateEcommerceVariationsField.fieldID+" .editNameLink",
 			function() {
 				var rel = "#editFieldFor"+jQuery(this).attr("rel");
@@ -380,7 +391,7 @@ var CreateEcommerceVariationsField = {
 		}
 		html = html.replace(/<li>VALUEHOLDER<\/li>/g, valueHtml);
 		html = html.replace(/ChangeToId/g, 'ID');
-
+		html = html.replace(/EDITLINK/g, type.EditLink);
 		return html;
 	},
 
@@ -398,6 +409,7 @@ var CreateEcommerceVariationsField = {
 			html = html.replace(/DELETE/g, 'doNotShow');
 		}
 		html = html.replace(/ChangeToId/g, 'ID');
+		html = html.replace(/EDITLINK/g, value.EditLink);
 		return html;
 	},
 

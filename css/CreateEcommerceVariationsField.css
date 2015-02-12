@@ -23,4 +23,8 @@
  	.createEcommerceVariations div.fieldHolder label a.deleteLink
 		{color: transparent; display: inline-block; height: 16px; width: 16px; color: transparent; background-image: url(/ecommerce_product_variation/images/icons/delete.png); }
 
+/* EDIT LINK */
+ 	.createEcommerceVariations div.fieldHolder label a.editInCMSLink
+		{color: transparent; display: inline-block; height: 16px; width: 16px; color: transparent; background-image: url(/ecommerce_product_variation/images/icons/edit.png); }
+
 #CreateEcommerceVariationsTemplate, .doNotShow{display: none!important;}

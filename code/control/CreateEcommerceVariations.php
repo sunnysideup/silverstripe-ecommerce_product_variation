@@ -226,6 +226,7 @@ class CreateEcommerceVariations extends Controller {
 				$resultType = array(
 					'ID' => $type->ID,
 					'Name' => $type->Name,
+					'EditLink' => $type->CMSEditLink(),
 					'Checked' => isset($this->_selectedtypeid[$type->ID]),
 					'Disabled' => ! $this->_product->canRemoveAttributeType($type),
 					'CanDelete' => $type->canDelete()
@@ -236,6 +237,7 @@ class CreateEcommerceVariations extends Controller {
 						$resultType['Values'][] = array(
 							'ID' => $value->ID,
 							'Name' => $value->Value,
+							'EditLink' => $value->CMSEditLink(),
 							'Checked' => isset($this->_selectedvalueid[$value->ID]),
 							'CanDelete' => $value->canDelete()
 						);

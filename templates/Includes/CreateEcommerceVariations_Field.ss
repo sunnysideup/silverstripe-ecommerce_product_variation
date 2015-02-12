@@ -12,8 +12,9 @@
 				<div class="checkboxInputHolder fieldHolder">
 					<input type="checkbox" class="checkbox dataForType" id="TypeCheckID"  name="typeCheckID" value="ID" disabled="disabled" checked="checked" rel="ID" />
 					<label>
+						<a href="EDITLINK" rel="editScreenForID" class="editInCMSLink dataForType">edit</a>
 						<a href="#" rel="TypeID" class="editNameLink dataForType">NAME</a>
-						<a href="#" rel="ID" class="deleteLink  dataForType DELETE">delete</a>
+						<a href="#" rel="ID" class="deleteLink dataForType DELETE">delete</a>
 					</label>
 				</div>
 				<div class="typeTextHolder textInputHolder fieldHolder editFieldHolder" id="editFieldForTypeID">
@@ -38,6 +39,7 @@
 				<div class="checkboxInputHolder fieldHolder">
 					<input type="checkbox" class="checkbox dataForValue" id="ValueCheckID"  name="valueCheckID" value="ID"  checked="checked" rel="ID" />
 					<label>
+						<a href="EDITLINK" rel="editScreenForID" class="editInCMSLink dataForValue">edit</a>
 						<a href="#" rel="ValueID" class="editNameLink dataForValue">NAME</a>
 						<a href="#" rel="ID" class="deleteLink dataForValue DELETE">delete</a>
 					</label>
