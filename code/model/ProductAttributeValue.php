@@ -126,7 +126,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 	function getValueForDropdown() {
 		$value = $this->Value;
 		$extensionValue = $this->extend("updateValueForDropdown");
-		if($extensionValue !== null) {
+		if($extensionValue !== null && is_array($extensionValue) && count($extensionValue)) {
 			$value = implode("", $extensionValue);
 		}
 		return $value;
@@ -141,7 +141,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 	function getValueForTable() {
 		$value = $this->Value;
 		$extensionValue = $this->extend("updateValueForTable");
-		if($extensionValue !== null) {
+		if($extensionValue !== null && is_array($extensionValue) && count($extensionValue)) {
 			$value = implode("", $extensionValue);
 		}
 		return $value;

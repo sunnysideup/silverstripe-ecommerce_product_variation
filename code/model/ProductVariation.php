@@ -629,7 +629,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	public function OrderItem() {
 		//work out the filter
 		$filter = "";
-		$this->extend('updateItemFilter', $filter);
+		$updatedFilter = $this->extend('updateItemFilter', $filter);
+		if($updatedFilter!== null && is_array($updatedFilter) && count($updatedFilter)) {
+			$filter = $updatedFilter[0];
+		}
 		//make the item and extend
 		$item = ShoppingCart::singleton()->findOrMakeItem($this, $filter);
 		$this->extend('updateDummyItem', $item);
@@ -649,9 +652,13 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 **/
 	public function classNameForOrderItem() {
 		$className = $this->defaultClassNameForOrderItem;
-		$update = implode("", $this->extend("updateClassNameForOrderItem", $className));
-		if(is_string($update) && class_exists($update)) {
-			$className = $update;
+		$extensionValue = $this->extend("updateClassNameForOrderItem", $className);
+		if($extensionValue!== null && is_array($extensionValue) && count($extensionValue)) {
+			$className = $extensionValue[0];
+		}
+		$updatedClassName = implode("", $this->extend("updateClassNameForOrderItem", $className));
+		if($updatedClassName != null && is_array($updatedClassName) && count($updatedClassName)) {
+			$className = $updatedClassName[0];
 		}
 		return $className;
 	}
@@ -795,11 +802,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	protected function linkParameters(){
 		$array = array();
 		$extendedArray = $this->extend('updateLinkParameters', $array, $type);
-		if($extendedArray) {
-			if(!is_array($extendedArray)) {
-				user_error("decoration method updateLinkParameters should return an array");
+		if($extendedArray !== null && is_array($extendedArray) && count($extendedArray)) {
+			foreach($extendedArray as $extendedArrayUpdate) {
+				$array += $extendedArrayUpdate;
 			}
-			return $extendedArray;
 		}
 		return $array;
 	}
@@ -861,11 +867,8 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	function getCalculatedPrice() {
 		$price = $this->Price;
 		$updatedPrice = $this->extend('updateCalculatedPrice',$price);
-		if($updatedPrice !== null) {
-			if(is_array($updatedPrice) && count($updatedPrice)) {
-				$price = $updatedPrice[0];
-			}
-
+		if($updatedPrice !== null && is_array($updatedPrice) && count($updatedPrice)) {
+			$price = $updatedPrice[0];
 		}
 		return $price;
 	}
@@ -908,7 +911,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($extended !== null) {
-			$allowpurchase = $extended[0];
+			$allowpurchase = min($extended);
 		}
 		return $allowpurchase;
 	}
@@ -1024,19 +1027,18 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 			$unitPrice = 0;
 		}
 		$updatedUnitPrice = $this->extend('updateUnitPrice',$unitPrice);
-		if($updatedUnitPrice !== null) {
-			if(is_array($updatedUnitPrice) && count($updatedUnitPrice)) {
-				$unitPrice = $updatedUnitPrice[0];
-			}
+		if($updatedUnitPrice !== null && is_array($updatedUnitPrice) && count($updatedUnitPrice)) {
+			$unitPrice = $updatedUnitPrice[0];
 		}
 		return $unitPrice;
 	}
 
 	/**
-	 *@decription: we return the product name here -
+	 * @decription: we return the product name here -
 	 * leaving the Table Sub Title for the name of the variation
-	 *@return String - title in cart.
-	 **/
+	 *
+	 * @return String - title in cart.
+	 */
 	public function TableTitle(){return $this->getTableTitle();}
 	function getTableTitle() {
 		$tableTitle = _t("Product.UNKNOWN", "Unknown Product");
@@ -1046,7 +1048,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 			}
 		}
 		$extendedTitle = $this->extend('updateTableTitle',$tableTitle);
-		if($extendedTitle !== null) {
+		if($extendedTitle !== null && is_array($extendedTitle) && count($extendedTitle)) {
 			return implode("", $extendedTitle);
 		}
 		return $tableTitle;
@@ -1066,7 +1068,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 			}
 		}
 		$extendedSubTitle = $this->extend('updateTableSubTitle', $tableSubTitle);
-		if($extendedSubTitle !== null) {
+		if($extendedSubTitle !== null && is_array($extendedSubTitle) && count($extendedSubTitle)) {
 			return implode("", $extendedSubTitle);
 		}
 		return $tableSubTitle;

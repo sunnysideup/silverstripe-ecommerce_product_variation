@@ -206,6 +206,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * @return DropdownField | Null
 	 */
 	function getDropDownField($emptystring = null, $values = null) {
+		$field = null;
 		//to do, why do switch to "all" the options if there are no values?
 		$values = ($values) ? $values : $this->Values();
 		if($values && $values->count() > 0){
@@ -213,10 +214,9 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 			if($emptystring && $values->count() > 1) {
 				$field->setEmptyString($emptystring);
 			}
-			$this->extend("updateDropDownField", $field);
-			return $field;
 		}
-		return null;
+		$this->extend("updateDropDownField", $field);
+		return $field;
 	}
 
 	/**
