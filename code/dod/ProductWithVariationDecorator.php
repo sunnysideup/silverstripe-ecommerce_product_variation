@@ -157,7 +157,14 @@ class ProductWithVariationDecorator extends DataExtension {
 					'Price',
 					"ProductID = {$this->owner->ID}",
 					'',
-					_t("ProductVariation.QUICK_UPDATE_VARIATION_RRICES", 'prices')
+					_t("ProductVariation.QUICK_UPDATE_VARIATION_PRICES", 'prices')
+				);
+				$linkForProductCodes = DataObjectOneFieldUpdateController::popup_link(
+					'ProductVariation',
+					'InternalItemID',
+					"ProductID = {$this->owner->ID}",
+					'',
+					_t("ProductVariation.QUICK_UPDATE_VARIATION_PRODUCT_CODES", 'product codes')
 				);
 				$tab->insertAfter(
 					new LiteralField(
@@ -167,6 +174,7 @@ class ProductWithVariationDecorator extends DataExtension {
 							.': '
 							."<span class=\"action ss-ui-button\">$linkForAllowSale</span> "
 							."<span class=\"action ss-ui-button\">$linkForPrice</span>"
+							."<span class=\"action ss-ui-button\">$linkForProductCodes</span>"
 							."</p>"
 					),
 					'ProductVariations'

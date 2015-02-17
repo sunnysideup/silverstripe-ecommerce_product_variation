@@ -907,6 +907,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 		}
 		$price = $this->getCalculatedPrice();
 		if($price == 0 && ! $config->AllowFreeProductPurchase) {
+			die((string)$price);
 			return false;
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
@@ -1051,6 +1052,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		if($extendedTitle !== null && is_array($extendedTitle) && count($extendedTitle)) {
 			return implode("", $extendedTitle);
 		}
+
 		return $tableTitle;
 	}
 
