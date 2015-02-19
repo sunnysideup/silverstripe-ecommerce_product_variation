@@ -671,7 +671,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	protected $variationFilter = array();
 
 	/**
-	 * return the variations and aplu filter if one has been set.
+	 * return the variations and apply filter if one has been set.
 	 * @return DataList
 	 */
 	function Variations(){
@@ -851,6 +851,9 @@ class ProductWithVariationDecorator_Controller extends Extension {
 				"ProductVariation",
 				"\"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\""
 			);
+		if($this->variationFilter) {
+			$vals = $vals->filter(array("ProductVariation.ID" => $this->variationFilter));
+		}
 		return $vals;
 	}
 
@@ -882,6 +885,13 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			$this->variationFilter = array_map("intval", $array);
 		}
 		return array();
+	}
+
+	/**
+	 * @return Boolean
+	 */
+	function HasFilterForVariations(){
+		return $this->variationFilter && count($this->variationFilter) ? true : false;
 	}
 
 
