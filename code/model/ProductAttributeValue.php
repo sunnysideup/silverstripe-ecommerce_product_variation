@@ -73,7 +73,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 		return $valueObj;
 	}
 
-	private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC, \"Value\" ASC";
+	private static $default_sort = "\"TypeID\" ASC, \"Sort\" ASC";
 
 	private static $singular_name = "Variation Attribute Value";
 		function i18n_singular_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUE", "Variation Attribute Value");}

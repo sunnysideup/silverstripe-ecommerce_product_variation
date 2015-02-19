@@ -839,8 +839,7 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			)
 			->sort(
 				array(
-					"ProductAttributeValue.Sort" => "ASC",
-					"ProductAttributeValue.Value" => "ASC"
+					"ProductAttributeValue.Sort" => "ASC"
 				)
 			)
 			->innerJoin(
