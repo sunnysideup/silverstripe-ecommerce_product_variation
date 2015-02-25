@@ -211,7 +211,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 					new TextField('Description', _t("ProductVariation.DESCRIPTION", "Description (optional)"))
 				),
 				new Tab('Image',
-					new UploadField('Image')
+					new Product_ProductImageUploadField('Image')
 				)
 			)
 		);
