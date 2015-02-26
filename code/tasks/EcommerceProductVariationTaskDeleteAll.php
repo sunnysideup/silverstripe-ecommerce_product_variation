@@ -34,8 +34,16 @@ class EcommerceProductVariationTaskDeleteAll extends BuildTask{
 			if($live) {
 				DB::query($sql);
 			}
+			$sql = "SELECT COUNT(ID) FROM \"$table\"";
+			$count = DB::query($sql)->value();
+			if($count == 0) {
+				$style = "created";
+			}
+			else {
+				$style = "deleted";
+			}
+			DB::alteration_message(" **** COMPLETED, NUMBER OF REMAINING RECORD: ".$count." **** ", $style);
 		}
-		DB::alteration_message(" **** COMPLETED **** ", "created");
 	}
 
 }

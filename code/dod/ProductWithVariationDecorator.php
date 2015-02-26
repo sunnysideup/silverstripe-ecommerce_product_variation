@@ -1,13 +1,10 @@
 <?php
 
 /**
- * TODO: integrate with Product and Rewrite!
  *
  *
  *
  */
-
-
 
 class ProductWithVariationDecorator extends DataExtension {
 
@@ -29,7 +26,9 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * standard SS Var
 	 */
 	private static $many_many_extraFields = array(
-		'VariationAttributes' => array('Notes' => 'Varchar(200)')
+		'VariationAttributes' => array(
+			'Notes' => 'Varchar(200)'
+		)
 	);
 
 	/**
@@ -282,60 +281,6 @@ class ProductWithVariationDecorator extends DataExtension {
 		return EcommerceCurrency::get_money_object_from_order_currency($this->LowestVariationPrice());
 	}
 
-	/*
-	 * Generates variations based on selected attributes.
-	 * TODO: work out how it works!
-	 * @param ProductAttributeType $attributetype
-	 * @param Array $values
-	 */
-	function generateVariationsFromAttributes(ProductAttributeType $attributetype, array $values){
-		die("this needs to be completed");
-		//TODO: introduce transactions here, in case objects get half made etc
-
-		//if product has variation attribute types
-		if(is_array($values)){
-			//TODO: get values dataobject set
-			$arrayValues = $attributetype->convertArrayToValues($values);
-			$existingvariations = $this->owner->Variations();
-			if($existingvariations->count()){
-				//delete old variation, and create new ones - to prevent modification of exising variations
-				foreach($existingvariations as $oldvariation){
-					$oldvalues = $oldvariation->AttributeValues();
-					if($oldvalues) {
-						foreach($arrayValues as $attributeValueObject){
-							$newvariation = $oldvariation->duplicate();
-							$newvariation->InternalItemID = $this->owner->InternalItemID.'-'.$newvariation->ID;
-							$newvariation->AttributeValues()->addMany($oldvalues);
-							$newvariation->AttributeValues()->add($attributeValueObject);
-							$newvariation->write();
-							$existingvariations->add($newvariation);
-						}
-					}
-					$existingvariations->remove($oldvariation);
-					$oldvariation->AttributeValues()->removeAll();
-					$oldvariation->delete();
-					$oldvariation->destroy();
-					//TODO: check that old variations actually stick around,
-					//as they will be needed for past orders etc
-				}
-			}
-			else {
-				if($arrayValues) {
-					foreach($arrayValues as $attributeValueObject){
-						$variation = new ProductVariation();
-						$variation->ProductID = $this->owner->ID;
-						$variation->Price = $this->owner->Price;
-						$variation->write();
-						$variation->InternalItemID = $this->owner->InternalItemID.'-'.$variation->ID;
-						$variation->AttributeValues()->add($attributeValueObject);
-						$variation->write();
-						$existingvariations->add($variation);
-					}
-				}
-			}
-		}
-	}
-
 	/**
 	 * The array provided needs to be
 	 *     TypeID => arrayOfValueIDs
@@ -413,10 +358,10 @@ class ProductWithVariationDecorator extends DataExtension {
 	}
 
 	/**
-	 * TO DO: work out how it works...
-	 * Get a
-	 * @param array $attributes
-	 * @return ProductVariation $variation
+	 * returns the matching variation if any
+	 * @param array $attributes formatted as (TypeID => ValueID, TypeID => ValueID)
+	 *
+	 * @return ProductVariation | NULL
 	 */
 	function getVariationByAttributes(array $attributes){
 		if(!is_array($attributes) || !count($attributes)) {
@@ -777,15 +722,16 @@ class ProductWithVariationDecorator_Controller extends Extension {
 	 *     AttributeValueID: AttributeValueID,
 	 *     AttributeValueID: AttributeValueID
 	 *   ]
+	 * @param Boolean $showCanNotPurchaseAsWell - show all variations, evens the ones that can not be purchased.
 	 *
 	 * @return String (JSON)
 	 */
-	public function VariationsForSaleJSON(){
+	public function VariationsForSaleJSON($showCanNotPurchaseAsWell = false){
 		//todo: change JS so that we dont have to add this default array.
 		$varArray = array(-1 => -1);
 		if($variations = $this->owner->Variations()){
 			foreach($variations as $variation){
-				if($variation->canPurchase()) {
+				if($showCanNotPurchaseAsWell || $variation->canPurchase()) {
 					$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
 				}
 			}

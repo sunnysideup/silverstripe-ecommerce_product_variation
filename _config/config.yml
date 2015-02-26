@@ -28,6 +28,8 @@ LeftAndMain:
 EcommerceDatabaseAdmin:
   extensions:
     - EcommerceProductVariationTaskDeleteVariations_EXT
+    - EcommerceProductVariationTaskDeleteAll_EXT
+    - EcommerceTaskCSVToVariations_EXT
 
 ProductConfigModelAdmin:
   managed_models:

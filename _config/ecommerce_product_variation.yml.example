@@ -18,6 +18,14 @@ ProductWithVariationDecorator_Controller:
 
 ProductVariation:
   current_style_option_code: "default"
+  folder_name_for_images: "ProductVariationImages"
+
+EcommerceTaskCSVToVariations:
+  file_location: "mysite/data/mydatafile.csv"
+  no_price_available: "poa"
+  attribute_type_field_names:
+    - Size
+    - Colour
 
 #########################################
 # END ECOMMERCE PRODUCT VARIATION

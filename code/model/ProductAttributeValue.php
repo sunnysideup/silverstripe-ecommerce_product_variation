@@ -177,7 +177,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		if(!$this->Value) {
-			$this->Value = $this->i18n_single_name();
+			$this->Value = $this->i18n_singular_name();
 			$i = 0;
 			$className = $this->ClassName;
 			while($className::get()->filter(array("Value" => $this->Value))->First() ) {
