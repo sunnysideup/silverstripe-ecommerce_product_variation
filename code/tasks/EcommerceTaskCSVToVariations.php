@@ -92,6 +92,10 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	 */
 	protected $defaultProductParentID = 0;
 
+	function getDescription(){
+		return $this->description ." The file to be used is: ".$this->Config()->get("file_location");
+	}
+
 	/**
 	 *
 	 */
@@ -107,11 +111,20 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	}
 
 	/**
-	 * do more with Product Variation
+	 * do more with Product
 	 * @param Product $product
 	 * @param Array $row
 	 */
 	protected function addMoreProduct($product, $row){
+		//overwrite in an extension of this task
+	}
+
+	/**
+	 * do more with Product that does have any variations
+	 * @param Product $product
+	 * @param Array $row
+	 */
+	protected function addMoreProductForProductWithoutVariations($product, $row){
 		//overwrite in an extension of this task
 	}
 
@@ -243,8 +256,15 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				}
 			}
 			if(count($this->data[$product->ID]["VariationRows"]) < 2) {
+				$varData = array_shift($this->data[$product->ID]["VariationRows"]);
+				$varDataRow = $varData["Data"];
+				$this->addFieldToObject($product, $data, "Price", "");
+				$this->addFieldToObject($product, $data, "InternalItemID", "");
+				$this->addMoreProductForProductWithoutVariations($product, $varDataRow);
+				$product->writeToStage("Stage");
+				$product->Publish('Stage', 'Live');
 				unset($this->data[$productKey]);
-				DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. Please create these in the CMS", "deleted");
+				DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. ", "deleted");
 			}
 			else {
 				DB::alteration_message("Found ".count($this->data[$product->ID]["VariationRows"])." Variations for ".$product->Title);
@@ -264,7 +284,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			DB::alteration_message("Working out variations for ".$product->Title);
 			//create attribute types for one product
 			DB::alteration_message("....Creating attribute types");
-			foreach($this->Config()->get("attribute_type_field_names") as $fieldName) {
+			foreach($this->Config()->get("attribute_type_field_names") as $fieldKey => $fieldName) {
 				DB::alteration_message("........Checking field $fieldName");
 				$attributeTypeName = $data["Product"]->Title."_".$fieldName;
 				$filterArray = array("Name" => $attributeTypeName);
@@ -273,7 +293,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					DB::alteration_message("............creating new attribute type: ".$attributeTypeName, "created");
 					$type = new ProductAttributeType($filterArray);
 					$type->Label = $attributeTypeName;
-
+					$type->Sort = $fieldKey;
 				}
 				else {
 					DB::alteration_message("............found existing attribute type: ".$attributeTypeName);
@@ -359,8 +379,8 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					else {
 						DB::alteration_message("........NO Price field", "deleted");
 					}
-					$this->addFieldToVariation($variation, "Price", "");
-					$this->addFieldToVariation($variation, "InternalItemID", "");
+					$this->addFieldToObject($variation, $variationData, "Price", "");
+					$this->addFieldToObject($variation, $variationData, "InternalItemID", "");
 					$this->addMoreToVariation($variation, $variationData, $product);
 					$variation->write();
 				}
@@ -372,13 +392,21 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		DB::alteration_message("================================================");
 	}
 
-	protected function addFieldToVariation($variation, $objectField, $arrayField = "") {
+	/**
+	 * adds a field to the variation
+	 * @param ProductVariation | Product $variation
+	 * @param array $variationData - the array of data
+	 * @param String $objectField - the name of the field on the variation itself
+	 * @param String $arrayField - the name of the field in the variationData
+	 *
+	 */
+	protected function addFieldToObject($variation, $variationData, $objectField, $arrayField = "") {
 		if(!$arrayField) {
 			$arrayField = $objectField;
 		}
 		if(isset($variationData[$arrayField])) {
 			if($value = $variationData[$arrayField]) {
-				DB::alteration_message("........$objectField = ".$value, "created");
+				DB::alteration_message("........$objectField = ".$value, "changed");
 				$variation->$objectField = $value;
 			}
 			else {
