@@ -164,7 +164,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	}
 
 	protected function readFile(){
-		flush(); ob_end_flush(); flush(); ob_end_flush(); DB::alteration_message("================================================ READING FILE ================================================"); ob_start();
+		DB::alteration_message("================================================ READING FILE ================================================"); ob_start();
 		$rowCount = 1;
 		$rows = array();
 		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
