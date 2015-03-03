@@ -140,7 +140,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	/**
 	 * Standard SS variable.
 	 */
-	private static $default_sort = "\"FullSiteTreeSort\" ASC, \"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
+	private static $default_sort = "\"AllowPurchase\" DESC, \"FullSiteTreeSort\" ASC, \"Sort\" ASC, \"InternalItemID\" ASC, \"Price\" ASC";
 
 	/**
 	 * Standard SS variable.
