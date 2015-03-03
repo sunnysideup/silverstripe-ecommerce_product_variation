@@ -164,7 +164,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	}
 
 	protected function readFile(){
-		DB::alteration_message("================================================ READING FILE ================================================");
+		flush(); ob_end_flush(); flush(); ob_end_flush(); DB::alteration_message("================================================ READING FILE ================================================"); ob_start();
 		$rowCount = 1;
 		$rows = array();
 		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
@@ -183,15 +183,15 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		$rowCount = 1;
 		foreach ($rows as $row) {
 			if(count($header) != count($row)) {
-				DB::alteration_message("I am trying to merge ".implode(", ", $header)." with ".implode(", ", $row)." but the column count does not match!", "deleted");
+				flush(); ob_end_flush(); DB::alteration_message("I am trying to merge ".implode(", ", $header)." with ".implode(", ", $row)." but the column count does not match!", "deleted");ob_start();
 				die("STOPPED");
 			}
 			$this->csv[] = array_combine($header, $row);
 			$rowCount++;
 		}
-		DB::alteration_message("Imported ".count($this->csv)." rows with ".count($header)." cells each");
-		DB::alteration_message("Fields are: ".implode(", ", $header));
-		DB::alteration_message("================================================");
+		flush(); ob_end_flush(); DB::alteration_message("Imported ".count($this->csv)." rows with ".count($header)." cells each");ob_start();
+		flush(); ob_end_flush(); DB::alteration_message("Fields are: ".implode(", ", $header));ob_start();
+		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
 	}
 
 	/**
@@ -199,7 +199,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	 *
 	 */
 	protected function createProducts(){
-		DB::alteration_message("================================================ CREATING PRODUCTS ================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================ CREATING PRODUCTS ================================================");ob_start();
 		$productsCompleted = array();
 		foreach($this->csv as $row) {
 			if(!isset($productsCompleted[$row["ProductTitle"]])) {
@@ -220,10 +220,10 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$product = ProductPage::create($filterArray);
 					$product->MenuTitle = $row["ProductTitle"];
 
-					DB::alteration_message("Creating Product: ".$row["ProductTitle"], "created");
+					flush(); ob_end_flush(); DB::alteration_message("Creating Product: ".$row["ProductTitle"], "created");ob_start();
 				}
 				else {
-					DB::alteration_message("Product: ".$row["ProductTitle"]." already exists");
+					flush(); ob_end_flush(); DB::alteration_message("Product: ".$row["ProductTitle"]." already exists");ob_start();
 				}
 				if(!$product->ParentID) {
 					$product->ParentID = $this->defaultProductParentID;
@@ -238,12 +238,12 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				);
 			}
 		}
-		DB::alteration_message("================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
 	}
 
 
 	protected function findVariations(){
-		DB::alteration_message("================================================ FINDING VARIATIONS ================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================ FINDING VARIATIONS ================================================");ob_start();
 		foreach($this->data as $productKey => $data) {
 			$product = $data["Product"];
 			$title = $product->Title;
@@ -264,39 +264,39 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				$product->writeToStage("Stage");
 				$product->Publish('Stage', 'Live');
 				unset($this->data[$productKey]);
-				DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. ", "deleted");
+				flush(); ob_end_flush(); DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. ", "deleted");ob_start();
 			}
 			else {
-				DB::alteration_message("Found ".count($this->data[$product->ID]["VariationRows"])." Variations for ".$product->Title);
+				flush(); ob_end_flush(); DB::alteration_message("Found ".count($this->data[$product->ID]["VariationRows"])." Variations for ".$product->Title);ob_start();
 			}
 		}
-		DB::alteration_message("================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
 	}
 
 	protected function createVariations(){
-		DB::alteration_message("================================================ CREATING VARIATIONS ================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================ CREATING VARIATIONS ================================================");ob_start();
 		foreach($this->data as $data) {
 			$types = array();
 			$values = array();
 			$product = $data["Product"];
 			$arrayForCreation = array();
 			$variationFilter = array();
-			DB::alteration_message("Working out variations for ".$product->Title);
+			flush(); ob_end_flush(); DB::alteration_message("Working out variations for ".$product->Title);ob_start();
 			//create attribute types for one product
-			DB::alteration_message("....Creating attribute types");
+			flush(); ob_end_flush(); DB::alteration_message("....Creating attribute types");ob_start();
 			foreach($this->Config()->get("attribute_type_field_names") as $fieldKey => $fieldName) {
-				DB::alteration_message("........Checking field $fieldName");
+				flush(); ob_end_flush(); DB::alteration_message("........Checking field $fieldName");ob_start();
 				$attributeTypeName = $data["Product"]->Title."_".$fieldName;
 				$filterArray = array("Name" => $attributeTypeName);
 				$type = ProductAttributeType::get()->filter($filterArray)->first();
 				if(!$type) {
-					DB::alteration_message("............creating new attribute type: ".$attributeTypeName, "created");
+					flush(); ob_end_flush(); DB::alteration_message("............creating new attribute type: ".$attributeTypeName, "created");ob_start();
 					$type = new ProductAttributeType($filterArray);
 					$type->Label = $attributeTypeName;
 					$type->Sort = $fieldKey;
 				}
 				else {
-					DB::alteration_message("............found existing attribute type: ".$attributeTypeName);
+					flush(); ob_end_flush(); DB::alteration_message("............found existing attribute type: ".$attributeTypeName);ob_start();
 				}
 				$this->addMoreAttributeType($type, $fieldName, $product);
 				$type->write();
@@ -304,23 +304,23 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				$product->VariationAttributes()->add($type);
 			}
 			//go through each variation to make the values
-			DB::alteration_message("....Creating attribute values");
+			flush(); ob_end_flush(); DB::alteration_message("....Creating attribute values");ob_start();
 			foreach($data["VariationRows"] as $key => $row) {
 				//go through each value
 				foreach($this->Config()->get("attribute_type_field_names") as $fieldName) {
-					DB::alteration_message("........Checking field $fieldName");
+					flush(); ob_end_flush(); DB::alteration_message("........Checking field $fieldName");ob_start();
 					//create attribute value
 					$attributeValueName = $row["Data"][$fieldName];
 					$filterArray = array("Code" => $attributeValueName, "TypeID" => $types[$fieldName]->ID);
 					$value = ProductAttributeValue::get()->filter($filterArray)->first();
 					if(!$value) {
-						DB::alteration_message("............creating new attribute value: ".$attributeValueName." for ".$types[$fieldName]->Name, "created");
+						flush(); ob_end_flush(); DB::alteration_message("............creating new attribute value: ".$attributeValueName." for ".$types[$fieldName]->Name, "created");ob_start();
 						$value = ProductAttributeValue::create($filterArray);
 						$value->Code = $attributeValueName;
 						$value->Value = $attributeValueName;
 					}
 					else {
-						DB::alteration_message("............found existing attribute value: ".$attributeValueName." for ".$types[$fieldName]->Name);
+						flush(); ob_end_flush(); DB::alteration_message("............found existing attribute value: ".$attributeValueName." for ".$types[$fieldName]->Name);ob_start();
 					}
 					$this->addMoreAttributeType($value, $types[$fieldName], $product);
 					$value->write();
@@ -337,8 +337,8 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$variationFilters[$key][$types[$fieldName]->ID] = $value->ID;
 				}
 			}
-			DB::alteration_message("....Creating Variations ///");
-			//DB::alteration_message("....Creating Variations From: ".print_r(array_walk($arrayForCreation, array($this, 'implodeWalk'))));
+			flush(); ob_end_flush(); DB::alteration_message("....Creating Variations ///");ob_start();
+			//flush(); ob_end_flush(); DB::alteration_message("....Creating Variations From: ".print_r(array_walk($arrayForCreation, array($this, 'implodeWalk'))));ob_start();
 			//generate variations
 			$product->generateVariationsFromAttributeValues($arrayForCreation);
 
@@ -346,38 +346,38 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			foreach($data["VariationRows"] as $key => $row) {
 				$variation = $product->getVariationByAttributes($variationFilters[$key]);
 				if($variation instanceof ProductVariation) {
-					DB::alteration_message("........Created variation, ".$variation->getTitle(), "created");
+					flush(); ob_end_flush(); DB::alteration_message("........Created variation, ".$variation->getTitle(), "created");ob_start();
 					$this->data[$product->ID]["VariationRows"][$key]["Variation"] = $variation;
 				}
 				else {
-					DB::alteration_message("........Could not find variation", "deleted");
+					flush(); ob_end_flush(); DB::alteration_message("........Could not find variation", "deleted");ob_start();
 				}
 			}
 		}
-		DB::alteration_message("================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
 	}
 
 	protected function getExtraDataForVariations() {
-		DB::alteration_message("================================================ ADDING EXTRA DATA ================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================ ADDING EXTRA DATA ================================================");ob_start();
 		foreach($this->data as $productData) {
 			$product = $productData["Product"];
-			DB::alteration_message("Adding extra data for ".$product->Title." with ".count($productData["VariationRows"])." Variations");
+			flush(); ob_end_flush(); DB::alteration_message("Adding extra data for ".$product->Title." with ".count($productData["VariationRows"])." Variations");ob_start();
 			foreach($productData["VariationRows"] as $key => $row) {
 				$variation = $row["Variation"];
 				$variationData = $row["Data"];
 				if($variation instanceof ProductVariation) {
-					DB::alteration_message("....Updating ".$variation->getTitle());
+					flush(); ob_end_flush(); DB::alteration_message("....Updating ".$variation->getTitle());ob_start();
 					if(isset($variationData["Price"])) {
 						if($price = floatval($variationData["Price"]) - 0) {
-							DB::alteration_message("........Price = ".$price, "created");
+							flush(); ob_end_flush(); DB::alteration_message("........Price = ".$price, "created");ob_start();
 							$variation->Price = $price;
 						}
 						else {
-							DB::alteration_message("........NO Price", "deleted");
+							flush(); ob_end_flush(); DB::alteration_message("........NO Price", "deleted");ob_start();
 						}
 					}
 					else {
-						DB::alteration_message("........NO Price field", "deleted");
+						flush(); ob_end_flush(); DB::alteration_message("........NO Price field", "deleted");ob_start();
 					}
 					$this->addFieldToObject($variation, $variationData, "Price", "");
 					$this->addFieldToObject($variation, $variationData, "InternalItemID", "");
@@ -385,11 +385,11 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$variation->write();
 				}
 				else {
-					DB::alteration_message("....Could not find variation for ".print_r($row), "deleted");
+					flush(); ob_end_flush(); DB::alteration_message("....Could not find variation for ".print_r($row), "deleted");ob_start();
 				}
 			}
 		}
-		DB::alteration_message("================================================");
+		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
 	}
 
 	/**
@@ -406,15 +406,15 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		}
 		if(isset($variationData[$arrayField])) {
 			if($value = $variationData[$arrayField]) {
-				DB::alteration_message("........$objectField = ".$value, "changed");
+				flush(); ob_end_flush(); DB::alteration_message("........$objectField = ".$value, "changed");ob_start();
 				$variation->$objectField = $value;
 			}
 			else {
-				DB::alteration_message("........NO $arrayField value", "deleted");
+				flush(); ob_end_flush(); DB::alteration_message("........NO $arrayField value", "deleted");ob_start();
 			}
 		}
 		else {
-			DB::alteration_message("........NO $arrayField field", "deleted");
+			flush(); ob_end_flush(); DB::alteration_message("........NO $arrayField field", "deleted");ob_start();
 		}
 	}
 
