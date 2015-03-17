@@ -179,8 +179,6 @@ class ProductWithVariationDecorator extends DataExtension {
 					'ProductVariations'
 				);
 			}
-
-
 		}
 	}
 
@@ -492,6 +490,18 @@ class ProductWithVariationDecorator extends DataExtension {
 		//check for the attributes used so that they can be added to VariationAttributes
 		parent::onAfterWrite();
 		$this->cleaningUpVariationData();
+	}
+
+	function onBeforeDelete(){
+		parent::onBeforeDelete();
+		if(Versioned::get_by_stage("Product", "Stage", "Product.ID =".$this->owner->ID)->count() == 0) {
+			$variations = $this->owner->Variations();
+			foreach($variations as $variation) {
+				if($variation->canDelete()) {
+					$variation->delete();
+				}
+			}
+		}
 	}
 
 	function onAfterDelete(){
