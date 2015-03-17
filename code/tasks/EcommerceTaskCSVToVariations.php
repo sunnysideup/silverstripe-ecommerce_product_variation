@@ -169,7 +169,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		$rows = array();
 		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
 		if (($handle = fopen($fileLocation, "r")) !== FALSE) {
-			while (($data = fgetcsv($handle, 100000, ",")) !== FALSE) {
+			while (($data = fgetcsv($handle, 100000, "\t")) !== FALSE) {
 				$rows[] = $data;
 				$rowCount++;
 			}
