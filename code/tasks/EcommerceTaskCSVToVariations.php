@@ -181,6 +181,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		$rowCount = 1;
 		$rows = array();
 		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
+		flush(); ob_end_flush(); DB::alteration_message("$fileLocation is the file we are reading", "deleted");ob_start();
 		if (($handle = fopen($fileLocation, "r")) !== FALSE) {
 			while (($data = fgetcsv($handle, 100000, "\t")) !== FALSE) {
 				$rows[] = $data;
@@ -301,6 +302,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		}
 		echo "<pre>";
 		print_r($this->data);
+		print_r($this->csv);
 		echo "</pre>";
 		die("====================================================== STOPPED - add ?forreal=1 to run for real. ======================================");
 	}
