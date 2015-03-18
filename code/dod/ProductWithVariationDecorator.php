@@ -1,7 +1,7 @@
 <?php
 
 /**
- *
+ * adds variation functionality to the product.
  *
  *
  */
@@ -484,7 +484,17 @@ class ProductWithVariationDecorator extends DataExtension {
 		return $array;
 	}
 
-
+	/**
+	 * set price to lowest variation if no price.
+	 */
+	function onBeforeWrite(){
+		if($this->owner->HasVariations()) {
+			$price = $this->owner->getCalculatedPrice();
+			if($price == 0) {
+				$this->owner->Price = $this->owner->LowestVariationPrice();
+			}
+		}
+	}
 
 	function onAfterWrite(){
 		//check for the attributes used so that they can be added to VariationAttributes
