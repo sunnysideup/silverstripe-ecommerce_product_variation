@@ -90,6 +90,12 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	protected $data = array();
 
 	/**
+	 * list of products without variations
+	 * @return Array
+	 */
+	protected $soleProduct = array();
+
+	/**
 	 * The default page of where the products are added.
 	 * @var Int
 	 */
@@ -281,6 +287,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$product->write("Stage");
 					$product->Publish('Stage', 'Live');
 				}
+				$this->soleProduct[$product->ID] = $product->Title.", ID: ".$product->ID;
 				unset($this->data[$productKey]);
 				flush(); ob_end_flush(); DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. ", "deleted");ob_start();
 			}
@@ -292,6 +299,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	}
 
 	protected function showData(){
+		echo "<h2>Variation Summary</h2>";
 		foreach($this->data as $key => $value) {
 			if(isset($value["Product"]) && $value["Product"]) {
 				$this->data[$key]["Product"] = $value["Product"]->Title.", ID: ".$value["Product"]->ID;
@@ -299,9 +307,18 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			else {
 				$this->data[$key]["Product"] = "Not found";
 			}
+			DB::alteration_message($this->data[$key]["Product"].", variations:".count($this->data[$key]["VariationRows"]), "created");
 		}
+		echo "<h2>Products without variations</h2>";
+		foreach($this->soleProduct as $key => $value) {
+			DB::alteration_message($value, "created");
+		}
+		echo "<h2>Variation data</h2>";
 		echo "<pre>";
 		print_r($this->data);
+		echo "</pre>";
+		echo "<h2>CSV Data</h2>";
+		echo "<pre>";
 		print_r($this->csv);
 		echo "</pre>";
 		die("====================================================== STOPPED - add ?forreal=1 to run for real. ======================================");
