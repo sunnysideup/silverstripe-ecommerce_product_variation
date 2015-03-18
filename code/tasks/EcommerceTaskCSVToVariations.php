@@ -111,7 +111,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	public function run($request){
 		increase_time_limit_to(3600);
 		increase_memory_limit_to('512M');
-		if($request->param("forreal")) {
+		if($request->param("forreal") || (isset($_GET["forreal"]) && $_GET["forreal"] == 1)) {
 			$this->forreal = true;
 		}
 		if($this->forreal) {
@@ -269,8 +269,9 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		foreach($this->data as $productKey => $data) {
 			$product = $data["Product"];
 			$title = $product->Title;
+			$internalItemID = $product->InternalItemID;
 			foreach($this->csv as $key => $row) {
-				if($title == $row["ProductTitle"]) {
+				if($title == $row["ProductTitle"] || $internalItemID == $row["ProductTitle"]) {
 					$this->data[$product->ID]["VariationRows"][$key] = array(
 						"Data" => $row,
 						"Variation" => null
@@ -287,7 +288,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$product->write("Stage");
 					$product->Publish('Stage', 'Live');
 				}
-				$this->soleProduct[$product->ID] = $product->Title.", ID: ".$product->ID.", PRODUCT KEY: ".$productKey;
+				$this->soleProduct[$product->ID] = $product->Title.", ID: ".$product->ID;
 				unset($this->data[$productKey]);
 				flush(); ob_end_flush(); DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. ", "deleted");ob_start();
 			}
@@ -302,7 +303,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		echo "<h2>Variation Summary</h2>";
 		foreach($this->data as $productKey => $value) {
 			if(isset($value["Product"]) && $value["Product"]) {
-				$this->data[$productKey]["Product"] = $value["Product"]->Title.", ID: ".$value["Product"]->ID." PRODUCT KEY: ".$productKey;
+				$this->data[$productKey]["Product"] = $value["Product"]->Title.", ID: ".$value["Product"]->ID;
 			}
 			else {
 				$this->data[$productKey]["Product"] = "Not found";
