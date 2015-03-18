@@ -248,6 +248,8 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				if(!$product->ParentID) {
 					$product->ParentID = $this->defaultProductParentID;
 				}
+				$product->Title = $row["ProductTitle"];
+				$product->InternalItemID = $row["InternalItemID"];
 				if($this->forreal) {
 					$this->addMoreProduct($product, $row);
 					$product->write("Stage");
@@ -271,7 +273,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			$title = $product->Title;
 			$internalItemID = $product->InternalItemID;
 			foreach($this->csv as $key => $row) {
-				if($title == $row["ProductTitle"] || $internalItemID == $row["ProductTitle"]) {
+				if(strtolower(trim($title)) == strtolower(trim($row["ProductTitle"])) || strtolower(trim($internalItemID)) == strtolower(trim($row["ProductInternalItemID"]))) {
 					$this->data[$product->ID]["VariationRows"][$key] = array(
 						"Data" => $row,
 						"Variation" => null
