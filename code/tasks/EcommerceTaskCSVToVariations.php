@@ -15,11 +15,14 @@
 
 class EcommerceTaskCSVToVariations extends BuildTask {
 
+	protected $forreal = false;
+
 	protected $title = "Create variations from a Spreadsheets (comma separated file CSV)";
 
 	protected $description = "
 		Does not delete any record, it only updates and adds.
-		The minimum recommend columns are: ProductTitle (or ProductInternalItemID), Size, Colour, Price, InternalItemID";
+		The minimum recommend columns are: ProductTitle (or ProductInternalItemID), Size, Colour, Price, InternalItemID.
+		You can add ?forreal=1 to the URL to run the task for real.";
 
 	/**
 	 * excluding base folder
@@ -102,12 +105,22 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	public function run($request){
 		increase_time_limit_to(3600);
 		increase_memory_limit_to('512M');
-		$this->reset();
+		if($request->param("forreal")) {
+			$this->forreal = true;
+		}
+		if($this->forreal) {
+			$this->reset();
+		}
 		$this->readFile();
 		$this->createProducts();
 		$this->findVariations();
-		$this->createVariations();
-		$this->getExtraDataForVariations();
+		if($this->forreal) {
+			$this->createVariations();
+			$this->getExtraDataForVariations();
+		}
+		else {
+			$this->showData();
+		}
 	}
 
 	/**
@@ -228,9 +241,11 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				if(!$product->ParentID) {
 					$product->ParentID = $this->defaultProductParentID;
 				}
-				$this->addMoreProduct($product, $row);
-				$product->writeToStage("Stage");
-				$product->Publish('Stage', 'Live');
+				if($this->forreal) {
+					$this->addMoreProduct($product, $row);
+					$product->write("Stage");
+					$product->Publish('Stage', 'Live');
+				}
 				$productsCompleted[$row["ProductTitle"]] = $product->ID;
 				$this->data[$product->ID] = array(
 					"Product" => $product,
@@ -260,9 +275,11 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				$varDataRow = $varData["Data"];
 				$this->addFieldToObject($product, $data, "Price", "");
 				$this->addFieldToObject($product, $data, "InternalItemID", "");
-				$this->addMoreProductForProductWithoutVariations($product, $varDataRow);
-				$product->writeToStage("Stage");
-				$product->Publish('Stage', 'Live');
+				if($this->forreal) {
+					$this->addMoreProductForProductWithoutVariations($product, $varDataRow);
+					$product->write("Stage");
+					$product->Publish('Stage', 'Live');
+				}
 				unset($this->data[$productKey]);
 				flush(); ob_end_flush(); DB::alteration_message("Removing data for ".$product->Title." because there is only ONE variation. ", "deleted");ob_start();
 			}
@@ -271,6 +288,21 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			}
 		}
 		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
+	}
+
+	protected function showData(){
+		foreach($this->data as $key => $value) {
+			if(isset($value["Product"]) && $value["Product"]) {
+				$this->data[$key]["Product"] = $value["Product"]->Title.", ID: ".$value["Product"]->ID;
+			}
+			else {
+				$this->data[$key]["Product"] = "Not found";
+			}
+		}
+		echo "<pre>";
+		print_r($this->data);
+		echo "</pre>";
+		die("====================================================== STOPPED - add ?forreal=1 to run for real. ======================================");
 	}
 
 	protected function createVariations(){
