@@ -209,6 +209,11 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			$this->csv[] = array_combine($header, $row);
 			$rowCount++;
 		}
+		//data fixes
+		foreach($this->csv as $key => $row) {
+			if(!isset($row["ProductTitle"])) {$this->csv[$key]["ProductTitle"] = "";}
+			if(!isset($row["ProductInternalItemID"])) {$this->csv[$key]["ProductInternalItemID"] = $row["ProductTitle"];}
+		}
 		flush(); ob_end_flush(); DB::alteration_message("Imported ".count($this->csv)." rows with ".count($header)." cells each");ob_start();
 		flush(); ob_end_flush(); DB::alteration_message("Fields are: ".implode(", ", $header));ob_start();
 		flush(); ob_end_flush(); DB::alteration_message("================================================");ob_start();
@@ -223,8 +228,6 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		$productsCompleted = array();
 		foreach($this->csv as $row) {
 			if(!isset($productsCompleted[$row["ProductTitle"]])) {
-				if(!isset($row["ProductInternalItemID"])) {$row["ProductInternalItemID"] = "";}
-				if(!isset($row["ProductTitle"])) {$row["ProductTitle"] = "";}
 				$filterArray = array(
 					"Title" => $row["ProductTitle"],
 					"InternalItemID" => $row["ProductInternalItemID"]
@@ -249,7 +252,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$product->ParentID = $this->defaultProductParentID;
 				}
 				$product->Title = $row["ProductTitle"];
-				$product->InternalItemID = $row["InternalItemID"];
+				$product->InternalItemID = $row["ProductInternalItemID"];
 				if($this->forreal) {
 					$this->addMoreProduct($product, $row);
 					$product->write("Stage");
