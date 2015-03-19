@@ -343,7 +343,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 			flush(); ob_end_flush(); DB::alteration_message("....Creating attribute types");ob_start();
 			foreach($this->Config()->get("attribute_type_field_names") as $fieldKey => $fieldName) {
 				flush(); ob_end_flush(); DB::alteration_message("........Checking field $fieldName");ob_start();
-				$attributeTypeName = $data["Product"]->Title."_".$fieldName;
+				$attributeTypeName = trim($data["Product"]->Title)."_".$fieldName;
 				$filterArray = array("Name" => $attributeTypeName);
 				$type = ProductAttributeType::get()->filter($filterArray)->first();
 				if(!$type) {
