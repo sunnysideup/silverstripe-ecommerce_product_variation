@@ -109,10 +109,21 @@ class ProductWithVariationDecorator extends DataExtension {
 	 */
 	function updateCMSFields(FieldList $fields) {
 		$tabName = singleton("ProductVariation")->plural_name();
-		$fields->addFieldToTab('Root', $tab = new Tab($tabName,
-			$this->owner->getVariationsTable(),
-			new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
-		));
+		$fields->addFieldToTab(
+			'Root',
+			$tab = new Tab(
+				$tabName,
+				new GridField(
+					"VariationAttributes",
+					singleton("ProductAttributeType")->plural_name(),
+					$this->owner->VariationAttributes(),
+					$variationAttributesConfig = GridFieldConfig_RecordEditor::create()
+				),
+				$this->owner->getVariationsTable(),
+				new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
+			)
+		);
+		$variationAttributesConfig->removeComponentsByType("GridFieldAddNewButton");
 		$variations = $this->owner->Variations();
 		if($variations && $variations->Count()){
 			$productVariationName = singleton("ProductVariation")->plural_name();
