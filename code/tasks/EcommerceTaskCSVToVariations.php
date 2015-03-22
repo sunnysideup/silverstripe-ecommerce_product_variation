@@ -46,6 +46,11 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		"Colour"
 	);
 
+	/**
+	 * Is the CSV separated by , or ; or [tab]?
+	 */
+	protected $csvSeparator = "\t";
+
 
 	/**
 	 * @var Boolean
@@ -102,7 +107,13 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	protected $defaultProductParentID = 0;
 
 	function getDescription(){
-		return $this->description ." The file to be used is: ".$this->Config()->get("file_location");
+		if($this->csvSeparator == "\t") {
+			$this->csvSeparatorName = "[TAB]";
+		}
+		else {
+			$this->csvSeparatorName = $this->csvSeparator;
+		}
+		return $this->description ." The file to be used is: ".$this->Config()->get("file_location").". The columns need to be separated by '".$this->csvSeparatorName."'";
 	}
 
 	/**
@@ -189,7 +200,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
 		flush(); ob_end_flush(); DB::alteration_message("$fileLocation is the file we are reading", "deleted");ob_start();
 		if (($handle = fopen($fileLocation, "r")) !== FALSE) {
-			while (($data = fgetcsv($handle, 100000, "\t")) !== FALSE) {
+			while (($data = fgetcsv($handle, 100000, $this->csvSeparator)) !== FALSE) {
 				$rows[] = $data;
 				$rowCount++;
 			}
