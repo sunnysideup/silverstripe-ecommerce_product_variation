@@ -441,7 +441,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 		unset($_POST['ProductAttributes']);
 		if($this->saveParentProduct) {
 			if($product = $this->Product()) {
-				$product->writeToStage('Stage');
+				$product->write();
 				$product->publish('Stage', 'Live');
 			}
 		}

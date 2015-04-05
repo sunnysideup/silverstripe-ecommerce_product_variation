@@ -8,6 +8,10 @@
 
 class ProductWithVariationDecorator extends DataExtension {
 
+	private static $db = array(
+		"BasicJSONForVariations" => "Text"
+	);
+
 	/**
 	 * standard SS Var
 	 */
@@ -38,6 +42,8 @@ class ProductWithVariationDecorator extends DataExtension {
 		'LowestVariationPrice' => 'Currency',
 		'LowestVariationPriceAsMoney' => 'Money'
 	);
+
+	private static $cache_basic_json_for_variations = true;
 
 	/**
 	 * what class do we use for Variations.
@@ -290,6 +296,37 @@ class ProductWithVariationDecorator extends DataExtension {
 		return EcommerceCurrency::get_money_object_from_order_currency($this->LowestVariationPrice());
 	}
 
+
+	/**
+	 * returns a list of variations for sale as JSON.
+	 * the output is as follows:
+	 *   VariationID: [
+	 *     AttributeValueID: AttributeValueID,
+	 *     AttributeValueID: AttributeValueID
+	 *   ]
+	 * @param Boolean $showCanNotPurchaseAsWell - show all variations, evens the ones that can not be purchased.
+	 *
+	 * @return String (JSON)
+	 */
+	public function VariationsForSaleJSON($showCanNotPurchaseAsWell = false){
+		//todo: change JS so that we dont have to add this default array element (-1 => -1)
+		if($this->owner->BasicJSONForVariations && Config::inst()->get("ProductWithVariationDecorator", "cache_basic_json_for_variations")) {
+			return $this->owner->BasicJSONForVariations;
+		}
+		else {
+			$varArray = array(-1 => -1);
+			if($variations = $this->owner->Variations()){
+				foreach($variations as $variation){
+					if($showCanNotPurchaseAsWell || $variation->canPurchase()) {
+						$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
+					}
+				}
+			}
+			$json = json_encode($varArray);
+			return $json;
+		}
+	}
+
 	/**
 	 * The array provided needs to be
 	 *     TypeID => arrayOfValueIDs
@@ -503,6 +540,11 @@ class ProductWithVariationDecorator extends DataExtension {
 			$price = $this->owner->getCalculatedPrice();
 			if($price == 0) {
 				$this->owner->Price = $this->owner->LowestVariationPrice();
+			}
+			if(Config::inst()->get("ProductWithVariationDecorator", "cache_basic_json_for_variations")) {
+				Config::inst()->update("ProductWithVariationDecorator", "cache_basic_json_for_variations", false);
+				$this->owner->BasicJSONForVariations = "";
+				$this->owner->BasicJSONForVariations = $this->VariationsForSaleJSON();
 			}
 		}
 	}
@@ -745,32 +787,6 @@ class ProductWithVariationDecorator_Controller extends Extension {
 			$this->owner->redirectBack();
 		}
 	}
-
-	/**
-	 * returns a list of variations for sale as JSON.
-	 * the output is as follows:
-	 *   VariationID: [
-	 *     AttributeValueID: AttributeValueID,
-	 *     AttributeValueID: AttributeValueID
-	 *   ]
-	 * @param Boolean $showCanNotPurchaseAsWell - show all variations, evens the ones that can not be purchased.
-	 *
-	 * @return String (JSON)
-	 */
-	public function VariationsForSaleJSON($showCanNotPurchaseAsWell = false){
-		//todo: change JS so that we dont have to add this default array.
-		$varArray = array(-1 => -1);
-		if($variations = $this->owner->Variations()){
-			foreach($variations as $variation){
-				if($showCanNotPurchaseAsWell || $variation->canPurchase()) {
-					$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
-				}
-			}
-		}
-		$json = json_encode($varArray);
-		return $json;
-	}
-
 
 	/**
 	 * returns a list of VariationAttributes (e.g. colour, size)
