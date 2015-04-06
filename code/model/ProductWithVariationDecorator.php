@@ -8,10 +8,6 @@
 
 class ProductWithVariationDecorator extends DataExtension {
 
-	private static $db = array(
-		"BasicJSONForVariations" => "Text"
-	);
-
 	/**
 	 * standard SS Var
 	 */
@@ -42,8 +38,6 @@ class ProductWithVariationDecorator extends DataExtension {
 		'LowestVariationPrice' => 'Currency',
 		'LowestVariationPriceAsMoney' => 'Money'
 	);
-
-	private static $cache_basic_json_for_variations = true;
 
 	/**
 	 * what class do we use for Variations.
@@ -310,21 +304,16 @@ class ProductWithVariationDecorator extends DataExtension {
 	 */
 	public function VariationsForSaleJSON($showCanNotPurchaseAsWell = false){
 		//todo: change JS so that we dont have to add this default array element (-1 => -1)
-		if($this->owner->BasicJSONForVariations && Config::inst()->get("ProductWithVariationDecorator", "cache_basic_json_for_variations")) {
-			return $this->owner->BasicJSONForVariations;
-		}
-		else {
-			$varArray = array(-1 => -1);
-			if($variations = $this->owner->Variations()){
-				foreach($variations as $variation){
-					if($showCanNotPurchaseAsWell || $variation->canPurchase()) {
-						$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
-					}
+		$varArray = array(-1 => -1);
+		if($variations = $this->owner->Variations()){
+			foreach($variations as $variation){
+				if($showCanNotPurchaseAsWell || $variation->canPurchase()) {
+					$varArray[$variation->ID] = $variation->AttributeValues()->map('ID','ID')->toArray();
 				}
 			}
-			$json = json_encode($varArray);
-			return $json;
 		}
+		$json = json_encode($varArray);
+		return $json;
 	}
 
 	/**
@@ -540,11 +529,6 @@ class ProductWithVariationDecorator extends DataExtension {
 			$price = $this->owner->getCalculatedPrice();
 			if($price == 0) {
 				$this->owner->Price = $this->owner->LowestVariationPrice();
-			}
-			if(Config::inst()->get("ProductWithVariationDecorator", "cache_basic_json_for_variations")) {
-				Config::inst()->update("ProductWithVariationDecorator", "cache_basic_json_for_variations", false);
-				$this->owner->BasicJSONForVariations = "";
-				$this->owner->BasicJSONForVariations = $this->VariationsForSaleJSON();
 			}
 		}
 	}
