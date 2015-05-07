@@ -113,7 +113,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		else {
 			$this->csvSeparatorName = $this->csvSeparator;
 		}
-		return $this->description ." The file to be used is: ".$this->Config()->get("file_location").". The columns need to be separated by '".$this->csvSeparatorName."'";
+		return $this->description .". The file to be used is: ".$this->Config()->get("file_location").". The columns need to be separated by '".$this->csvSeparatorName."'";
 	}
 
 	/**
@@ -195,10 +195,11 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 
 	protected function readFile(){
 		DB::alteration_message("================================================ READING FILE ================================================"); ob_start();
+		flush(); ob_end_flush(); DB::alteration_message("<h3>".$this->getDescription()."</h3>", "created");ob_start();
 		$rowCount = 1;
 		$rows = array();
 		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
-		flush(); ob_end_flush(); DB::alteration_message("$fileLocation is the file we are reading", "deleted");ob_start();
+		flush(); ob_end_flush(); DB::alteration_message("$fileLocation is the file we are reading", "created");ob_start();
 		if (($handle = fopen($fileLocation, "r")) !== FALSE) {
 			while (($data = fgetcsv($handle, 100000, $this->csvSeparator)) !== FALSE) {
 				$rows[] = $data;
@@ -267,7 +268,9 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				if($this->forreal) {
 					$this->addMoreProduct($product, $row);
 					$product->write("Stage");
-					$product->Publish('Stage', 'Live');
+					if($product->IsPublished()) {
+						$product->Publish('Stage', 'Live');
+					}
 				}
 				$productsCompleted[$row["ProductTitle"]] = $product->ID;
 				$this->data[$product->ID] = array(
@@ -302,7 +305,9 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				if($this->forreal) {
 					$this->addMoreProductForProductWithoutVariations($product, $varDataRow);
 					$product->write("Stage");
-					$product->Publish('Stage', 'Live');
+					if($product->IsPublished()) {
+						$product->Publish('Stage', 'Live');
+					}
 				}
 				$this->soleProduct[$product->ID] = $product->Title.", ID: ".$product->ID;
 				unset($this->data[$productKey]);
