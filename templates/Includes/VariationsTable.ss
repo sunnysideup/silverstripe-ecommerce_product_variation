@@ -21,7 +21,7 @@
 				$Description &nbsp;
 			</th>
 	<% if AttributeValuesSorted %>
-		<% loop AttributeValues %>
+		<% loop AttributeValuesSorted %>
 			<td class="label"<% if RGBCode %> style="color: #{$ComputedRGBCode}; background-color: #{$ComputedContrastRGBCode}"<% end_if %> >$Value</td>
 		<% end_loop %>
 	<% else %>
