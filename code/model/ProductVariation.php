@@ -32,7 +32,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	private static $db = array(
 		'InternalItemID' => 'Varchar(30)',
 		'Price' => 'Currency',
-		'Weight' => 'Decimal(9,4)',
+		'Weight' => 'Float',
 		'Model' => 'Varchar(30)',
 		'Quantifier' => 'Varchar(30)',
 		'AllowPurchase' => 'Boolean',
