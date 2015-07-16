@@ -49,7 +49,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	/**
 	 * Is the CSV separated by , or ; or [tab]?
 	 */
-	protected $csvSeparator = "\t";
+	protected $csvSeparator = ",";
 
 
 	/**
@@ -198,7 +198,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 		flush(); ob_end_flush(); DB::alteration_message("<h3>".$this->getDescription()."</h3>", "created");ob_start();
 		$rowCount = 1;
 		$rows = array();
-		$fileLocation = Director::baseFolder()."/".$this->config()->get("file_location");
+		$fileLocation = $this->config()->get("file_location");
 		flush(); ob_end_flush(); DB::alteration_message("$fileLocation is the file we are reading", "created");ob_start();
 		if (($handle = fopen($fileLocation, "r")) !== FALSE) {
 			while (($data = fgetcsv($handle, 100000, $this->csvSeparator)) !== FALSE) {
