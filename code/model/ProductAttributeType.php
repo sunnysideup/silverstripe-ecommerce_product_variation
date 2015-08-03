@@ -227,7 +227,9 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	public function canDelete($member = null) {
 		$values = $this->Values();
 		foreach($values as $value) {
-			if(! $value->canDelete()) return false;
+			if(! $value->canDelete()) {
+				return false;
+			}
 		}
 		return true;
 	}

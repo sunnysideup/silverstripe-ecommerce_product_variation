@@ -327,6 +327,7 @@ class ProductWithVariationDecorator extends DataExtension {
 	 *     NameOfAttritbuteType => arrayOfValueNames
 	 * e.g.
 	 *     Colour => array(Red, Orange, Blue )
+	 *     Size => array(S, M, L )
 	 *
 	 * TypeID is the ID of the ProductAttributeType.  You can also make
 	 * it a string in which case it will be found / created
