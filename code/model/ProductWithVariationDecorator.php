@@ -53,7 +53,12 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return String
 	 */
 	public function getClassNameOfVariations(){
-		return $this->owner->classNameOfVariations;
+		if(!empty($this->owner->classNameOfVariations)) {
+			return $this->owner->classNameOfVariations;
+		}
+		else {
+			return $this->classNameOfVariations;
+		}
 	}
 
 	/**
@@ -381,7 +386,8 @@ class ProductWithVariationDecorator extends DataExtension {
 			}
 			if($add) {
 				$count++;
-				$newVariation = new ProductVariation(array(
+				$className = $this->owner->getClassNameOfVariations();
+				$newVariation = new $className(array(
 					'ProductID' => $this->owner->ID,
 					'Price' => $this->owner->Price
 				));

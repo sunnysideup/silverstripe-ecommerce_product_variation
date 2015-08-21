@@ -194,7 +194,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 	}
 
 	protected function readFile(){
-		echo "================================================ READING FILE ================================================"; 
+		echo "================================================ READING FILE ================================================";
 		$this->alterationMessage("<h3>".$this->getDescription()."</h3>", "created");
 		$rowCount = 1;
 		$rows = array();
@@ -388,7 +388,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					elseif(!trim($row["Data"][$fieldName])) {
 						$this->alterationMessage("skipping $fieldName as there are no entries...");
 						continue;
-					}					
+					}
 					$startMessage = "........Checking field $fieldName";
 					//create attribute value
 					$attributeValueName = $row["Data"][$fieldName];
@@ -434,7 +434,7 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 					$variationAttributeValuesPerVariation[$positionOfVariation][$typeID] = $attributeValueID;
 				}
 			}
-			
+
 			foreach($variationAttributeValuesPerVariation as $variationAttributes) {
 				$variation = $product->getVariationByAttributes($variationAttributes);
 				if($variation instanceof ProductVariation) {
@@ -442,7 +442,8 @@ class EcommerceTaskCSVToVariations extends BuildTask {
 				}
 			  else{
 					//2. if not, create variation with attributes
-					$newVariation = new ProductVariation(
+					$className = $product->getClassNameOfVariations();
+					$newVariation = new $className(
 						array(
 							'ProductID' => $product->ID,
 							'Price' => $product->Price
