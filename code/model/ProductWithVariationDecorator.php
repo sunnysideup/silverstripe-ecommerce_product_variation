@@ -53,7 +53,10 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return String
 	 */
 	public function getClassNameOfVariations(){
-		if(!empty($this->owner->classNameOfVariations)) {
+		if(method_exists($this->owner,"classNameOfVariationsSetInProduct")) {
+			return $this->owner->classNameOfVariationsSetInProduct();
+		}
+		elseif(!empty($this->owner->classNameOfVariations)) {
 			return $this->owner->classNameOfVariations;
 		}
 		else {
@@ -333,10 +336,15 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * e.g.
 	 *     Colour => array(Red, Orange, Blue )
 	 *     Size => array(S, M, L )
+	 *     Foo => array(
+	 *         1 => 1,
+	 *         3 => 3
+	 *     )
 	 *
 	 * TypeID is the ID of the ProductAttributeType.  You can also make
 	 * it a string in which case it will be found / created
-	 * arrayOfValueIDs is an array of IDs of the already created ProductAttributeValue.
+	 * arrayOfValueIDs is an array of IDs of the already created ProductAttributeValue
+	 * (key and value need to be the same)
 	 * You can also make it an array of strings in which case they will be found / created...
 	 *
 	 * @param array $values
@@ -352,12 +360,13 @@ class ProductWithVariationDecorator extends DataExtension {
 			$copyVariations = $valueCombos;
 			$valueCombos = array();
 			if($typeObject) {
-				foreach($typeValues as $valueID) {
-					$obj = ProductAttributeValue::get()->byID(intval($valueID));
-					if(!$obj) {
-						$obj = ProductAttributeValue::find_or_make($typeObject, $valueID);
-						$valueID = $obj->write();
+				foreach($typeValues as $valueKey => $valueValue) {
+					$valueIsID = false;
+					if(intval($valueKey) == intval($valueValue)) {	
+						$valueIsID = true;
 					}
+					$obj = ProductAttributeValue::find_or_make($typeObject, $valueID, $create = true, $valueIsID = true);
+					$valueID = $obj->write();
 					if($valueID = intval($valueID)) {
 						$valueID = array($valueID);
 						if(count($copyVariations) > 0) {

@@ -49,22 +49,25 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 	/**
 	 * finds or makes a ProductAttributeType, based on the lower case Name.
 	 *
-	 * @param ProductAttributeType | Int $type
+	 * @param ProductAttributeType | int $type
 	 * @param String $value
 	 * @param Boolean $create
 	 *
 	 * @return ProductAttributeType
 	 */
-	public static function find_or_make($type, $value, $create = true){
+	public static function find_or_make($type, $value, $create = true, $findByID = false){
 		if($type instanceof ProductAttributeType) {
 			$type = $type->ID;
 		}
-		$value = strtolower($value);
-		if($valueObj = ProductAttributeValue::get()->where("(LOWER(\"Code\") = '$value' OR LOWER(\"Value\") = '$value') AND TypeID = ".intval($type))->First()) {
+		$cleanedValue = strtolower($value);
+		$valueObj = ProductAttributeValue::get()
+			->where("(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type))
+			->First();
+		if($valueObj) {
 			return $valueObj;
 		}
 		$valueObj = new ProductAttributeValue();
-		$valueObj->Code = $value;
+		$valueObj->Code = $cleanedValue;
 		$valueObj->Value = $value;
 		$valueObj->TypeID = $type;
 		if($create) {

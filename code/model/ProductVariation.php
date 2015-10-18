@@ -202,7 +202,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			new TabSet('Root',
 				new Tab('Main',
 					$productField,
-					new ReadOnlyField('FullName', _t("ProductVariation.FULLNAME", 'Full Name')),
+					$fullNameLinkField = ReadOnlyField::create('FullNameLink', _t("ProductVariation.FULLNAME", 'Full Name'), "<a href=\"".$this->Link()."\">".$this->FullName."</a>"),
 					new NumericField('Price', _t("ProductVariation.PRICE", 'Price')),
 					new CheckboxField('AllowPurchase', _t("ProductVariation.ALLOWPURCHASE", 'Allow Purchase ?'))
 				),
@@ -215,6 +215,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 				)
 			)
 		);
+		$fullNameLinkField->dontEscape = true;
 		if($this->EcomConfig()->ProductsHaveWeight) {
 			$fields->addFieldToTab('Root.Details', new NumericField('Weight', _t('ProductVariation.WEIGHT', 'Weight')));
 		}
