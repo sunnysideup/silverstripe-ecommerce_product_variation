@@ -59,10 +59,21 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 		if($type instanceof ProductAttributeType) {
 			$type = $type->ID;
 		}
-		$cleanedValue = strtolower($value);
-		$valueObj = ProductAttributeValue::get()
-			->where("(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type))
-			->First();
+		if($findByID) {
+
+		}
+		else {
+			$cleanedValue = strtolower($value);
+			$valueObj = ProductAttributeValue::get()
+				->where("(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type))
+				->First();
+		}
+		else {
+			$intValue = intval($value);
+			$valueObj = ProductAttributeValue::get()
+				->filter(array("ID" => $intValue, "TypeID" => intval($type)))
+				->First();
+		}
 		if($valueObj) {
 			return $valueObj;
 		}
