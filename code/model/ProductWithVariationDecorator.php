@@ -361,11 +361,11 @@ class ProductWithVariationDecorator extends DataExtension {
 			$valueCombos = array();
 			if($typeObject) {
 				foreach($typeValues as $valueKey => $valueValue) {
-					$valueIsID = false;
-					if(intval($valueKey) == intval($valueValue)) {	
-						$valueIsID = true;
+					$findByID = false;
+					if(strlen($valueKey) == strlen($valueValue) && intval($valueKey) == intval($valueValue)) {	
+						$findByID = true;
 					}
-					$obj = ProductAttributeValue::find_or_make($typeObject, $valueID, $create = true, $valueIsID = true);
+					$obj = ProductAttributeValue::find_or_make($typeObject, $valueValue, $create = true, $findByID);
 					$valueID = $obj->write();
 					if($valueID = intval($valueID)) {
 						$valueID = array($valueID);
