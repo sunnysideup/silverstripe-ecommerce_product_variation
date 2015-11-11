@@ -203,7 +203,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * @param String $emptyString
 	 * @param DataList $values
 	 *
-	 * @return DropdownField | Null
+	 * @return DropdownField | HiddenField
 	 */
 	function getDropDownField($emptystring = null, $values = null) {
 		//to do, why do switch to "all" the options if there are no values?
@@ -226,7 +226,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * @param String $emptyString
 	 * @param DataList $values
 	 *
-	 * @return DropdownField | Null
+	 * @return array
 	 */
 	function getValuesForDropdown($values = null) {
 		$values = ($values) ? $values : $this->Values();
