@@ -231,7 +231,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	function getValuesForDropdown($values = null) {
 		$values = ($values) ? $values : $this->Values();
 		if($values && $values->count() > 0){
-			$field = $values->map('ID','ValueForDropdown')->toArray();
+			return $values->map('ID','ValueForDropdown')->toArray();
 		}
 		else {
 			return array();
