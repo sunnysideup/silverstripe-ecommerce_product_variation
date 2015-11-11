@@ -206,17 +206,36 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * @return DropdownField | Null
 	 */
 	function getDropDownField($emptystring = null, $values = null) {
-		$field = null;
 		//to do, why do switch to "all" the options if there are no values?
-		$values = ($values) ? $values : $this->Values();
-		if($values && $values->count() > 0){
-			$field = new DropdownField('ProductAttributes['.$this->ID.']', $this->Name, $values->map('ID','ValueForDropdown')->toArray());
+		$values = $this->getValueForDropdown($values);
+		if($values && is_array($values) && count($values)){
+			$field = new DropdownField('ProductAttributes['.$this->ID.']', $this->Name, $values);
 			if($emptystring && $values->count() > 1) {
 				$field->setEmptyString($emptystring);
 			}
 		}
+		else {
+			$field = new HiddenField('ProductAttributes['.$this->ID.']', 0);
+		}
 		$this->extend("updateDropDownField", $field);
 		return $field;
+	}
+
+	/**
+	 *
+	 * @param String $emptyString
+	 * @param DataList $values
+	 *
+	 * @return DropdownField | Null
+	 */
+	function getValuesForDropdown($values = null) {
+		$values = ($values) ? $values : $this->Values();
+		if($values && $values->count() > 0){
+			$field = $values->map('ID','ValueForDropdown')->toArray();
+		}
+		else {
+			return array();
+		}
 	}
 
 	/**
