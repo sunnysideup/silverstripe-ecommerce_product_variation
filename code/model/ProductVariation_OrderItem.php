@@ -27,7 +27,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 		else{
 			$unitPrice = 0;
 		}
-		$updatedUnitPrice = $this->extend('updateUnitPrice',$unitPrice);
+		$updatedUnitPrice = $this->extend('updateUnitPrice', $unitPrice);
 		if($updatedUnitPrice !== null && is_array($updatedUnitPrice) && count($updatedUnitPrice)) {
 			$unitPrice = $updatedUnitPrice[0];
 		}
@@ -81,7 +81,7 @@ class ProductVariation_OrderItem extends Product_OrderItem {
 	 * Check if this variation is new - that is, if it has yet to have been written
 	 * to the database.
 	 *
-	 * @return boolean True if this page is new.
+	 * @return boolean True if this is new.
 	 */
 	public function isNew() {
 		/**

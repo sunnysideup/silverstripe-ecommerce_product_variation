@@ -653,10 +653,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 **/
 	public function classNameForOrderItem() {
 		$className = $this->defaultClassNameForOrderItem;
-		$extensionValue = $this->extend("updateClassNameForOrderItem", $className);
-		if($extensionValue!== null && is_array($extensionValue) && count($extensionValue)) {
-			$className = $extensionValue[0];
-		}
 		$updatedClassName = implode("", $this->extend("updateClassNameForOrderItem", $className));
 		if($updatedClassName != null && is_array($updatedClassName) && count($updatedClassName)) {
 			$className = $updatedClassName[0];
