@@ -322,6 +322,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	function TitleWithHTML($noProductTitle = false){
 		return $this->getTitle(TRUE, $noProductTitle);
 	}
+	
 	function getTitle($withHTML = false, $noProductTitle = false){
 		$array = array(
 			"Values" => $this->AttributeValues(),

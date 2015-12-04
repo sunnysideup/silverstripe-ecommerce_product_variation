@@ -151,6 +151,10 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		);
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
+		if(class_exists("DataObjectSorterDOD")) {
+			$link2 = DataObjectSorterController::popup_link("ProductAttributeValue", "TypeID", $this->ID, _t("ProductAttributeType.SORT_VALUES", "Sort Values"));
+			$fields->addFieldToTab("Root.Sort", new LiteralField("DataObjectSorterPopupLink_Values", "<h2>".$link2."</h2>"));
+		}
 		return $fields;
 	}
 

@@ -114,6 +114,11 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 		if($table) {
 			$table->setPermissions("edit", "view");
 		}
+		if(class_exists("DataObjectSorterDOD")) {
+			$fields->removeFieldFromTab("Root.Sort", "DataObjectSorterPopupLink");
+			$link = $this->dataObjectSorterPopupLink("TypeID", $this->TypeID);
+			$fields->addFieldToTab("Root.Sort", new LiteralField("DataObjectSorterPopupLink", "<h2>".$link."</h2>"));
+		}
 		return $fields;
 	}
 

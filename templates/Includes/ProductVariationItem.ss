@@ -1,9 +1,9 @@
 <% if WithProductTitle %>
 	<span class="productVariationProductTitle">
-		$Product.Title.XML
+		$Product.Title.XML 
 	</span>
 <% end_if %>
-<% if Values %> - <% if Values.count %>
+<% if Values %><% if Values.count %>
 		<% loop Values %>
 			<span class="productVariationValues">
 				<strong>$Type.Label:</strong> <em>$Value</em><% if Last %>;<% else %>,<% end_if %>

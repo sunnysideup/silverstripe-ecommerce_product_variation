@@ -427,6 +427,7 @@ class CreateEcommerceVariations_Field extends LiteralField {
 			return DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
 		}
 	}
+	
 	function ValueSorterLink() {
 		$singleton = singleton("ProductAttributeValue");
 		if(class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
