@@ -30,7 +30,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	private static $db = array(
 		'Name' => 'Varchar', //for back-end use
 		'Label' => 'Varchar', //for front-end use
-		'Sort' => 'Int' //for front-end use
+		'Sort' => 'Int', //for front-end use
+		'MergeIntoNote' => 'Varchar(255)' //for front-end use
 		//'Unit' => 'Varchar' //TODO: for future use
 	);
 
@@ -38,7 +39,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * Standard SS variable.
 	 */
 	private static $has_one = array(
-		'MoreInfoLink' => 'SiteTree'
+		'MoreInfoLink' => 'SiteTree',
+		'MergeInto' => 'ProductAttributeType'
 	);
 
 	/**
@@ -88,11 +90,6 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 	 * Standard SS variable.
 	 */
 	private static $default_sort = "\"Sort\" ASC, \"Name\"";
-
-	/**
-	 * Standard SS variable.
-	 */
-	public $Variations = null;
 
 	/**
 	 * Standard SS variable.
@@ -151,6 +148,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		);
 		//TODO: make this a really fast editing interface. Table list field??
 		//$fields->removeFieldFromTab('Root.Values','Values');
+		$fields->AddFieldToTab("Root.Advanced", new DropdownField("MergeIntoID", "Merge into ...", array(0 => "-- do not merge --") + ProductAttributeType::get()->exclude(array("ID" => $this->ID))->map()->toArray()));
+		$fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
 		return $fields;
 	}
 
@@ -273,6 +272,73 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
 		if(!$this->Label) {
 			$this->Label = $this->Name;
 		}
+	}
+
+	function onAfterWrite(){
+		parent::onAfterWrite();
+		if($this->MergeIntoID) {
+			$newAttributeType = $this->MergeInto();
+			$canDoMerge = true;
+			if($this->Values()->count() != $newAttributeType->Values()->count()) {
+				$canDoMerge = false;
+				$this->MergeIntoNote = "NON-MATCHINGE VALUE COUNTS";
+			}
+			else {
+
+				$mergeMapArray_OLD = array();
+				$mergeMapArray_NEW = array();
+				$mergeMapArrayGO = array();
+				foreach($this->Values() as $value) {
+					$mergeMapArray_OLD[] = $value->ID;
+				}
+				foreach($newAttributeType->Values() as $value) {
+					$mergeMapArray_NEW[] = $value->ID;
+				}
+				foreach($mergeMapArray_OLD as $key => $id_OLD) {
+					$id_NEW = $mergeMapArray_NEW[$key];
+					$obj_OLD = ProductAttributeValue::get()->byID($id_OLD);
+					$obj_NEW = ProductAttributeValue::get()->byID($id_NEW);
+					if($obj_OLD && $obj_NEW) {
+						if($obj_OLD->Code == $obj_NEW->Code || $obj_OLD->Value == $obj_NEW->Value || 1 == 1) {
+							$mergeMapArrayGO[$obj_OLD->ID] = $obj_NEW->ID;
+						}
+						else {
+							$this->MergeIntoNote = "NON-MATCHINGE VALUES: ".$obj_OLD->Code."!=".$obj_NEW->Code." AND ".$obj_OLD->Value."!=".$obj_NEW->Value;
+							$canDoMerge = false;
+						}
+					}
+					else {
+						$this->MergeIntoNote = "MISSING OLD OR NEW OBJECT";
+						$canDoMerge = false;
+					}
+				}
+			}
+			if($canDoMerge) {
+				foreach($mergeMapArrayGO as $id_OLD => $id_NEW) {
+					DB::query("
+						UPDATE \"ProductVariation_AttributeValues\"
+						SET \"ProductAttributeValueID\" = ".$id_NEW."
+						WHERE \"ProductAttributeValueID\" = ".$id_OLD.";
+					");
+
+				}
+				DB::query("
+					UPDATE \"Product_VariationAttributes\"
+					SET \"ProductAttributeTypeID\" = ".$this->MergeIntoID."
+					WHERE \"ProductAttributeTypeID\" = ".$this->ID.";
+				");
+				$values = ProductAttributeValue::get()->filter(array("TypeID" => $this->ID));
+				foreach($values as $value) {
+					$value->delete();
+				}
+				$this->MergeIntoNote = "Merged successfully into ".$this->MergeInto()->Name." ...";
+				$this->Name = "TO BE DELETED ".$this->Name;
+				$this->Label = "TO BE DELETED ".$this->Label;
+			}
+			$this->MergeIntoID = 0;
+			$this->write();
+		}
+
 	}
 
 	/**
