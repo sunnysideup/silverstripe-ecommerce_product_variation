@@ -75,18 +75,32 @@ class ProductWithVariationDecorator extends DataExtension {
 
 	/**
 	 * tells you the number of variations this product has
+	 * @param boolean $mustBeForSale - only count variations that are for sale
 	 * @return Int
 	 */
-	function NumberOfVariations() {
-		return $this->owner->Variations()->count();
+	function NumberOfVariations($mustBeForSale = false) {
+		if($mustBeForSale) {
+			$count = 0;
+			$variations =  $this->owner->Variations();
+			foreach($variations as $variation) {
+				if($variation->canPurchase()) {
+					$count++;
+				}
+			}
+			return $count;
+		}
+		else {
+			return $this->owner->Variations()->count();
+		}
 	}
 
 	/**
 	 * tells you whether the product has any variations
+	 * @param boolean $mustBeForSale - only count variations that are for sale
 	 * @return Boolean
 	 */
-	function HasVariations() {
-		return $this->owner->NumberOfVariations() ? true : false;
+	function HasVariations($mustBeForSale = false) {
+		return $this->owner->NumberOfVariations($mustBeForSale) ? true : false;
 	}
 
 	/**
