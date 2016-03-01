@@ -70,7 +70,16 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return Boolean
 	 */
 	function canDelete($member  = null) {
-		return (bool)!$this->owner->Variations();
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
+		if($this->owner->Variations()) {
+			return false;
+		}
+		else {
+			return parent::canDelete($member);
+		}
 	}
 
 	/**
@@ -376,7 +385,7 @@ class ProductWithVariationDecorator extends DataExtension {
 			if($typeObject) {
 				foreach($typeValues as $valueKey => $valueValue) {
 					$findByID = false;
-					if(strlen($valueKey) == strlen($valueValue) && intval($valueKey) == intval($valueValue)) {	
+					if(strlen($valueKey) == strlen($valueValue) && intval($valueKey) == intval($valueValue)) {
 						$findByID = true;
 					}
 					$obj = ProductAttributeValue::find_or_make($typeObject, $valueValue, $create = true, $findByID);

@@ -95,12 +95,19 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 		function i18n_plural_name() { return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Variation Attribute Values");}
 
 	public function canDelete($member = null) {
-		return DB::query("
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
+		if(DB::query("
 			SELECT COUNT(*)
 			FROM \"ProductVariation_AttributeValues\"
 				INNER JOIN \"ProductVariation\" ON  \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
 			WHERE \"ProductAttributeValueID\" = ".$this->ID
-		)->value() == 0;
+		)->value() == 0) {
+			return parent::canDelete($member);
+		}
+		return false;
 	}
 
 	function getCMSFields(){

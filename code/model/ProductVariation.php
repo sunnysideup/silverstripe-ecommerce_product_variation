@@ -920,6 +920,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	function canView($member = null){
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		if($this->ProductID && $this->Product()->exists()) {
 			return $this->Product()->canEdit($member);
 		}
@@ -931,9 +935,12 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	function canEdit($member = null) {
-		return true;
 		if(!$member) {
 			$member = Member::currentUser();
+		}
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
 		}
 		if($member && $member->IsShopAdmin()) {
 			return true;
@@ -946,6 +953,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	public function canDelete($member = null) {
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		return $this->canEdit($member);
 	}
 
@@ -955,6 +966,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	public function canDeleteFromLive($member = null) {
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		return $this->canEdit($member);
 	}
 
@@ -964,6 +979,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	public function canCreate($member = null) {
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		return $this->canEdit($member);
 	}
 
