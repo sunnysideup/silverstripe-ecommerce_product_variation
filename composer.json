@@ -19,7 +19,7 @@
 	"suggest":{
 		"sunnysideup/dataobjectsorter": "dev-master",
 		"ajshort/silverstripe-gridfieldextensions": "dev-master",
-		"briceburg/silverstripe-pickerfield"
+		"briceburg/silverstripe-pickerfield": "dev-master"
 	},
 	"extra": {
 		"installer-name": "ecommerce_product_variation"
