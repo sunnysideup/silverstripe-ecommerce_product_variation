@@ -204,7 +204,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 					'ProductID',
 					_t("ProductVariation.PRODUCT", 'Product'),
 					$this->Product(),
-					_t("ProductVariation.SELECT_A_PRODUCT", 'Select a Product'),
+					_t("ProductVariation.SELECT_A_PRODUCT", 'Select a Product')
 				);
 			}
 			else {
@@ -212,7 +212,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 				$productField = ReadonlyField::create(
 					"ProductIDTitle",
 					_t("ProductVariation.PRODUCT", 'Product'),
-					$this->Product() ? $this->Product()->Title, _t("ProductVariation.NO_PRODUCT", 'none')
+					$this->Product() ? $this->Product()->Title : _t("ProductVariation.NO_PRODUCT", 'none')
 				);
 			}
 		}
