@@ -196,8 +196,26 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			return parent::getCMSFields();
 		}
 		$product = $this->Product();
-		$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title')->toArray());
-		$productField->setEmptyString('(Select one)');
+		if(Product::get()->count() < 500) {
+			$productField = new DropdownField(
+				'ProductID',
+				_t("ProductVariation.PRODUCT", 'Product'),
+				Product::get()->map('ID', 'Title')->toArray()
+			);
+			$productField->setEmptyString('(Select one)');
+		}
+		else {
+			$product = $this->Product();
+			$productTitle = _t("ProductVariation.PRODUCT_NOT_SET", 'Product not set');
+			if($product) {
+				$productTitle = $product->Title;
+			}
+			$productField = new ReadonlyField(
+				'ProductID',
+				_t("ProductVariation.PRODUCT", 'Product'),
+				$productTitle
+			);
+		}
 		$fields = new FieldList(
 			new TabSet('Root',
 				new Tab('Main',
@@ -215,6 +233,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 				)
 			)
 		);
+		
 		$fullNameLinkField->dontEscape = true;
 		if($this->EcomConfig()->ProductsHaveWeight) {
 			$fields->addFieldToTab('Root.Details', new NumericField('Weight', _t('ProductVariation.WEIGHT', 'Weight')));
@@ -226,6 +245,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			$fields->addFieldToTab('Root.Details',new TextField('Quantifier', _t('ProductVariation.QUANTIFIER', 'Quantifier (e.g. per kilo, per month, per dozen, each)')));
 		}
 		$fields->addFieldToTab('Root.Details',new ReadOnlyField('FullSiteTreeSort', _t('Product.FULLSITETREESORT', 'Full sort index')));
+		
 		if($product) {
 			$types = $product->VariationAttributes();
 			if($this->ID) {
@@ -283,7 +303,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	public function CMSEditLink($action = null) {
 		return Controller::join_links(
 			Director::baseURL(),
-			"/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
+			"/admin/product-config/ProductVariation/EditForm/field/ProductVariation/item/".$this->ID."/",
 			$action
 		);
 	}
