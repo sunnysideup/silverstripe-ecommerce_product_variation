@@ -70,15 +70,8 @@ class ProductWithVariationDecorator extends DataExtension {
 	 * @return Boolean
 	 */
 	function canDelete($member  = null) {
-		$extended = $this->owner->extendedCan(__FUNCTION__, $member);
-		if($extended !== null) {
-			return $extended;
-		}
-		if($this->owner->Variations()) {
+		if($this->owner->Variations()->count()) {
 			return false;
-		}
-		else {
-			return parent::canDelete($member);
 		}
 	}
 
