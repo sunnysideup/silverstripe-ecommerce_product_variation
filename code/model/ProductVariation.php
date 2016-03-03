@@ -196,7 +196,30 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			return parent::getCMSFields();
 		}
 		$product = $this->Product();
-		$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title')->toArray());
+		$productCount = Product::get()->count();
+		if($productCount > 500) {
+			if(class_exists("HasOnePickerField")) {
+				$productField = HasOnePickerField::create(
+					$this,
+					'ProductID',
+					_t("ProductVariation.PRODUCT", 'Product'),
+					$this->Product(),
+					_t("ProductVariation.SELECT_A_PRODUCT", 'Select a Product'),
+				);
+			}
+			else {
+				user_error("We recommend you install https://github.com/briceburg/silverstripe-pickerfield");
+				$productField = ReadonlyField::create(
+					"ProductIDTitle",
+					_t("ProductVariation.PRODUCT", 'Product'),
+					$this->Product() ? $this->Product()->Title, _t("ProductVariation.NO_PRODUCT", 'none')
+				);
+			}
+		}
+		else {
+			$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title')->toArray());
+		}
+
 		$productField->setEmptyString('(Select one)');
 		$fields = new FieldList(
 			new TabSet('Root',
