@@ -196,25 +196,29 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			return parent::getCMSFields();
 		}
 		$product = $this->Product();
-		if(Product::get()->count() < 500) {
-			$productField = new DropdownField(
+		if(class_exists("HasOnePickerField")) {
+			$productField = HasOnePickerField::create(
+				$this,
 				'ProductID',
 				_t("ProductVariation.PRODUCT", 'Product'),
-				Product::get()->map('ID', 'Title')->toArray()
+				$this->Product(),
+				_t("ProductVariation.SELECT_A_PRODUCT", 'Select a Product')
 			);
-			$productField->setEmptyString('(Select one)');
 		}
 		else {
-			$product = $this->Product();
-			$productTitle = _t("ProductVariation.PRODUCT_NOT_SET", 'Product not set');
-			if($product) {
-				$productTitle = $product->Title;
+			$productCount = Product::get()->count();
+			if($productCount > 500) {
+				user_error("We recommend you install https://github.com/briceburg/silverstripe-pickerfield");
+				$productField = ReadonlyField::create(
+					"ProductIDTitle",
+					_t("ProductVariation.PRODUCT", 'Product'),
+					$this->Product() ? $this->Product()->Title : _t("ProductVariation.NO_PRODUCT", 'none')
+				);
 			}
-			$productField = new ReadonlyField(
-				'ProductID',
-				_t("ProductVariation.PRODUCT", 'Product'),
-				$productTitle
-			);
+			else {
+				$productField = new DropdownField('ProductID', _t("ProductVariation.PRODUCT", 'Product'), Product::get()->map('ID', 'Title')->toArray());
+				$productField->setEmptyString('(Select one)');
+			}
 		}
 		$fields = new FieldList(
 			new TabSet('Root',
@@ -233,7 +237,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 				)
 			)
 		);
-		
 		$fullNameLinkField->dontEscape = true;
 		if($this->EcomConfig()->ProductsHaveWeight) {
 			$fields->addFieldToTab('Root.Details', new NumericField('Weight', _t('ProductVariation.WEIGHT', 'Weight')));
@@ -245,7 +248,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 			$fields->addFieldToTab('Root.Details',new TextField('Quantifier', _t('ProductVariation.QUANTIFIER', 'Quantifier (e.g. per kilo, per month, per dozen, each)')));
 		}
 		$fields->addFieldToTab('Root.Details',new ReadOnlyField('FullSiteTreeSort', _t('Product.FULLSITETREESORT', 'Full sort index')));
-		
 		if($product) {
 			$types = $product->VariationAttributes();
 			if($this->ID) {
@@ -951,7 +953,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	function canEdit($member = null) {
-		return true;
 		if(!$member) {
 			$member = Member::currentUser();
 		}
@@ -966,6 +967,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	public function canDelete($member = null) {
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		return $this->canEdit($member);
 	}
 
@@ -975,6 +980,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	public function canDeleteFromLive($member = null) {
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		return $this->canEdit($member);
 	}
 
@@ -984,6 +993,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 	 * @return Boolean
 	 */
 	public function canCreate($member = null) {
+		$extended = $this->extendedCan(__FUNCTION__, $member);
+		if($extended !== null) {
+			return $extended;
+		}
 		return $this->canEdit($member);
 	}
 
