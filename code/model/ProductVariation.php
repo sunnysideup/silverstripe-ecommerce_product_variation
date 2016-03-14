@@ -930,7 +930,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 		}
 		$extended = $this->extendedCan('canPurchase', $member);
 		if($extended !== null) {
-			$allowpurchase = min($extended);
+			$allowpurchase = $extended;
 		}
 		return $allowpurchase;
 	}
