@@ -251,7 +251,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 		if($product) {
 			$types = $product->VariationAttributes();
 			if($this->ID) {
-				$hasBeenSold = $this->HasBeenSold();
 				$values = $this->AttributeValues();
 				foreach($types as $type) {
 					$field = $type->getDropDownField();
@@ -259,10 +258,8 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 						$value = $values->find('TypeID', $type->ID);
 						if($value) {
 							$field->setValue($value->ID);
-							if($hasBeenSold) {
-								$field = $field->performReadonlyTransformation();
-								$field->setName("Type{$type->ID}");
-							}
+							$field = $field->performReadonlyTransformation();
+							$field->setName("Type{$type->ID}");
 						}
 						else {
 							if($hasBeenSold) {
