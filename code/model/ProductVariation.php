@@ -793,6 +793,23 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         return $this->Product()->Link($action);
     }
 
+
+    /**
+     *
+     * @todo TEST!!!!
+     * @return string
+     */
+     function VersionedLink(){
+         return Controller::join_links(
+             Director::baseURL(),
+             EcommerceConfig::get('ShoppingCart_Controller', 'url_segment'),
+             'submittedbuyable',
+             $this->ClassName,
+             $this->ID,
+             $this->Version
+         );
+    }
+
     /**
      * passing on shopping cart links ...is this necessary?? ...why not just pass the cart?
      *
