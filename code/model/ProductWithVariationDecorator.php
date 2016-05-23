@@ -510,7 +510,7 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function addAttributeType($attributeTypeObject)
     {
-        if (intval($attributeTypeObject) === $attributeTypeObject) {
+        if (is_numeric($attributeTypeObject) && intval($attributeTypeObject) === $attributeTypeObject) {
             $attributeTypeObject = ProductAttributeType::get()->byID(intval($attributeTypeObject));
         }
         if (is_string($attributeTypeObject)) {
@@ -561,9 +561,9 @@ class ProductWithVariationDecorator extends DataExtension
         return $this->owner->VariationAttributes()->map('ID', 'ID')->toArray();
         //old way...
         $sql = '
-			Select "ProductAttributeTypeID"
-			FROM "Product_VariationAttributes"
-			WHERE "ProductID" = '.$this->owner->ID;
+            Select "ProductAttributeTypeID"
+            FROM "Product_VariationAttributes"
+            WHERE "ProductID" = '.$this->owner->ID;
         $data = DB::query($sql);
         $array = $data->keyedColumn();
 
@@ -578,11 +578,11 @@ class ProductWithVariationDecorator extends DataExtension
     public function getArrayOfLinkedProductAttributeValueIDs()
     {
         $sql = '
-			Select "ProductAttributeValueID"
-			FROM "ProductVariation"
-				INNER JOIN "ProductVariation_AttributeValues"
-					ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
-			WHERE "ProductVariation"."ProductID" = '.$this->owner->ID;
+            Select "ProductAttributeValueID"
+            FROM "ProductVariation"
+                INNER JOIN "ProductVariation_AttributeValues"
+                    ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
+            WHERE "ProductVariation"."ProductID" = '.$this->owner->ID;
         $data = DB::query($sql);
         $array = $data->keyedColumn();
 
@@ -640,13 +640,13 @@ class ProductWithVariationDecorator extends DataExtension
         $changes = false;
         $productID = $this->owner->ID;
         $sql = '
-			SELECT "ProductAttributeValue"."TypeID"
-			FROM "ProductVariation"
-				INNER JOIN "ProductVariation_AttributeValues"
-					ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
-				INNER JOIN "ProductAttributeValue"
-					ON "ProductVariation_AttributeValues"."ProductAttributeValueID" = "ProductAttributeValue"."ID"
-			WHERE "ProductVariation"."ProductID" = '.$productID;
+            SELECT "ProductAttributeValue"."TypeID"
+            FROM "ProductVariation"
+                INNER JOIN "ProductVariation_AttributeValues"
+                    ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
+                INNER JOIN "ProductAttributeValue"
+                    ON "ProductVariation_AttributeValues"."ProductAttributeValueID" = "ProductAttributeValue"."ID"
+            WHERE "ProductVariation"."ProductID" = '.$productID;
         $arrayOfTypesToKeepForProduct = array();
         $data = DB::query($sql);
         $array = $data->keyedColumn();
@@ -657,63 +657,63 @@ class ProductWithVariationDecorator extends DataExtension
         }
         if (count($arrayOfTypesToKeepForProduct)) {
             $deleteCounter = DB::query('
-				SELECT COUNT(ID)
-				FROM "Product_VariationAttributes"
-				WHERE
-					"ProductAttributeTypeID" NOT IN ('.implode(',', $arrayOfTypesToKeepForProduct).")
-					AND \"ProductID\" = '$productID'
-			");
+                SELECT COUNT(ID)
+                FROM "Product_VariationAttributes"
+                WHERE
+                    "ProductAttributeTypeID" NOT IN ('.implode(',', $arrayOfTypesToKeepForProduct).")
+                    AND \"ProductID\" = '$productID'
+            ");
             if ($deleteCounter->value()) {
                 $changes = true;
                 if ($verbose) {
                     DB::alteration_message('DELETING Attribute Type From '.$this->owner->Title, 'deleted');
                 }
                 DB::query('
-					DELETE FROM "Product_VariationAttributes"
-					WHERE
-						"ProductAttributeTypeID" NOT IN ('.implode(',', $arrayOfTypesToKeepForProduct).")
-						AND \"ProductID\" = '$productID'
-				");
+                    DELETE FROM "Product_VariationAttributes"
+                    WHERE
+                        "ProductAttributeTypeID" NOT IN ('.implode(',', $arrayOfTypesToKeepForProduct).")
+                        AND \"ProductID\" = '$productID'
+                ");
             }
             foreach ($arrayOfTypesToKeepForProduct as $productAttributeTypeID) {
                 $addCounter = DB::query("
-					SELECT COUNT(ID)
-					FROM \"Product_VariationAttributes\"
-					WHERE
-						\"ProductAttributeTypeID\" = '$productAttributeTypeID'
-						AND \"ProductID\" = $productID
-				");
+                    SELECT COUNT(ID)
+                    FROM \"Product_VariationAttributes\"
+                    WHERE
+                        \"ProductAttributeTypeID\" = '$productAttributeTypeID'
+                        AND \"ProductID\" = $productID
+                ");
                 if (!$addCounter->value()) {
                     $changes = true;
                     if ($verbose) {
                         DB::alteration_message('ADDING Attribute Type From '.$this->owner->Title, 'created');
                     }
                     DB::query("
-						INSERT INTO \"Product_VariationAttributes\" (
-							\"ProductID\" ,
-							\"ProductAttributeTypeID\"
-						)
-						VALUES (
-							'$productID', '$productAttributeTypeID'
-						)
-					");
+                        INSERT INTO \"Product_VariationAttributes\" (
+                            \"ProductID\" ,
+                            \"ProductAttributeTypeID\"
+                        )
+                        VALUES (
+                            '$productID', '$productAttributeTypeID'
+                        )
+                    ");
                 }
             }
         } else {
             $deleteAllCounter = DB::query("
-				SELECT COUNT(ID)
-				FROM \"Product_VariationAttributes\"
-				WHERE \"ProductID\" = '$productID'
-			");
+                SELECT COUNT(ID)
+                FROM \"Product_VariationAttributes\"
+                WHERE \"ProductID\" = '$productID'
+            ");
             if ($deleteAllCounter->value()) {
                 $changes = true;
                 if ($verbose) {
                     DB::alteration_message('DELETING ALL Attribute Types From '.$this->owner->Title, 'deleted');
                 }
                 DB::query("
-					DELETE FROM \"Product_VariationAttributes\"
-					WHERE \"ProductID\" = '$productID'
-				");
+                    DELETE FROM \"Product_VariationAttributes\"
+                    WHERE \"ProductID\" = '$productID'
+                ");
             }
         }
 
@@ -800,8 +800,8 @@ class ProductWithVariationDecorator_Controller extends Extension
                 $jsObjectName = $form->FormName().'Object';
                 Requirements::customScript(
                     "var $jsObjectName = new SelectEcommerceProductVariations('".$form->FormName()."')
-						.setJSON(".$this->owner->VariationsForSaleJSON().')
-						.init();'
+                        .setJSON(".$this->owner->VariationsForSaleJSON().')
+                        .init();'
                 );
             }
 
