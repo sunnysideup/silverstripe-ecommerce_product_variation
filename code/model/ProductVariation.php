@@ -696,10 +696,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     public function OrderItem()
     {
         //work out the filter
-        $filter = '';
-        $updatedFilter = $this->extend('updateItemFilter', $filter);
-        if ($updatedFilter !== null && is_array($updatedFilter) && count($updatedFilter)) {
-            $filter = $updatedFilter[0];
+        $filter = array();
+        $updatedFilters = $this->extend('updateItemFilter', $filter);
+        if ($updatedFilters !== null && is_array($updatedFilters) && count($updatedFilters)) {
+            foreach($updatedFilters as $updatedFilter) {
+                if(is_array($updatedFilter)) {
+                    $filter += $updatedFilter;
+                } else {
+                    $filter[] = $updatedFilter;
+                }
+            }
         }
         //make the item and extend
         $item = ShoppingCart::singleton()->findOrMakeItem($this, $filter);
