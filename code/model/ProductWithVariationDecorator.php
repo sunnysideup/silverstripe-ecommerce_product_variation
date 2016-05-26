@@ -799,9 +799,9 @@ class ProductWithVariationDecorator_Controller extends Extension
                 Requirements::javascript('ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
                 $jsObjectName = $form->FormName().'Object';
                 Requirements::customScript(
-                    "var $jsObjectName = new SelectEcommerceProductVariations('".$form->FormName()."')
-                        .setJSON(".$this->owner->VariationsForSaleJSON().')
-                        .init();'
+                    '
+                    var SelectEcommerceProductVariationsOptions = {};
+                    SelectEcommerceProductVariationsOptions['.$form->FormName().'] = '.$this->owner->VariationsForSaleJSON().';'
                 );
             }
 
