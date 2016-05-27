@@ -801,7 +801,7 @@ class ProductWithVariationDecorator_Controller extends Extension
                 Requirements::customScript(
                     '
                     var SelectEcommerceProductVariationsOptions = {};
-                    SelectEcommerceProductVariationsOptions['.$form->FormName().'] = '.$this->owner->VariationsForSaleJSON().';'
+                    SelectEcommerceProductVariationsOptions[\''.$form->FormName().'\'] = '.$this->owner->VariationsForSaleJSON().';'
                 );
             }
 

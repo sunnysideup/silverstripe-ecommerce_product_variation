@@ -195,7 +195,7 @@ var SelectEcommerceProductVariations = function(RootSelector) {
          * @return Array | null
          */
         findVariation: function(selections){
-            vloop: for(v in AvailAttr.variationsJSON){
+            vloop: for(var v in AvailAttr.variationsJSON){
                 for(var i = 0; i < selections.length; i++){
                     if(!AvailAttr.variationsJSON[v][selections[i]]){ //check that all values are in a possible variation attribute
                         continue vloop;
@@ -238,11 +238,12 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 
 jQuery(document).ready(
     function(){
+        console.debug(SelectEcommerceProductVariationsOptions);
         if(typeof SelectEcommerceProductVariationsOptions !== "undefined") {
             for (var key in SelectEcommerceProductVariationsOptions) {
                 if (SelectEcommerceProductVariationsOptions.hasOwnProperty(key)) {
                     var json = SelectEcommerceProductVariationsOptions[key];
-                    alert(key);
+                    console.debug(key);
                     var extendedKey = key + "_fx";
                     SelectEcommerceProductVariationsOptions[extendedKey] = new SelectEcommerceProductVariations(key)
                     .setJSON(json)
