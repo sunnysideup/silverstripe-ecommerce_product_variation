@@ -238,7 +238,6 @@ var SelectEcommerceProductVariations = function(RootSelector) {
 
 jQuery(document).ready(
     function(){
-        console.debug(SelectEcommerceProductVariationsOptions);
         if(typeof SelectEcommerceProductVariationsOptions !== "undefined") {
             for (var key in SelectEcommerceProductVariationsOptions) {
                 if (SelectEcommerceProductVariationsOptions.hasOwnProperty(key)) {
