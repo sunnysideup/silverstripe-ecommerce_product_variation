@@ -821,7 +821,7 @@ class ProductWithVariationDecorator_Controller extends Extension
                     if (!$quantity) {
                         $quantity = 1;
                     }
-                    ShoppingCart::singleton()->addBuyable($variation, $quantity, $form);
+                    ShoppingCart::singleton()->addBuyable($variation, $quantity);
                     if ($variation->IsInCart()) {
                         $msg = _t('ProductWithVariationDecorator.SUCCESSFULLYADDED', 'Added to cart.');
                         $status = 'good';
