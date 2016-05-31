@@ -142,6 +142,7 @@ class ProductWithVariationDecorator extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $tabName = singleton('ProductVariation')->plural_name();
+        $priceField = $fields->dataFieldByName("Price");
         $fields->addFieldToTab(
             'Root',
             $tab = new Tab(
