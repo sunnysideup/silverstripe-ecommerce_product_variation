@@ -242,7 +242,6 @@ jQuery(document).ready(
             for (var key in SelectEcommerceProductVariationsOptions) {
                 if (SelectEcommerceProductVariationsOptions.hasOwnProperty(key)) {
                     var json = SelectEcommerceProductVariationsOptions[key];
-                    console.debug(key);
                     var extendedKey = key + "_fx";
                     SelectEcommerceProductVariationsOptions[extendedKey] = new SelectEcommerceProductVariations(key)
                     .setJSON(json)
