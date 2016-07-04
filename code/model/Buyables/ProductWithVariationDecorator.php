@@ -772,31 +772,48 @@ class ProductWithVariationDecorator_Controller extends Extension
     public function VariationForm()
     {
         if ($this->owner->canPurchase(null, true)) {
-            $farray = array();
-            $requiredfields = array();
-            $attributes = $this->owner->VariationAttributes();
-            if ($attributes) {
-                foreach ($attributes as $attribute) {
-                    $options = $this->possibleValuesForAttributeType($attribute);
-                    if ($options && $options->count()) {
-                        $farray[] = $attribute->getDropDownField(_t('ProductWithVariationDecorator.CHOOSE', 'choose')." $attribute->Label "._t('ProductWithVariationDecorator.DOTDOTDOT', '...'), $options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
-                        $requiredfields[] = "ProductAttributes[$attribute->ID]";
+            if($this->owner->HasVariations()) {
+                $farray = array();
+                $requiredfields = array();
+                $attributes = $this->owner->VariationAttributes();
+                if ($attributes) {
+                    foreach ($attributes as $attribute) {
+                        $options = $this->possibleValuesForAttributeType($attribute);
+                        if ($options && $options->count()) {
+                            $farray[] = $attribute->getDropDownField(_t('ProductWithVariationDecorator.CHOOSE', 'choose')." $attribute->Label "._t('ProductWithVariationDecorator.DOTDOTDOT', '...'), $options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+                            $requiredfields[] = "ProductAttributes[$attribute->ID]";
+                        }
                     }
                 }
+                $fields = FieldList::create($farray);
             }
-            $fields = new FieldList($farray);
+            else {
+                $fields = FieldList::create();
+            }
             $fields->push(new NumericField('Quantity', 'Quantity', 1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
-            $actions = new FieldList(
-                new FormAction('addVariation', _t('ProductWithVariationDecorator.ADDLINK', 'Add to cart'))
+            $actions = FieldList::create(
+                new FormAction(
+                    'addVariation',
+                    _t('ProductWithVariationDecorator.ADDLINK', 'Add to cart')
+                )
             );
             $requiredfields[] = 'Quantity';
             $requiredFieldsClass = 'RequiredFields';
-            $validator = new $requiredFieldsClass($requiredfields);
-            $form = new Form($this->owner, 'VariationForm', $fields, $actions, $validator);
+            $validator = $requiredFieldsClass::create($requiredfields);
+            $form = Form::create(
+                $this->owner,
+                'VariationForm',
+                $fields,
+                $actions,
+                $validator
+            );
             Requirements::themedCSS('variationsform', 'ecommerce_product_variation');
             //variation options json generation
-            if (Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')) { //TODO: make javascript json inclusion optional
+            if (
+                Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')
+                && $this->owner->HasVariations()
+            ) {
                 Requirements::javascript('ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
                 $jsObjectName = $form->FormName().'Object';
                 Requirements::customScript(
@@ -812,8 +829,7 @@ class ProductWithVariationDecorator_Controller extends Extension
 
     public function addVariation($data, $form)
     {
-        //TODO: save form data to session so selected values are not lost
-        if (isset($data['ProductAttributes'])) {
+        if ($this->owner->HasVariations() && isset($data['ProductAttributes'])) {
             $data['ProductAttributes'] = Convert::raw2sql($data['ProductAttributes']);
             $variation = $this->owner->getVariationByAttributes($data['ProductAttributes']);
             if ($variation) {
@@ -836,6 +852,19 @@ class ProductWithVariationDecorator_Controller extends Extension
                 }
             } else {
                 $msg = _t('ProductWithVariationDecorator.VARIATIONNOTAVAILABLE', 'That option is not available.');
+                $status = 'bad';
+            }
+        } else if (! $this->owner->HasVariations()) {
+            $quantity = round($data['Quantity'], $this->owner->QuantityDecimals());
+            if (!$quantity) {
+                $quantity = 1;
+            }
+            ShoppingCart::singleton()->addBuyable($this->owner->dataRecord, $quantity);
+            if ($this->owner->IsInCart()) {
+                $msg = _t('ProductWithVariationDecorator.SUCCESSFULLYADDED', 'Added to cart.');
+                $status = 'good';
+            } else {
+                $msg = _t('ProductWithVariationDecorator.NOTSUCCESSFULLYADDED', 'Not added to cart.');
                 $status = 'bad';
             }
         } else {
