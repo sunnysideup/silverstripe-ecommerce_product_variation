@@ -796,7 +796,7 @@ class ProductWithVariationDecorator_Controller extends Extension
             $form = new Form($this->owner, 'VariationForm', $fields, $actions, $validator);
             Requirements::themedCSS('variationsform', 'ecommerce_product_variation');
             //variation options json generation
-            if (Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')) { //TODO: make javascript json inclusion optional
+            if (Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')) {
                 Requirements::javascript('ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
                 $jsObjectName = $form->FormName().'Object';
                 Requirements::customScript(
