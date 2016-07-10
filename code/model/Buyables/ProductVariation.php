@@ -701,7 +701,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         if ($updatedFilters !== null && is_array($updatedFilters) && count($updatedFilters)) {
             foreach($updatedFilters as $updatedFilter) {
                 if(is_array($updatedFilter)) {
-                    $filter += $updatedFilter;
+                    $filter = array_merge($filter, $updatedFilter);
                 } else {
                     $filter[] = $updatedFilter;
                 }
@@ -921,7 +921,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         $extendedArray = $this->extend('updateLinkParameters', $array, $type);
         if ($extendedArray !== null && is_array($extendedArray) && count($extendedArray)) {
             foreach ($extendedArray as $extendedArrayUpdate) {
-                $array += $extendedArrayUpdate;
+                $array = array_merge($array, $extendedArrayUpdate);
             }
         }
 
@@ -1148,7 +1148,9 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                     ->innerJoin('ProductVariation_AttributeValues', '"ProductVariation"."ID" = "ProductVariationID" ')
                     ->filter(array('ProductAttributeValueID' => $getAnyArray, 'ProductID' => $this->ProductID))
                     ->exclude(array('ID' => $this->ID));
-                $idArray += $items->map('ID', 'ID')->toArray();
+                if($items->count()) {
+                    $idArray = array_merge($idArray, $items->map('ID', 'ID')->toArray());
+                }
             }
         }
 
