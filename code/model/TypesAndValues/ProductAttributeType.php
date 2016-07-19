@@ -91,6 +91,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      */
     private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
+    private static $dropdown_field_for_orderform = 'DropdownField';
+
     /**
      * Standard SS variable.
      */
@@ -208,7 +210,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         //to do, why do switch to "all" the options if there are no values?
         $values = $this->getValuesForDropdown($values);
         if($values && is_array($values) && count($values)){
-            $field = new DropdownField('ProductAttributes['.$this->ID.']', $this->Name, $values);
+            $fieldType = $this->Config()->get('dropdown_field_for_orderform');
+            $field = $fieldType::create('ProductAttributes['.$this->ID.']', $this->Name, $values);
             if($emptystring && count($values) > 1) {
                 $field->setEmptyString($emptystring);
             }
