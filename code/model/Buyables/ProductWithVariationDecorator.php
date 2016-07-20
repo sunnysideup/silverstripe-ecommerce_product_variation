@@ -950,7 +950,7 @@ class ProductWithVariationDecorator_Controller extends Extension
      */
     public function selectvariation($request)
     {
-        if (Director::is_ajax()) {
+        if (Director::is_ajax() || 1 == 1) {
             return $this->owner->renderWith('SelectVariationFromProductGroup');
         } else {
             $this->owner->redirect($this->owner->Link());
