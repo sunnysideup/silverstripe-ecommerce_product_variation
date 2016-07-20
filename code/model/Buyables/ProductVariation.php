@@ -272,7 +272,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                             $field = $field->performReadonlyTransformation();
                             $field->setName("Type{$type->ID}");
                         } else {
-                            if ($hasBeenSold) {
+                            if ($this->HasBeenSold()) {
                                 $field = new ReadonlyField("Type{$type->ID}", $type->Name, _t('ProductVariation.ALREADYPURCHASED', 'NOT SET (you can not select a value now because it has already been purchased).'));
                             } else {
                                 $field->setEmptyString('');
