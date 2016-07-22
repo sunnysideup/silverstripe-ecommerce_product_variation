@@ -32,11 +32,7 @@
             </td>
             <td class="actionCell">
                 <div class="actionOuter">
-                    <% if canPurchase %>
-                        <% include ProductActionsInner %>
-                    <% else %>
-                        <div class="notForSale message">$EcomConfig.NotForSaleMessage</div>
-                    <% end_if %>
+                    <% include ProductActions %>
                 </div>
             </td>
         </tr>
