@@ -211,7 +211,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         $values = $this->getValuesForDropdown($values);
         if($values && is_array($values) && count($values)){
             $fieldType = $this->Config()->get('dropdown_field_for_orderform');
-            $field = $fieldType::create('ProductAttributes['.$this->ID.']', $this->Name, $values);
+            $field = $fieldType::create('ProductAttributes['.$this->ID.']', $this->Label, $values);
             if($emptystring && count($values) > 1) {
                 $field->setEmptyString($emptystring);
             }
