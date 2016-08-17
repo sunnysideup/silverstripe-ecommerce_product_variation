@@ -595,6 +595,7 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function onBeforeWrite()
     {
+        return;
         if ($this->owner->HasVariations()) {
             $price = $this->owner->getCalculatedPrice();
             if ($price == 0) {
