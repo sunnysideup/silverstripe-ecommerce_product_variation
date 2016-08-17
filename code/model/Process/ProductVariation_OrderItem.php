@@ -9,32 +9,6 @@ class ProductVariation_OrderItem extends Product_OrderItem {
     }
 
     /**
-     * price per item
-     * @return Float
-     **/
-    function UnitPrice($recalculate = false) {return $this->getUnitPrice($recalculate);}
-    function getUnitPrice($recalculate = false) {
-        $unitPrice = 0;
-        if($this->priceHasBeenFixed($recalculate) && !$recalculate) {
-            $unitPrice = parent::getUnitPrice($recalculate);
-        }
-        elseif($productVariation = $this->ProductVariation()){
-            if(!isset(self::$calculated_buyable_price[$this->ID]) || $recalculate) {
-                self::$calculated_buyable_price[$this->ID] = $productVariation->getCalculatedPrice();
-            }
-            $unitPrice = self::$calculated_buyable_price[$this->ID];
-        }
-        else{
-            $unitPrice = 0;
-        }
-        $updatedUnitPrice = $this->extend('updateUnitPrice', $unitPrice);
-        if($updatedUnitPrice !== null && is_array($updatedUnitPrice) && count($updatedUnitPrice)) {
-            $unitPrice = $updatedUnitPrice[0];
-        }
-        return $unitPrice;
-    }
-
-    /**
      * @decription: we return the product name here -
      * leaving the Table Sub Title for the name of the variation
      *
