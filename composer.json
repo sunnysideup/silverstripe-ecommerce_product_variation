@@ -1,27 +1,36 @@
 {
-	"name": "sunnysideup/ecommerce_product_variation",
-	"type": "silverstripe-module",
-	"description": "create product variations within e-commerce (e.g. if you have a sock you can now sell a red XL sock or a small blue sock).",
-	"homepage": "http://www.silverstripe-ecommerce.com",
-	"keywords": ["ecommerce", "e-commerce", "shop", "product variation","variation", "silverstripe", "sizes", "colours", "sub-types", "types"],
-	"license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
-	"authors":[
-		{
-			"name": "Nicolaas Francken",
-			"homepage": "https://github.com/sunnysideup",
-			"email" : "modules@sunnysideup.co.nz",
-			"role" : "lead developer"
-		}
-	],
-	"require":{
-		"sunnysideup/ecommerce": "dev-master"
-	},
-	"suggest":{
-		"sunnysideup/dataobjectsorter": "dev-master",
-		"silverstripe-australia/gridfieldextensions": "dev-master",
-		"briceburg/silverstripe-pickerfield": "dev-master"
-	},
-	"extra": {
-		"installer-name": "ecommerce_product_variation"
-	}
+    "name": "sunnysideup/ecommerce_product_variation",
+    "type": "silverstripe-module",
+    "description": "create product variations within e-commerce (e.g. if you have a sock you can now sell a red XL sock or a small blue sock).",
+    "keywords": [
+        "ecommerce",
+        "e-commerce",
+        "shop",
+        "product variation",
+        "variation",
+        "silverstripe",
+        "sizes",
+        "colours",
+        "sub-types",
+        "types"
+    ],
+    "license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
+    "authors": [
+        {
+            "name": "Nicolaas Francken",
+            "email": "modules@sunnysideup.co.nz",
+            "role": "lead developer"
+        }
+    ],
+    "require": {
+        "sunnysideup/ecommerce": "dev-master"
+    },
+    "suggest": {
+        "sunnysideup/dataobjectsorter": "dev-master",
+        "silverstripe-australia/gridfieldextensions": "dev-master",
+        "briceburg/silverstripe-pickerfield": "dev-master"
+    },
+    "extra": {
+        "installer-name": "ecommerce_product_variation"
+    }
 }
