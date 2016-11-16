@@ -760,6 +760,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      *
      * @TODO: check if we need to use other class names
      *
+     *
      * @return int
      */
     public function HasBeenSold()
@@ -768,16 +769,17 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     }
     public function getHasBeenSold()
     {
-        return DB::query("
-            SELECT COUNT(*)
-            FROM \"OrderItem\"
-                INNER JOIN \"OrderAttribute\" ON \"OrderAttribute\".\"ID\" = \"OrderItem\".\"ID\"
-            WHERE
-                \"BuyableID\" = '".$this->ID."' AND
-                \"BuyableClassName\" = '".$this->ClassName."'
-            LIMIT 1
-            "
-        )->value();
+        $dataList = Order::get_datalist_of_orders_with_submit_record($onlySubmittedOrders = true, $includeCancelledOrders = false);
+        $dataList = $dataList->innerJoin('OrderAttribute', '"OrderAttribute"."OrderID" = "Order"."ID"');
+        $dataList = $dataList->innerJoin('OrderItem', '"OrderAttribute"."ID" = "OrderItem"."ID"');
+        $dataList = $dataList->filter(
+            array(
+                'BuyableID' => $this->ID,
+                'buyableClassName' => $this->ClassName
+            )
+        );
+
+        return $dataList->count();
     }
 
     //LINKS
