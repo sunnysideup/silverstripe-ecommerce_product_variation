@@ -699,8 +699,8 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         $filter = array();
         $updatedFilters = $this->extend('updateItemFilter', $filter);
         if ($updatedFilters !== null && is_array($updatedFilters) && count($updatedFilters)) {
-            foreach($updatedFilters as $updatedFilter) {
-                if(is_array($updatedFilter)) {
+            foreach ($updatedFilters as $updatedFilter) {
+                if (is_array($updatedFilter)) {
                     $filter = array_merge($filter, $updatedFilter);
                 } else {
                     $filter[] = $updatedFilter;
@@ -807,7 +807,8 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * @todo TEST!!!!
      * @return string
      */
-     function VersionedLink(){
+     public function VersionedLink()
+     {
          return Controller::join_links(
              Director::baseURL(),
              EcommerceConfig::get('ShoppingCart_Controller', 'url_segment'),
@@ -816,7 +817,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
              $this->ID,
              $this->Version
          );
-    }
+     }
 
     /**
      * passing on shopping cart links ...is this necessary?? ...why not just pass the cart?
@@ -1150,7 +1151,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                     ->innerJoin('ProductVariation_AttributeValues', '"ProductVariation"."ID" = "ProductVariationID" ')
                     ->filter(array('ProductAttributeValueID' => $getAnyArray, 'ProductID' => $this->ProductID))
                     ->exclude(array('ID' => $this->ID));
-                if($items->count()) {
+                if ($items->count()) {
                     $idArray = array_merge($idArray, $items->map('ID', 'ID')->toArray());
                 }
             }

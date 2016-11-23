@@ -773,7 +773,7 @@ class ProductWithVariationDecorator_Controller extends Extension
     public function VariationForm()
     {
         if ($this->owner->canPurchase(null, true)) {
-            if($this->owner->HasVariations()) {
+            if ($this->owner->HasVariations()) {
                 $farray = array();
                 $requiredfields = array();
                 $attributes = $this->owner->VariationAttributes();
@@ -787,8 +787,7 @@ class ProductWithVariationDecorator_Controller extends Extension
                     }
                 }
                 $fields = FieldList::create($farray);
-            }
-            else {
+            } else {
                 $fields = FieldList::create();
             }
             $fields->push(new NumericField('Quantity', 'Quantity', 1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
@@ -855,7 +854,7 @@ class ProductWithVariationDecorator_Controller extends Extension
                 $msg = _t('ProductWithVariationDecorator.VARIATIONNOTAVAILABLE', 'That option is not available.');
                 $status = 'bad';
             }
-        } else if (! $this->owner->HasVariations()) {
+        } elseif (! $this->owner->HasVariations()) {
             $quantity = round($data['Quantity'], $this->owner->QuantityDecimals());
             if (!$quantity) {
                 $quantity = 1;

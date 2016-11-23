@@ -11,7 +11,8 @@
  *
  */
 
-class ProductAttributeType extends DataObject implements EditableEcommerceObject{
+class ProductAttributeType extends DataObject implements EditableEcommerceObject
+{
 
     /**
      * Standard SS variable.
@@ -97,17 +98,24 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * Standard SS variable.
      */
     private static $singular_name = "Variation Attribute Type";
-        function i18n_singular_name() { return _t("ProductAttributeType.ATTRIBUTETYPE", "Variation Attribute Type");}
+    public function i18n_singular_name()
+    {
+        return _t("ProductAttributeType.ATTRIBUTETYPE", "Variation Attribute Type");
+    }
 
     /**
      * Standard SS variable.
      */
     private static $plural_name = "Variation Attribute Types";
-        function i18n_plural_name() { return _t("ProductAttributeType.ATTRIBUTETYPES", "Variation Attribute Types");}
-        public static function get_plural_name(){
-            $obj = Singleton("ProductAttributeType");
-            return $obj->i18n_plural_name();
-        }
+    public function i18n_plural_name()
+    {
+        return _t("ProductAttributeType.ATTRIBUTETYPES", "Variation Attribute Types");
+    }
+    public static function get_plural_name()
+    {
+        $obj = Singleton("ProductAttributeType");
+        return $obj->i18n_plural_name();
+    }
 
     /**
      * finds or makes a ProductAttributeType, based on the lower case Name.
@@ -117,15 +125,16 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      *
      * @return ProductAttributeType
      */
-    public static function find_or_make($name, $create = true){
+    public static function find_or_make($name, $create = true)
+    {
         $name = strtolower($name);
-        if($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
+        if ($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
             return $type;
         }
         $type = ProductAttributeType::create();
         $type->Name = $name;
         $type->Label = $name;
-        if($create) {
+        if ($create) {
             $type->write();
         }
         return $type;
@@ -134,7 +143,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     /**
      * Standard SS Methodd.
      */
-    function getCMSFields(){
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
         $nameField = $fields->dataFieldByName("Name");
         $nameField->SetRightTitle(_t("ProductAttributeType.NAME_RIGHT_TITLE", "Mainly used for easy recognition in the CMS"));
@@ -160,7 +170,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * @param String | Null $action - e.g. edit
      * @return String
      */
-    public function CMSEditLink($action = null) {
+    public function CMSEditLink($action = null)
+    {
         return Controller::join_links(
             Director::baseURL(),
             "/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
@@ -173,7 +184,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * array should be an something like red, blue, orange (strings NOT objects)
      * @param Array
      */
-    function addValues(array $values){
+    public function addValues(array $values)
+    {
         $avalues = $this->convertArrayToValues($values);
         $this->Values()->addMany($values);
     }
@@ -185,11 +197,12 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * @param Array $values
      * @return ArrayList
      */
-    function convertArrayToValues(array $values){
+    public function convertArrayToValues(array $values)
+    {
         $set = new ArrayList();
-        foreach($values as $value){
-            $val = $this->Values()->find('Value',$value);
-            if(!$val){  //TODO: ignore case, if possible
+        foreach ($values as $value) {
+            $val = $this->Values()->find('Value', $value);
+            if (!$val) {  //TODO: ignore case, if possible
                 $val = new ProductAttributeValue();
                 $val->Value = $value;
                 $val->write();
@@ -206,17 +219,17 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      *
      * @return DropdownField | HiddenField
      */
-    function getDropDownField($emptystring = null, $values = null) {
+    public function getDropDownField($emptystring = null, $values = null)
+    {
         //to do, why do switch to "all" the options if there are no values?
         $values = $this->getValuesForDropdown($values);
-        if($values && is_array($values) && count($values)){
+        if ($values && is_array($values) && count($values)) {
             $fieldType = $this->Config()->get('dropdown_field_for_orderform');
             $field = $fieldType::create('ProductAttributes['.$this->ID.']', $this->Label, $values);
-            if($emptystring && count($values) > 1) {
+            if ($emptystring && count($values) > 1) {
                 $field->setEmptyString($emptystring);
             }
-        }
-        else {
+        } else {
             $field = new HiddenField('ProductAttributes['.$this->ID.']', 0);
         }
         $this->extend("updateDropDownField", $field);
@@ -230,12 +243,12 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      *
      * @return array
      */
-    function getValuesForDropdown($values = null) {
+    public function getValuesForDropdown($values = null)
+    {
         $values = ($values) ? $values : $this->Values();
-        if($values && $values->count() > 0){
-            return $values->map('ID','ValueForDropdown')->toArray();
-        }
-        else {
+        if ($values && $values->count() > 0) {
+            return $values->map('ID', 'ValueForDropdown')->toArray();
+        } else {
             return array();
         }
     }
@@ -245,14 +258,15 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      *
      * @return Boolean
      */
-    public function canDelete($member = null) {
+    public function canDelete($member = null)
+    {
         $extended = $this->extendedCan(__FUNCTION__, $member);
-        if($extended !== null) {
+        if ($extended !== null) {
             return $extended;
         }
         $values = $this->Values();
-        foreach($values as $value) {
-            if(! $value->canDelete()) {
+        foreach ($values as $value) {
+            if (! $value->canDelete()) {
                 return false;
             }
         }
@@ -265,69 +279,66 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * Adds a label is there is no label.
      *
      */
-    function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
         $i = 0;
         $className = $this->ClassName;
-        while(!$this->Name || $className::get()->filter(array("Name" => $this->Name))->exclude("ID", $this->ID)->First() ){
+        while (!$this->Name || $className::get()->filter(array("Name" => $this->Name))->exclude("ID", $this->ID)->First()) {
             $this->Name = $this->i18n_singular_name();
-            if($i) {
+            if ($i) {
                 $this->Name .= "_".$i;
             }
             $i++;
         }
-        if(!$this->Label) {
+        if (!$this->Label) {
             $this->Label = $this->Name;
         }
     }
 
-    function onAfterWrite(){
+    public function onAfterWrite()
+    {
         parent::onAfterWrite();
-        if($this->MergeIntoID) {
+        if ($this->MergeIntoID) {
             $newAttributeType = $this->MergeInto();
             $canDoMerge = true;
-            if($this->Values()->count() != $newAttributeType->Values()->count()) {
+            if ($this->Values()->count() != $newAttributeType->Values()->count()) {
                 $canDoMerge = false;
                 $this->MergeIntoNote = "NON-MATCHINGE VALUE COUNTS";
-            }
-            else {
-
+            } else {
                 $mergeMapArray_OLD = array();
                 $mergeMapArray_NEW = array();
                 $mergeMapArrayGO = array();
-                foreach($this->Values() as $value) {
+                foreach ($this->Values() as $value) {
                     $mergeMapArray_OLD[] = $value->ID;
                 }
-                foreach($newAttributeType->Values() as $value) {
+                foreach ($newAttributeType->Values() as $value) {
                     $mergeMapArray_NEW[] = $value->ID;
                 }
-                foreach($mergeMapArray_OLD as $key => $id_OLD) {
+                foreach ($mergeMapArray_OLD as $key => $id_OLD) {
                     $id_NEW = $mergeMapArray_NEW[$key];
                     $obj_OLD = ProductAttributeValue::get()->byID($id_OLD);
                     $obj_NEW = ProductAttributeValue::get()->byID($id_NEW);
-                    if($obj_OLD && $obj_NEW) {
-                        if($obj_OLD->Code == $obj_NEW->Code || $obj_OLD->Value == $obj_NEW->Value || 1 == 1) {
+                    if ($obj_OLD && $obj_NEW) {
+                        if ($obj_OLD->Code == $obj_NEW->Code || $obj_OLD->Value == $obj_NEW->Value || 1 == 1) {
                             $mergeMapArrayGO[$obj_OLD->ID] = $obj_NEW->ID;
-                        }
-                        else {
+                        } else {
                             $this->MergeIntoNote = "NON-MATCHINGE VALUES: ".$obj_OLD->Code."!=".$obj_NEW->Code." AND ".$obj_OLD->Value."!=".$obj_NEW->Value;
                             $canDoMerge = false;
                         }
-                    }
-                    else {
+                    } else {
                         $this->MergeIntoNote = "MISSING OLD OR NEW OBJECT";
                         $canDoMerge = false;
                     }
                 }
             }
-            if($canDoMerge) {
-                foreach($mergeMapArrayGO as $id_OLD => $id_NEW) {
+            if ($canDoMerge) {
+                foreach ($mergeMapArrayGO as $id_OLD => $id_NEW) {
                     DB::query("
                         UPDATE \"ProductVariation_AttributeValues\"
                         SET \"ProductAttributeValueID\" = ".$id_NEW."
                         WHERE \"ProductAttributeValueID\" = ".$id_OLD.";
                     ");
-
                 }
                 DB::query("
                     UPDATE \"Product_VariationAttributes\"
@@ -335,7 +346,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                     WHERE \"ProductAttributeTypeID\" = ".$this->ID.";
                 ");
                 $values = ProductAttributeValue::get()->filter(array("TypeID" => $this->ID));
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     $value->delete();
                 }
                 $this->MergeIntoNote = "Merged successfully into ".$this->MergeInto()->Name." ...";
@@ -345,18 +356,18 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
             $this->MergeIntoID = 0;
             $this->write();
         }
-
     }
 
     /**
      * Delete all the values
      * that are related to this type.
      */
-    function onBeforeDelete() {
+    public function onBeforeDelete()
+    {
         parent::onBeforeDelete();
         $values = $this->Values();
-        foreach($values as $value) {
-            if($value->canDelete()) {
+        foreach ($values as $value) {
+            if ($value->canDelete()) {
                 $value->delete();
                 $value->destroy();
             }
@@ -364,23 +375,24 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = ".$this->ID);
     }
 
-    function cleanup(){
+    public function cleanup()
+    {
         $sql = "
             Select \"ProductAttributeTypeID\"
             FROM \"Product_VariationAttributes\"
             WHERE \"ProductID\" = ".$this->owner->ID;
         $data = DB::query($sql);
         $array = $data->keyedColumn();
-        if(is_array($array) && count($array) ) {
-            foreach($array as $key => $productAttributeTypeID) {
+        if (is_array($array) && count($array)) {
+            foreach ($array as $key => $productAttributeTypeID) {
                 //attribute type does not exist.
-                if( ! ProductAttributeType::get()->byID($productAttributeTypeID) ) {
+                if (! ProductAttributeType::get()->byID($productAttributeTypeID)) {
                     //delete non-existing combinations of Product_VariationAttributes (where the attribute does not exist)
                     //DB::query("DELETE FROM \"Product_VariationAttributes\" WHERE \"ProductAttributeTypeID\" = $productAttributeTypeID");
                     //non-existing product attribute values.
                     $productAttributeValues = ProductAttributeValue::get()->filter(array("TypeID" => $productAttributeTypeID));
-                    if($productAttributeValues->count()) {
-                        foreach($productAttributeValues as $productAttributeValue) {
+                    if ($productAttributeValues->count()) {
+                        foreach ($productAttributeValues as $productAttributeValue) {
                             $productAttributeValue->delete();
                         }
                     }
@@ -393,7 +405,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * useful for GridField
      * @return String
      */
-    function getFullName(){
+    public function getFullName()
+    {
         return $this->Name." (".$this->Values()->count()."), label: ".$this->Label;
     }
 }
