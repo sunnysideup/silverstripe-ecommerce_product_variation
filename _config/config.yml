@@ -23,7 +23,8 @@ LeftAndMain:
     - ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js
     - ecommerce_product_variation/javascript/DeleteEcommerceVariations.js
   extra_requirements_themedCss:
-    - CreateEcommerceVariationsField
+    CreateEcommerceVariationsField:
+      media: ecommerce_product_variation    
 
 
 EcommerceDatabaseAdmin:

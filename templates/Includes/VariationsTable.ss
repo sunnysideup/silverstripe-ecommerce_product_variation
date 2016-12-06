@@ -40,4 +40,4 @@
     </tbody>
 </table>
 
-<% require themedCSS(VariationsTable) %>
+<% require themedCSS(VariationsTable, ecommerce_product_variation) %>
