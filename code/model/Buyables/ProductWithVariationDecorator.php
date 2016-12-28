@@ -449,22 +449,26 @@ class ProductWithVariationDecorator extends DataExtension
     /**
      * returns the matching variation if any.
      *
-     * @param array $attributes formatted as (TypeID => ValueID, TypeID => ValueID)
+     * @param array        $attributes formatted as (TypeID => ValueID, TypeID => ValueID)
+     * @param bool         $searchAllProducts - show results from any variation matching the combination
+     *                                          this will return a DataList
      *
-     * @return ProductVariation | NULL
+     * @return ProductVariation | null | Datalist
      */
-    public function getVariationByAttributes(array $attributes)
+    public function getVariationByAttributes(array $attributes, $searchAllProducts = false)
     {
         if (!is_array($attributes) || !count($attributes)) {
             user_error('attributes must be provided as an array of numeric keys and values IDs...', E_USER_NOTICE);
 
             return;
         }
-        $variations = ProductVariation::get()->filter(
-            array('ProductID' => $this->owner->ID)
-        );
-        $keyattributes = array_keys($attributes);
-        $id = $keyattributes[0];
+        if($searchAllProducts) {
+            $variations = ProductVariation::get();
+        } else {
+            $variations = ProductVariation::get()->filter(
+                array('ProductID' => $this->owner->ID)
+            );
+        }
         foreach ($attributes as $typeid => $valueid) {
             if (!is_numeric($typeid) || !is_numeric($valueid)) {
                 user_error('key and value ID must be numeric', E_USER_NOTICE);
@@ -481,11 +485,12 @@ class ProductWithVariationDecorator extends DataExtension
                  $alias
             );
         }
+        if($searchAllProducts) {
+            return $variations;
+        }
         if ($variation = $variations->First()) {
             return $variation;
         }
-
-        return;
     }
 
     public function addAttributeValue($attributeValue)
@@ -905,7 +910,7 @@ class ProductWithVariationDecorator_Controller extends Extension
     }
 
     /**
-     * @param int | ProductAttributeType
+     * @param int | ProductAttributeType           $type
      *
      * @return DataList of ProductAttributeValues
      */
