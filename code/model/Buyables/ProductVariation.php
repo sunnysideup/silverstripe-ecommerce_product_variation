@@ -176,6 +176,14 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             'BetweenVariations' => ', ',
         ),
     );
+
+    /**
+     * change the way the title of the variation is displayed
+     * @param string $code                key
+     * @param string $showType            do we show the type (e.g. colour, size)?
+     * @param string $betweenTypeAndValue e.g. a semi-colon (:)
+     * @param string $betweenVariations   e.g. a comma (,)
+     */
     public static function add_title_style_option($code, $showType, $betweenTypeAndValue, $betweenVariations)
     {
         self::$title_style_option[$code] = array(
@@ -185,6 +193,11 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             );
         Config::inst()->update('ProductVariation', 'current_style_option_code', $code);
     }
+
+    /**
+     * remove style option by key
+     * @param  string $code               key
+     */
     public static function remove_title_style_option($code)
     {
         unset(self::$title_style_option[$code]);
@@ -484,7 +497,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         parent::onAfterWrite();
         //clean up data???
         //todo: what is this for?
-        if (isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes'])) {
+        if (isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes']) && $this->canEdit()) {
             $productAttributesArray = array();
             foreach ($_POST['ProductAttributes'] as $key => $value) {
                 $productAttributesArray[$key] = intval($value);
