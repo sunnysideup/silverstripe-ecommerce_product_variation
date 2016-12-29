@@ -80,7 +80,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         if ($valueObj) {
             return $valueObj;
         }
-        $valueObj = new ProductAttributeValue();
+        $valueObj = ProductAttributeValue::create();
         $valueObj->Code = $cleanedValue;
         $valueObj->Value = $value;
         $valueObj->TypeID = $type;

@@ -248,21 +248,32 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         return $field;
     }
 
+    private static $_drop_down_values = array();
+
     /**
      *
-     * @param String $emptyString
      * @param DataList $values
      *
      * @return array
      */
     public function getValuesForDropdown($values = null)
     {
-        $values = ($values) ? $values : $this->Values();
-        if ($values && $values->count() > 0) {
-            return $values->map('ID', 'ValueForDropdown')->toArray();
-        } else {
-            return array();
+        if(! isset(self::$_drop_down_values[$this->ID])) {
+            $values = ($values) ? $values : $this->Values();
+            $count = $values->count();
+            if ($count > 0) {
+                if($count > 100) {
+                    $values = $values->limit(1000);
+                    self::$_drop_down_values[$this->ID] = $values->map('ID', 'Value')->toArray();
+                } else {
+                    self::$_drop_down_values[$this->ID] = $values->map('ID', 'ValueForDropdown')->toArray();
+                }
+            } else {
+                self::$_drop_down_values[$this->ID] = array();
+            }
         }
+
+        return self::$_drop_down_values[$this->ID];
     }
 
     /**
@@ -276,7 +287,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         if ($extended !== null) {
             return $extended;
         }
-        $values = $this->Values();
+        $values = $this->Values()->limit(10);
         foreach ($values as $value) {
             if (! $value->canDelete()) {
                 return false;
