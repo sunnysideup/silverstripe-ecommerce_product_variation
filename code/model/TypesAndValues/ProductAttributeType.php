@@ -419,6 +419,13 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      */
     public function getFullName()
     {
-        return $this->Name." (".$this->Values()->count()."), label: ".$this->Label;
+        $fieldLabels = $this->FieldLabels();
+        return
+            $this->Name.', '.
+            $this->Label.
+            ' ('.
+                $this->Values()->count().' '.Injector::inst()->get('ProductAttributeValue')->i18n_plural_name().', '.
+                $this->Products()->count().' '.Injector::inst()->get('Product')->i18n_plural_name().
+            ')';
     }
 }
