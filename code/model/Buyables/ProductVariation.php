@@ -1160,7 +1160,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                     $getAnyArray[$innerValue->ID] = $innerValue->ID;
                 }
                 //find a product variation that has the getAnyArray Values
-                $items = self::get()
+                $items = ProductVariation::get()
                     ->innerJoin('ProductVariation_AttributeValues', '"ProductVariation"."ID" = "ProductVariationID" ')
                     ->filter(array('ProductAttributeValueID' => $getAnyArray, 'ProductID' => $this->ProductID))
                     ->exclude(array('ID' => $this->ID));

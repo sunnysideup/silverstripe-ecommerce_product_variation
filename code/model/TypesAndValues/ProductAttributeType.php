@@ -32,7 +32,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         'Name' => 'Varchar', //for back-end use
         'Label' => 'Varchar', //for front-end use
         'Sort' => 'Int', //for front-end use
-        'MergeIntoNote' => 'Varchar(255)' //for front-end use
+        'MergeIntoNote' => 'Varchar(255)'
         //'Unit' => 'Varchar' //TODO: for future use
     );
 
@@ -150,6 +150,10 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         $nameField->SetRightTitle(_t("ProductAttributeType.NAME_RIGHT_TITLE", "Mainly used for easy recognition in the CMS"));
         $valueField = $fields->dataFieldByName("Label");
         $valueField->SetRightTitle(_t("ProductAttributeType.VALUE_RIGHT_TITLE", "Mainly used for site users"));
+        $variationField = $fields->dataFieldByName('Values');
+        if($variationField) {
+            $variationField->setConfig(new GridFieldConfigForOrderItems());
+        }
         $fields->addFieldToTab(
             "Root.Main",
             new OptionalTreeDropdownField(
@@ -160,7 +164,15 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         );
         //TODO: make this a really fast editing interface. Table list field??
         //$fields->removeFieldFromTab('Root.Values','Values');
-        $fields->AddFieldToTab("Root.Advanced", new DropdownField("MergeIntoID", "Merge into ...", array(0 => "-- do not merge --") + ProductAttributeType::get()->exclude(array("ID" => $this->ID))->map()->toArray()));
+        $fields->AddFieldToTab(
+            "Root.Advanced",
+            DropdownField::create(
+                'MergeIntoID',
+                _t('ProductAttributeType.MERGE_INTO', 'Merge into ...'),
+                array(0 => _t('ProductAttributeType.DO_NOT_MERGE', '-- do not merge --')) +
+                    ProductAttributeType::get()->exclude(array("ID" => $this->ID))->map()->toArray()
+            )
+        );
         $fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
         return $fields;
     }
@@ -304,7 +316,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
             $canDoMerge = true;
             if ($this->Values()->count() != $newAttributeType->Values()->count()) {
                 $canDoMerge = false;
-                $this->MergeIntoNote = "NON-MATCHINGE VALUE COUNTS";
+                $this->MergeIntoNote = "NON-MATCHING VALUE COUNTS";
             } else {
                 $mergeMapArray_OLD = array();
                 $mergeMapArray_NEW = array();

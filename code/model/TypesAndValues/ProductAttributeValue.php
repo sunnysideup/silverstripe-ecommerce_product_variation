@@ -16,11 +16,13 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     private static $db = array(
         'Code' => 'Varchar(255)',
         'Value' => 'Varchar(255)',
-        'Sort' => 'Int'
+        'Sort' => 'Int',
+        'MergeIntoNote' => 'Varchar(255)'
     );
 
     private static $has_one = array(
-        'Type' => 'ProductAttributeType'
+        'Type' => 'ProductAttributeType',
+        'MergeInto' => 'ProductAttributeValue'
     );
 
     private static $belongs_many_many = array(
@@ -28,7 +30,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     );
 
     private static $summary_fields = array(
-        'Type.Title' => 'Type',
+        'Type.FullName' => 'Type',
         'Value' => 'Value'
     );
 
@@ -38,6 +40,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 
     private static $casting = array(
         'Title' => 'HTMLText',
+        'FullTitle' => 'Varchar',
         'ValueForDropdown' => "HTMLText",
         'ValueForTable' => "HTMLText"
     );
@@ -108,10 +111,11 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             return $extended;
         }
         if (DB::query("
-			SELECT COUNT(*)
-			FROM \"ProductVariation_AttributeValues\"
-				INNER JOIN \"ProductVariation\" ON  \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
-			WHERE \"ProductAttributeValueID\" = ".$this->ID
+            SELECT COUNT(*)
+            FROM \"ProductVariation_AttributeValues\"
+                INNER JOIN \"ProductVariation\"
+                    ON  \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+            WHERE \"ProductAttributeValueID\" = ".$this->ID
         )->value() == 0) {
             return parent::canDelete($member);
         }
@@ -121,15 +125,23 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        //TODO: make this a really fast editing interface. Table list field??
-        //$fields->removeFieldFromTab('Root.Values','Values');
-        // TO DO: the code below does not work...
-        //$fields->removeFieldFromTab("Root.Product Variation", "ProductVariation");
-        //$fields->removeFieldFromTab("Root", "Product Variation");
-        $table = $fields->fieldByName("ProductVariation");
-        if ($table) {
-            $table->setPermissions("edit", "view");
+        $variationField = $fields->dataFieldByName('ProductVariation');
+        if($variationField) {
+            $variationField->setConfig(new GridFieldConfigForOrderItems());
         }
+        $fields->AddFieldToTab(
+            "Root.Advanced",
+            DropdownField::create(
+                'MergeIntoID',
+                _t('ProductAttributeType.MERGE_INTO', 'Merge into ...'),
+                array(0 => _t('ProductAttributeType.DO_NOT_MERGE', '-- do not merge --')) +
+                    ProductAttributeValue::get()
+                        ->filter(array('TypeID' => $this->TypeID))
+                        ->exclude(array("ID" => $this->ID))
+                        ->map('ID', 'FullTitle')->toArray()
+            )
+        );
+        $fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
         return $fields;
     }
 
@@ -199,6 +211,25 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         return $this->getValueForTable();
     }
 
+    /**
+     * casted variable
+     * returns the value for the variations table
+     * @return String
+     **/
+    public function FullTitle()
+    {
+        return $this->getFullTitle();
+    }
+    public function getFullTitle()
+    {
+        if($type = $this->Type()) {
+            $typeName = $type->Name;
+        } else {
+            $typeName = _t('ProductAttributeValue.NO_TYPE_NAME', 'NO TYPE');
+        }
+        return $typeName.': '.$this->Value.' ('.$this->Code.')';
+    }
+
     public function onBeforeDelete()
     {
         parent::onBeforeDelete();
@@ -233,4 +264,39 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         /*$variations = $this->ProductVariation();
         foreach($variations as $variation) $variation->delete();*/
     }
+
+
+    /**
+     * Event handler called after writing to the database.
+     */
+    public function onAfterWrite()
+    {
+        parent::onAfterWrite();
+        if ($this->MergeIntoID) {
+            $newAttributeValue = $this->MergeInto();
+            if($newAttributeValue && $newAttributeValue->exists()) {
+                $newID = $this->MergeIntoID;
+                $oldID = $this->ID;
+                $oldTypeID = $this->TypeID;
+                $newTypeID = $newAttributeValue->TypeID;
+                DB::query("
+                    UPDATE \"ProductVariation_AttributeValues\"
+                    SET \"ProductAttributeValueID\" = ".$newID."
+                    WHERE \"ProductAttributeValueID\" = ".$oldID.";
+                ");
+                DB::query("
+                    UPDATE \"Product_VariationAttributes\"
+                    SET \"ProductAttributeTypeID\" = ".$newTypeID."
+                    WHERE \"ProductAttributeTypeID\" = ".$oldTypeID.";
+                ");
+                $mergedInto = _t('ProductAttributeValue.MERGED_INTO', 'Merged successfully into');
+                $this->MergeIntoNote = $mergedInto.' '.$newAttributeValue->FullTitle();
+                $toBeDeleted = _t('ProductAttributeValue.TO_BE_DELETED', 'To be deleted');
+                $this->Value = $toBeDeleted.' '.$this->Value;
+                $this->MergeIntoID = 0;
+                $this->write();
+            }
+        }
+    }
+
 }
