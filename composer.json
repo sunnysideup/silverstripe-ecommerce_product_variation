@@ -32,7 +32,7 @@
     "suggest": {
         "sunnysideup/dataobjectsorter": "dev-master",
         "silverstripe-australia/gridfieldextensions": "dev-master",
-        "briceburg/silverstripe-pickerfield": "dev-master"
+        "sunnysideup/cms_edit_link_field": "dev-master"
     },
     "extra": {
         "installer-name": "ecommerce_product_variation"
