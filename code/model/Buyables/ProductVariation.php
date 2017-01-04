@@ -222,13 +222,11 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             return parent::getCMSFields();
         }
         $product = $this->Product();
-        if (class_exists('HasOnePickerField')) {
-            $productField = HasOnePickerField::create(
-                $this,
+        if (class_exists('CMSEditLinkField')) {
+            $productField = CMSEditLinkField::create(
                 'ProductID',
-                _t('ProductVariation.PRODUCT', 'Product'),
-                $this->Product(),
-                _t('ProductVariation.SELECT_A_PRODUCT', 'Select a Product')
+                $this->Product()->i18n_singular_name(),
+                $this->Product()
             );
         } else {
             $productCount = Product::get()->count();
@@ -277,22 +275,39 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             if ($this->ID) {
                 $values = $this->AttributeValues();
                 foreach ($types as $type) {
+                    $isReadonlyField = false;
+                    $rightTitle = '';
                     $field = $type->getDropDownField();
                     if ($field) {
                         $value = $values->find('TypeID', $type->ID);
                         if ($value) {
-                            $field->setValue($value->ID);
-                            $field = $field->performReadonlyTransformation();
-                            $field->setName("Type{$type->ID}");
+                            $isReadonlyField = true;
                         } else {
                             if ($this->HasBeenSold()) {
-                                $field = new ReadonlyField("Type{$type->ID}", $type->Name, _t('ProductVariation.ALREADYPURCHASED', 'NOT SET (you can not select a value now because it has already been purchased).'));
+                                $isReadonlyField = true;
+                                $rightTitle = _t(
+                                    'ProductVariation.ALREADYPURCHASED',
+                                    'NOT SET (you can not select a value now because it has already been purchased).'
+                                );
                             } else {
+                                $field = $type->getDropDownField();
                                 $field->setEmptyString('');
                             }
                         }
                     } else {
-                        $field = new ReadonlyField("Type{$type->ID}", $type->Name, _t('ProductVariation.NOVALUESTOSELECT', 'No values to select'));
+                        $isReadonlyField = true;
+                        $rightTitle = _t('ProductVariation.NOVALUESTOSELECT', 'No values to select');
+                    }
+                    if($isReadonlyField) {
+                        if(class_exists('CMSEditLinkField')) {
+                            $field = CMSEditLinkField::create("Type{$type->ID}", $type->Name, $value)
+                                ->setDescription($rightTitle);
+                        } else {
+                            $field->setValue($value->ID);
+                            $field = $field->performReadonlyTransformation();
+                            $field->setName("Type{$type->ID}");
+                            $field->setDescription($rightTitle);
+                        }
                     }
                     $fields->addFieldToTab('Root.Attributes', $field);
                 }
