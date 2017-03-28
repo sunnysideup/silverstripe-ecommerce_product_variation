@@ -1176,8 +1176,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                 }
                 //find a product variation that has the getAnyArray Values
                 $items = ProductVariation::get()
-                    ->innerJoin('ProductVariation_AttributeValues', '"ProductVariation"."ID" = "ProductVariationID" ')
-                    ->filter(array('ProductAttributeValueID' => $getAnyArray, 'ProductID' => $this->ProductID))
+                    ->innerJoin(
+                        'ProductVariation_AttributeValues',
+                        '"ProductVariation"."ID" = "ProductVariationID"'
+                    )
+                    ->filter(
+                        array(
+                            'ProductAttributeValueID' => $getAnyArray,
+                            'ProductID' => $this->ProductID
+                        )
+                    )
                     ->exclude(array('ID' => $this->ID));
                 if ($items->count()) {
                     $idArray = array_merge($idArray, $items->map('ID', 'ID')->toArray());
@@ -1185,6 +1193,6 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             }
         }
 
-        return self::get()->filter(array('ID' => $idArray));
+        return ProductVariation::get()->filter(array('ID' => $idArray));
     }
 }
