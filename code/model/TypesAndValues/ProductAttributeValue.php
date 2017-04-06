@@ -53,9 +53,10 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     /**
      * finds or makes a ProductAttributeType, based on the lower case Name.
      *
-     * @param ProductAttributeType | int $type
-     * @param String $value
-     * @param Boolean $create
+     * @param productAttributeType | int $type
+     * @param string $value
+     * @param boolean $create
+     * @param boolean $findByID
      *
      * @return ProductAttributeType
      */
@@ -73,7 +74,11 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
                 //debug::log("INT VALUE:" .$intValue."-".$type);
         } else {
             $valueObj = ProductAttributeValue::get()
-                ->where("(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type))
+                ->where("
+                    (
+                        LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue'
+                    ) AND TypeID = ".intval($type)
+                )
                 ->First();
                 //debug::log("CLEANED VALUE:" .$cleanedValue."-".$type);
         }
