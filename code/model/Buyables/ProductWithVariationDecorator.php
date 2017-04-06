@@ -389,7 +389,7 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function generateVariationsFromAttributeValues(array $values)
     {
-        set_time_limit(0);
+        set_time_limit(600);
         $count = 0;
         $valueCombos = array();
         foreach ($values as $typeID => $typeValues) {
@@ -403,7 +403,12 @@ class ProductWithVariationDecorator extends DataExtension
                     if (strlen($valueKey) == strlen($valueValue) && intval($valueKey) == intval($valueValue)) {
                         $findByID = true;
                     }
-                    $obj = ProductAttributeValue::find_or_make($typeObject, $valueValue, $create = true, $findByID);
+                    $obj = ProductAttributeValue::find_or_make(
+                        $typeObject,
+                        $valueValue,
+                        $create = true,
+                        $findByID
+                    );
                     $valueID = $obj->write();
                     if ($valueID = intval($valueID)) {
                         $valueID = array($valueID);
