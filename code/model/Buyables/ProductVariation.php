@@ -291,7 +291,9 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                                 );
                             } else {
                                 $field = $type->getDropDownField();
-                                $field->setEmptyString('');
+                                if($field instanceof DropdownField) {
+                                    $field->setEmptyString('');
+                                }
                             }
                         }
                     } else {
