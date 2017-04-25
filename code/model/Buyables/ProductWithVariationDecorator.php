@@ -470,9 +470,10 @@ class ProductWithVariationDecorator extends DataExtension
         if($searchAllProducts) {
             $variations = ProductVariation::get();
         } else {
-            $variations = ProductVariation::get()->filter(
-                array('ProductID' => $this->owner->ID)
-            );
+            $variations = ProductVariation::get()
+                ->filter(
+                    array('ProductID' => $this->owner->ID)
+                );
         }
         foreach ($attributes as $typeid => $valueid) {
             if (!is_numeric($typeid) || !is_numeric($valueid)) {
@@ -480,7 +481,7 @@ class ProductWithVariationDecorator extends DataExtension
 
                 return;
             }
-            $alias = "A$typeid";
+            $alias = "Alias$typeid";
             $variations = $variations->where(
                 "\"$alias\".\"ProductAttributeValueID\" = $valueid"
             )
