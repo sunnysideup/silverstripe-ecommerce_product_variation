@@ -68,19 +68,16 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         $cleanedValue = strtolower($value);
         if ($findByID) {
             $intValue = intval($value);
-            $valueObj = ProductAttributeValue::get()
-                ->filter(array("ID" => $intValue, "TypeID" => intval($type)))
-                ->First();
+            $valueObj = DataObject::get_one(
+                'ProductAttributeValue',
+                array("ID" => $intValue, "TypeID" => intval($type))
+            );
                 //debug::log("INT VALUE:" .$intValue."-".$type);
         } else {
-            $valueObj = ProductAttributeValue::get()
-                ->where("
-                    (
-                        LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue'
-                    ) AND TypeID = ".intval($type)
-                )
-                ->First();
-                //debug::log("CLEANED VALUE:" .$cleanedValue."-".$type);
+            $valueObj = DataObject::get_one(
+                'ProductAttributeValue',
+                "(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type)
+            );
         }
         if ($valueObj) {
             return $valueObj;
@@ -242,7 +239,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             $this->Value = $this->i18n_singular_name();
             $i = 0;
             $className = $this->ClassName;
-            while ($className::get()->filter(array("Value" => $this->Value))->First()) {
+            while (DataObject::get_one($className, array("Value" => $this->Value))) {
                 if ($i) {
                     $this->Value = $this->i18n_singular_name()."_".$i;
                 }
@@ -260,7 +257,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             $this->Value = $this->i18n_singular_name();
             $i = 0;
             $className = $this->ClassName;
-            while ($className::get()->filter(array("Value" => $this->Value))->First()) {
+            while(DataObject::get_one($className, array("Value" => $this->Value))) {
                 $this->Value = $this->i18n_singular_name()."_".$i;
                 $i++;
             }

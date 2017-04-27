@@ -681,7 +681,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         if ($product) {
             $this->redirect($product->Link('viewversion/'.$product->ID.'/'.$version.'/'));
         } else {
-            $page = ErrorPage::get()->Filter(array('ErrorCode' => '404'))->First();
+            $page = DataObject::get_one(
+                'ErrorPage',
+                array('ErrorCode' => '404')
+            );
             if ($page) {
                 $this->redirect($page->Link());
 

@@ -20,9 +20,9 @@ class EcommerceTaskCSVToVariations extends BuildTask
     protected $title = "Create variations from a Spreadsheets (comma separated file CSV)";
 
     protected $description = "
-		Does not delete any record, it only updates and adds.
-		The minimum recommend columns are: ProductTitle (or ProductInternalItemID), Size, Colour, Price, InternalItemID.
-		You can add ?forreal=1 to the URL to run the task for real.";
+        Does not delete any record, it only updates and adds.
+        The minimum recommend columns are: ProductTitle (or ProductInternalItemID), Size, Colour, Price, InternalItemID.
+        You can add ?forreal=1 to the URL to run the task for real.";
 
     /**
      * excluding base folder
@@ -256,11 +256,14 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     "Title" => $row["ProductTitle"],
                     "InternalItemID" => $row["ProductInternalItemID"]
                 );
-                $product = ProductPage::get()->filterAny($filterArray)->first();
+                $product = DataObject::get_one(
+                   'ProductPage', 
+                    $filterArray
+                );
                 if ($product && $product->ParentID) {
                     $this->defaultProductParentID = $product->ParentID;
                 } elseif (!$this->defaultProductParentID) {
-                    $this->defaultProductParentID = ProductGroup::get()->first()->ID;
+                    $this->defaultProductParentID = DataObject::get_one('ProductGroup')->ID;
                 }
                 if (!$product) {
                     $product = ProductPage::create($filterArray);
@@ -372,7 +375,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
                 $startMessage = "........Checking field $fieldName";
                 $attributeTypeName = trim($data["Product"]->Title)."_".$fieldName;
                 $filterArray = array("Name" => $attributeTypeName);
-                $type = ProductAttributeType::get()->filter($filterArray)->first();
+                $type = DataObject::get_one('ProductAttributeType', $filterArray);
                 if (!$type) {
                     $this->alterationMessage($startMessage." ... creating new attribute type: ".$attributeTypeName, "created");
                     $type = new ProductAttributeType($filterArray);
@@ -402,7 +405,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     //create attribute value
                     $attributeValueName = $row["Data"][$fieldName];
                     $filterArray = array("Code" => $attributeValueName, "TypeID" => $types[$fieldName]->ID);
-                    $value = ProductAttributeValue::get()->filter($filterArray)->first();
+                    $value = DataObject::get_one('ProductAttributeValue', $filterArray);
                     if (!$value) {
                         $this->alterationMessage($startMessage."............creating new attribute value:  <strong>".$attributeValueName."</strong> for ".$types[$fieldName]->Name, "created");
                         $value = ProductAttributeValue::create($filterArray);

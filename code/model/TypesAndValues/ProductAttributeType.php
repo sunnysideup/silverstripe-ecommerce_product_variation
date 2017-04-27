@@ -128,7 +128,11 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     public static function find_or_make($name, $create = true)
     {
         $name = strtolower($name);
-        if ($type = ProductAttributeType::get()->where("LOWER(\"Name\") = '$name'")->First()) {
+        $type = DataObject::get_one(
+            'ProductAttributeType', 
+            'LOWER("Name") = \'$name\''
+        );
+        if ($type) {
             return $type;
         }
         $type = ProductAttributeType::create();
