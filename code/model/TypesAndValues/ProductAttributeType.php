@@ -130,7 +130,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         $name = strtolower($name);
         $type = DataObject::get_one(
             'ProductAttributeType',
-            'LOWER("Name") = \'$name\''
+            'LOWER("Name") = \''.$name.'\''
         );
         if ($type) {
             return $type;
