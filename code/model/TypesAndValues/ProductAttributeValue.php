@@ -68,18 +68,20 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         $cleanedValue = strtolower($value);
         if ($findByID) {
             $intValue = intval($value);
-            $valueObj = DataObject::get_one(
-                'ProductAttributeValue',
-                array("ID" => $intValue, "TypeID" => intval($type))
+            $valueObj = ProductAttributeValue::get()
+                ->filter(array("ID" => $intValue, "TypeID" => intval($type)))
+                ->first();
             );
                 //debug::log("INT VALUE:" .$intValue."-".$type);
         } else {
             $valueObj = DataObject::get_one(
                 'ProductAttributeValue',
-                "(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type)
+                "(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type),
+                $cacheDataObjectGetOne = false
             );
         }
         if ($valueObj) {
+
             return $valueObj;
         }
         $valueObj = ProductAttributeValue::create();
@@ -235,17 +237,6 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     public function onBeforeDelete()
     {
         parent::onBeforeDelete();
-        if (!$this->Value) {
-            $this->Value = $this->i18n_singular_name();
-            $i = 0;
-            $className = $this->ClassName;
-            while (DataObject::get_one($className, array("Value" => $this->Value))) {
-                if ($i) {
-                    $this->Value = $this->i18n_singular_name()."_".$i;
-                }
-                $i++;
-            }
-        }
         //delete ProductVariation_AttributeValues were the Attribute Value does not exist.
         DB::query("DELETE FROM \"ProductVariation_AttributeValues\" WHERE \"ProductVariation_AttributeValues\".\"ProductAttributeValueID\" = ".$this->ID);
     }
@@ -257,7 +248,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             $this->Value = $this->i18n_singular_name();
             $i = 0;
             $className = $this->ClassName;
-            while(DataObject::get_one($className, array("Value" => $this->Value))) {
+            while( DataObject::get_one($className, array("Value" => $this->Value), $cacheDataObjectGetOne = false) ) {
                 $this->Value = $this->i18n_singular_name()."_".$i;
                 $i++;
             }

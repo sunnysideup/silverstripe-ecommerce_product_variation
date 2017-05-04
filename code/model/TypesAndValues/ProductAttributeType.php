@@ -130,7 +130,8 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         $name = strtolower($name);
         $type = DataObject::get_one(
             'ProductAttributeType',
-            'LOWER("Name") = \''.$name.'\''
+            'LOWER("Name") = \''.$name.'\'',
+            $cacheDataObjectGetOne = false
         );
         if ($type) {
             return $type;
@@ -311,7 +312,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         parent::onBeforeWrite();
         $i = 0;
         $className = $this->ClassName;
-        while (!$this->Name || DataObject::get_one($className, 'Name = \''.$this->Name.'\' AND ID != \''.$this->ID.'\'')) {
+        while (!$this->Name || DataObject::get_one($className, 'Name = \''.$this->Name.'\' AND ID != \''.$this->ID.'\'', $cacheDataObjectGetOne = false)) {
             $this->Name = $this->i18n_singular_name();
             if ($i) {
                 $this->Name .= "_".$i;

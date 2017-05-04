@@ -257,13 +257,18 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     "InternalItemID" => $row["ProductInternalItemID"]
                 );
                 $product = DataObject::get_one(
-                   'ProductPage', 
-                    $filterArray
+                   'ProductPage',
+                    $filterArray,
+                    $cacheDataObjectGetOne = false
                 );
                 if ($product && $product->ParentID) {
                     $this->defaultProductParentID = $product->ParentID;
                 } elseif (!$this->defaultProductParentID) {
-                    $this->defaultProductParentID = DataObject::get_one('ProductGroup')->ID;
+                    $this->defaultProductParentID = DataObject::get_one(
+                        'ProductGroup',
+                        null,
+                        $cacheDataObjectGetOne = false
+                    )->ID;
                 }
                 if (!$product) {
                     $product = ProductPage::create($filterArray);
@@ -375,10 +380,14 @@ class EcommerceTaskCSVToVariations extends BuildTask
                 $startMessage = "........Checking field $fieldName";
                 $attributeTypeName = trim($data["Product"]->Title)."_".$fieldName;
                 $filterArray = array("Name" => $attributeTypeName);
-                $type = DataObject::get_one('ProductAttributeType', $filterArray);
+                $type = DataObject::get_one(
+                    'ProductAttributeType',
+                    $filterArray,
+                    $cacheDataObjectGetOne = false
+                );
                 if (!$type) {
                     $this->alterationMessage($startMessage." ... creating new attribute type: ".$attributeTypeName, "created");
-                    $type = new ProductAttributeType($filterArray);
+                    $type = ProductAttributeType::create($filterArray);
                     $type->Label = $attributeTypeName;
                     $type->Sort = $fieldKey;
                 } else {
@@ -405,7 +414,11 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     //create attribute value
                     $attributeValueName = $row["Data"][$fieldName];
                     $filterArray = array("Code" => $attributeValueName, "TypeID" => $types[$fieldName]->ID);
-                    $value = DataObject::get_one('ProductAttributeValue', $filterArray);
+                    $value = DataObject::get_one(
+                        'ProductAttributeValue',
+                        $filterArray,
+                        $cacheDataObjectGetOne = false
+                    );
                     if (!$value) {
                         $this->alterationMessage($startMessage."............creating new attribute value:  <strong>".$attributeValueName."</strong> for ".$types[$fieldName]->Name, "created");
                         $value = ProductAttributeValue::create($filterArray);
