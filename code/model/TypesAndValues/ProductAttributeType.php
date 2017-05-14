@@ -292,7 +292,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         if ($extended !== null) {
             return $extended;
         }
-        $values = $this->Values()->limit(10);
+        $values = $this->Values()->limit(20)->sort('RAND()');
         foreach ($values as $value) {
             if (! $value->canDelete()) {
                 return false;
