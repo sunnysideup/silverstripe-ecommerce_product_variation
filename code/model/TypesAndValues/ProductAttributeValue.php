@@ -31,7 +31,9 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
 
     private static $summary_fields = array(
         'Type.FullName' => 'Type',
-        'Value' => 'Value'
+        'Value' => 'Value',
+        'Created' => 'Created',
+        'LastEdited' => 'Edited'
     );
 
     private static $searchable_fields = array(
