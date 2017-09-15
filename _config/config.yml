@@ -24,7 +24,7 @@ LeftAndMain:
     - ecommerce_product_variation/javascript/DeleteEcommerceVariations.js
   extra_requirements_themedCss:
     CreateEcommerceVariationsField:
-      media: ecommerce_product_variation    
+      media: ecommerce_product_variation
 
 
 EcommerceDatabaseAdmin:
