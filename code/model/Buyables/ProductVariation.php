@@ -360,7 +360,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     {
         $values = parent::AttributeValues();
         $types = $this->Product()->VariationAttributes();
-        $result = new ArrayList();
+        $result = ArrayList::create();
         foreach ($types as $type) {
             $result->push($values->find('TypeID', $type->ID));
         }
