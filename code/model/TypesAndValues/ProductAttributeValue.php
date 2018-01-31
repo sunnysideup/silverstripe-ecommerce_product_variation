@@ -73,7 +73,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             $valueObj = ProductAttributeValue::get()
                 ->filter(array("ID" => $intValue, "TypeID" => intval($type)))
                 ->first();
-                //debug::log("INT VALUE:" .$intValue."-".$type);
+        //debug::log("INT VALUE:" .$intValue."-".$type);
         } else {
             $valueObj = DataObject::get_one(
                 'ProductAttributeValue',
@@ -82,7 +82,6 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             );
         }
         if ($valueObj) {
-
             return $valueObj;
         }
         $valueObj = ProductAttributeValue::create();
@@ -115,7 +114,8 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         if ($extended !== null) {
             return $extended;
         }
-        if (DB::query("
+        if (DB::query(
+            "
             SELECT COUNT(*)
             FROM \"ProductVariation_AttributeValues\"
                 INNER JOIN \"ProductVariation\"
@@ -131,7 +131,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     {
         $fields = parent::getCMSFields();
         $variationField = $fields->dataFieldByName('ProductVariation');
-        if($variationField) {
+        if ($variationField) {
             $variationField->setConfig(new GridFieldConfigForOrderItems());
         }
         $fields->AddFieldToTab(
@@ -227,7 +227,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     }
     public function getFullTitle()
     {
-        if($type = $this->Type()) {
+        if ($type = $this->Type()) {
             $typeName = $type->Name;
         } else {
             $typeName = _t('ProductAttributeValue.NO_TYPE_NAME', 'NO TYPE');
@@ -249,7 +249,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             $this->Value = $this->i18n_singular_name();
             $i = 0;
             $className = $this->ClassName;
-            while( DataObject::get_one($className, array("Value" => $this->Value), $cacheDataObjectGetOne = false) ) {
+            while (DataObject::get_one($className, array("Value" => $this->Value), $cacheDataObjectGetOne = false)) {
                 $this->Value = $this->i18n_singular_name()."_".$i;
                 $i++;
             }
@@ -268,7 +268,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         parent::onAfterWrite();
         if ($this->MergeIntoID) {
             $newAttributeValue = $this->MergeInto();
-            if($newAttributeValue && $newAttributeValue->exists()) {
+            if ($newAttributeValue && $newAttributeValue->exists()) {
                 $newID = $this->MergeIntoID;
                 $oldID = $this->ID;
                 $oldTypeID = $this->TypeID;
@@ -292,5 +292,4 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             }
         }
     }
-
 }

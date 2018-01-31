@@ -243,18 +243,22 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             }
         }
         $fields = new FieldList(
-            new TabSet('Root',
-                new Tab('Main',
+            new TabSet(
+                'Root',
+                new Tab(
+                    'Main',
                     $productField,
                     $fullNameLinkField = ReadOnlyField::create('FullNameLink', _t('ProductVariation.FULLNAME', 'Full Name'), '<a href="'.$this->Link().'">'.$this->FullName.'</a>'),
                     new NumericField('Price', _t('ProductVariation.PRICE', 'Price')),
                     new CheckboxField('AllowPurchase', _t('ProductVariation.ALLOWPURCHASE', 'Allow Purchase ?'))
                 ),
-                new Tab('Details',
+                new Tab(
+                    'Details',
                     new TextField('InternalItemID', _t('ProductVariation.INTERNALITEMID', 'Internal Item ID')),
                     new TextField('Description', _t('ProductVariation.DESCRIPTION', 'Description (optional)'))
                 ),
-                new Tab('Image',
+                new Tab(
+                    'Image',
                     new Product_ProductImageUploadField('Image')
                 )
             )
@@ -291,7 +295,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                                 );
                             } else {
                                 $field = $type->getDropDownField();
-                                if($field instanceof DropdownField) {
+                                if ($field instanceof DropdownField) {
                                     $field->setEmptyString('');
                                 }
                             }
@@ -300,8 +304,8 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                         $isReadonlyField = true;
                         $rightTitle = _t('ProductVariation.NOVALUESTOSELECT', 'No values to select');
                     }
-                    if($isReadonlyField) {
-                        if(class_exists('CMSEditLinkField')) {
+                    if ($isReadonlyField) {
+                        if (class_exists('CMSEditLinkField')) {
                             $field = CMSEditLinkField::create("Type{$type->ID}", $type->Name, $value)
                                 ->setDescription($rightTitle);
                         } else {
@@ -840,9 +844,9 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * @todo TEST!!!!
      * @return string
      */
-     public function VersionedLink()
-     {
-         return Controller::join_links(
+    public function VersionedLink()
+    {
+        return Controller::join_links(
              Director::baseURL(),
              EcommerceConfig::get('ShoppingCart_Controller', 'url_segment'),
              'submittedbuyable',
@@ -850,7 +854,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
              $this->ID,
              $this->Version
          );
-     }
+    }
 
     /**
      * passing on shopping cart links ...is this necessary?? ...why not just pass the cart?
