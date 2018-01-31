@@ -392,7 +392,8 @@ class CreateEcommerceVariations extends Controller
         }
         $variations = $this->_product->getComponents('Variations', $variation ? "\"ProductVariation\".\"ID\" != '$variation->ID'" : '');
         foreach ($variations as $otherVariation) {
-            $otherValues = DB::query("
+            $otherValues = DB::query(
+                "
                 SELECT \"TypeID\", \"ProductAttributeValueID\"
                 FROM \"ProductVariation_AttributeValues\"
                     INNER JOIN \"ProductAttributeValue\" ON \"ProductAttributeValue\".\"ID\" = \"ProductAttributeValueID\"

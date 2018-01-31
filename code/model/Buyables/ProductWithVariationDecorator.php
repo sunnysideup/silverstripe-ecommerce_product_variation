@@ -178,8 +178,10 @@ class ProductWithVariationDecorator extends DataExtension
                         'DeleteVariations',
                         "<p class=\"bad message\"><a href=\"$link\"  class=\"action ss-ui-button\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"".
                                 Convert::raw2att(
-                                    _t('Product.ARE_YOU_SURE_YOU_WANT_TO_DELETE_ALL_VARIATIONS',
-                                    'are you sure you want to delete all variations from this product? ')
+                                    _t(
+                                        'Product.ARE_YOU_SURE_YOU_WANT_TO_DELETE_ALL_VARIATIONS',
+                                    'are you sure you want to delete all variations from this product? '
+                                    )
                                 ).
                             '">'
                             ._t('Product.DELETE_ALL_VARIATIONS_FROM', 'Delete all variations from <i>').$this->owner->Title.'</i>'.
@@ -467,7 +469,7 @@ class ProductWithVariationDecorator extends DataExtension
 
             return;
         }
-        if($searchAllProducts) {
+        if ($searchAllProducts) {
             $variations = ProductVariation::get();
         } else {
             $variations = ProductVariation::get()
@@ -491,7 +493,7 @@ class ProductWithVariationDecorator extends DataExtension
                  $alias
             );
         }
-        if($searchAllProducts) {
+        if ($searchAllProducts) {
             return $variations;
         }
         if ($variation = $variations->First()) {
@@ -547,7 +549,8 @@ class ProductWithVariationDecorator extends DataExtension
     {
         $variations = $this->owner->getComponents(
             'Variations',
-            "\"TypeID\" = '$attributeTypeObject->ID'");
+            "\"TypeID\" = '$attributeTypeObject->ID'"
+        );
         $variations = $variations->innerJoin('ProductVariation_AttributeValues', '"ProductVariationID" = "ProductVariation"."ID"');
         $variations = $variations->innerJoin('ProductAttributeValue', '"ProductAttributeValue"."ID" = "ProductAttributeValueID"');
 

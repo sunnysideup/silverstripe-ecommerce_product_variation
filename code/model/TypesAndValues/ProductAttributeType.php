@@ -156,7 +156,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         $valueField = $fields->dataFieldByName("Label");
         $valueField->SetRightTitle(_t("ProductAttributeType.VALUE_RIGHT_TITLE", "Mainly used for site users"));
         $variationField = $fields->dataFieldByName('Values');
-        if($variationField) {
+        if ($variationField) {
             $variationField->setConfig(new GridFieldConfigForOrderItems());
         }
         $fields->addFieldToTab(
@@ -263,11 +263,11 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      */
     public function getValuesForDropdown($values = null)
     {
-        if(! isset(self::$_drop_down_values[$this->ID])) {
+        if (! isset(self::$_drop_down_values[$this->ID])) {
             $values = ($values) ? $values : $this->Values();
             $count = $values->count();
             if ($count > 0) {
-                if($count > 100) {
+                if ($count > 100) {
                     $values = $values->limit(1000);
                     self::$_drop_down_values[$this->ID] = $values->map('ID', 'Value')->toArray();
                 } else {
