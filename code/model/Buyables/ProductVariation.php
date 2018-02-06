@@ -159,7 +159,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     }
     public static function get_plural_name()
     {
-        $obj = Singleton('ProductVariation');
+        $obj = Injector::inst()->get('ProductVariation');
 
         return $obj->i18n_plural_name();
     }
@@ -1197,7 +1197,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                     )
                     ->exclude(array('ID' => $this->ID));
                 if ($items->count()) {
-                    $idArray = array_merge($idArray, $items->map('ID', 'ID')->toArray());
+                    $idArray = array_merge($idArray, $items->column('ID'));
                 }
             }
         }

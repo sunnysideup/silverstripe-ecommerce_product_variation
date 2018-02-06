@@ -440,10 +440,12 @@ class ProductWithVariationDecorator extends DataExtension
             if ($add) {
                 ++$count;
                 $className = $this->owner->getClassNameOfVariations();
-                $newVariation = new $className(array(
-                    'ProductID' => $this->owner->ID,
-                    'Price' => $this->owner->Price,
-                ));
+                $newVariation = $className::create(
+                    array(
+                        'ProductID' => $this->owner->ID,
+                        'Price' => $this->owner->Price,
+                    )
+                );
                 $newVariation->setSaveParentProduct(false);
                 $newVariation->write();
                 $newVariation->AttributeValues()->addMany($valueArray);
