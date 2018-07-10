@@ -73,7 +73,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
             $valueObj = ProductAttributeValue::get()
                 ->filter(array("ID" => $intValue, "TypeID" => intval($type)))
                 ->first();
-        //debug::log("INT VALUE:" .$intValue."-".$type);
+            //debug::log("INT VALUE:" .$intValue."-".$type);
         } else {
             $valueObj = DataObject::get_one(
                 'ProductAttributeValue',
