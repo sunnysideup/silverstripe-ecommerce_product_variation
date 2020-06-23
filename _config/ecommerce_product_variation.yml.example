@@ -11,7 +11,7 @@ ProductsAndGroupsModelAdmin:
     - ProductAttributeType
     - ProductAttributeValue
 
-ProductWithVariationDecorator_Controller:
+ProductWithVariationDecoratorController:
   use_js_validation: false
   alternative_validator_class_name: ""
 

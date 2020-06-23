@@ -10,7 +10,7 @@ Product:
 
 Product_Controller:
   extensions:
-    - ProductWithVariationDecorator_Controller
+    - ProductWithVariationDecoratorController
   allowed_actions:
     - VariationForm
     - addvariation
