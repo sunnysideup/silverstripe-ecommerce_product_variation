@@ -154,7 +154,7 @@ class ProductWithVariationDecorator extends DataExtension
                     $variationAttributesConfig = GridFieldConfig_RecordEditor::create()
                 ),
                 $this->owner->getVariationsTable(),
-                new CreateEcommerceVariations_Field('VariationMaker', '', $this->owner->ID)
+                new CreateEcommerceVariationsField('VariationMaker', '', $this->owner->ID)
             )
         );
         $variationAttributesConfig->removeComponentsByType('GridFieldAddNewButton');
