@@ -1,7 +1,7 @@
 <?php
 
 
-class ProductWithVariationDecorator_Controller extends Extension
+class ProductWithVariationDecoratorController extends Extension
 {
     /**
      * standard SS Var.
@@ -89,7 +89,7 @@ class ProductWithVariationDecorator_Controller extends Extension
             Requirements::themedCSS('variationsform', 'ecommerce_product_variation');
             //variation options json generation
             if (
-                Config::inst()->get('ProductWithVariationDecorator_Controller', 'use_js_validation')
+                Config::inst()->get('ProductWithVariationDecoratorController', 'use_js_validation')
                 && $this->owner->HasVariations()
             ) {
                 Requirements::javascript('ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');

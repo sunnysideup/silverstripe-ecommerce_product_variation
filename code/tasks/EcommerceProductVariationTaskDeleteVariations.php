@@ -106,28 +106,28 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
                     }
                     if ($live) {
                         $sql = "
-									DELETE
-									FROM \"Product_VariationAttributes\"
-									WHERE \"ProductID\" = ".$productID;
+                                    DELETE
+                                    FROM \"Product_VariationAttributes\"
+                                    WHERE \"ProductID\" = ".$productID;
                         if ($this->verbose) {
                             DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
                         }
                         DB::query($sql);
                         $sql = "
-									DELETE \"ProductVariation_AttributeValues\"
-									FROM \"ProductVariation_AttributeValues\"
-										LEFT JOIN \"ProductVariation\"
-											ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
-									WHERE \"ProductVariation\".\"ID\" IS NULL";
+                                    DELETE \"ProductVariation_AttributeValues\"
+                                    FROM \"ProductVariation_AttributeValues\"
+                                        LEFT JOIN \"ProductVariation\"
+                                            ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+                                    WHERE \"ProductVariation\".\"ID\" IS NULL";
                         if ($this->verbose) {
                             DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
                         }
                         DB::query($sql);
                     } else {
                         $sql = "
-									SELECT COUNT(Product_VariationAttributes.ID)
-									FROM \"Product_VariationAttributes\"
-									WHERE \"ProductID\" = ".$productID;
+                                    SELECT COUNT(Product_VariationAttributes.ID)
+                                    FROM \"Product_VariationAttributes\"
+                                    WHERE \"ProductID\" = ".$productID;
                         if ($this->verbose) {
                             DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
                         }
@@ -136,13 +136,13 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
                             DB::alteration_message("Would have deleted ".$result->value()." rows");
                         }
                         $sql = "
-									SELECT COUNT (\"ProductVariation_AttributeValues\".\"ID\")
-									FROM \"ProductVariation_AttributeValues\"
-										LEFT JOIN \"ProductVariation\"
-											ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
-									WHERE
-										\"ProductVariation\".\"ID\" IS NULL OR
-										\"ProductVariation\".\"ID\" IN(".implode(",", $productVariationArrayID).") ";
+                                    SELECT COUNT (\"ProductVariation_AttributeValues\".\"ID\")
+                                    FROM \"ProductVariation_AttributeValues\"
+                                        LEFT JOIN \"ProductVariation\"
+                                            ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+                                    WHERE
+                                        \"ProductVariation\".\"ID\" IS NULL OR
+                                        \"ProductVariation\".\"ID\" IN(".implode(",", $productVariationArrayID).") ";
                         if ($this->verbose) {
                             DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
                         }
