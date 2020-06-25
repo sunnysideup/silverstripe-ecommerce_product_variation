@@ -33,5 +33,10 @@
         "symbiote/silverstripe-gridfieldextensions": "dev-master",
         "sunnysideup/cms_edit_link_field": "dev-master"
     },
-    "extra": []
+    "extra": [],
+    "autoload": {
+        "psr-4": {
+            "Sunnysideup\\EcommerceProductVariation\\": "src/"
+        }
+    }
 }
