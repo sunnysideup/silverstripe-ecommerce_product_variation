@@ -86,3 +86,4 @@ class EcommerceSideReport_ProductsWithVariations extends SS_Report
         return new FieldList();
     }
 }
+

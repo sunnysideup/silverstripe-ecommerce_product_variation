@@ -445,3 +445,4 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
             ')';
     }
 }
+

@@ -1205,3 +1205,4 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         return ProductVariation::get()->filter(array('ID' => $idArray));
     }
 }
+

@@ -738,3 +738,4 @@ class ProductWithVariationDecorator extends DataExtension
         return $changes;
     }
 }
+

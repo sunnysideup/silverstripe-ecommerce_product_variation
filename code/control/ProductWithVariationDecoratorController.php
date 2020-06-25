@@ -260,3 +260,4 @@ class ProductWithVariationDecoratorController extends Extension
         return $this->variationFilter && count($this->variationFilter) ? true : false;
     }
 }
+

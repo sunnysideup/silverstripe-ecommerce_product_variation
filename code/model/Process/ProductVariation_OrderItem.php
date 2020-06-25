@@ -84,3 +84,4 @@ class ProductVariation_OrderItem extends Product_OrderItem
         return stripos($this->ID, 'new') === 0;
     }
 }
+

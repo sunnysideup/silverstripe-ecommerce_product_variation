@@ -408,3 +408,4 @@ class CreateEcommerceVariations extends Controller
         return $this->output;
     }
 }
+
