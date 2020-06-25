@@ -1,0 +1,17 @@
+SilverStripe\ORM\DatabaseAdmin:
+  classname_value_remapping:
+    CreateEcommerceVariations: Sunnysideup\EcommerceProductVariation\Control\CreateEcommerceVariations
+    ProductWithVariationDecoratorController: Sunnysideup\EcommerceProductVariation\Control\ProductWithVariationDecoratorController
+    CreateEcommerceVariationsField: Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField
+    EcommerceSideReport_ProductsWithVariations: Sunnysideup\EcommerceProductVariation\Reports\EcommerceSideReport_ProductsWithVariations
+    EcommerceProductVariationTaskDeleteAll: Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteAll
+    EcommerceTaskCSVToVariations_EXT: Sunnysideup\EcommerceProductVariation\Tasks\EcommerceTaskCSVToVariations_EXT
+    EcommerceProductVariationTaskDeleteVariations_EXT: Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations_EXT
+    EcommerceProductVariationTaskDeleteVariations: Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations
+    EcommerceTaskCSVToVariations: Sunnysideup\EcommerceProductVariation\Tasks\EcommerceTaskCSVToVariations
+    EcommerceProductVariationTaskDeleteAll_EXT: Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteAll_EXT
+    ProductAttributeType: Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType
+    ProductAttributeValue: Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue
+    ProductVariation_OrderItem: Sunnysideup\EcommerceProductVariation\Model\Process\ProductVariation_OrderItem
+    ProductWithVariationDecorator: Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductWithVariationDecorator
+    ProductVariation: Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation
