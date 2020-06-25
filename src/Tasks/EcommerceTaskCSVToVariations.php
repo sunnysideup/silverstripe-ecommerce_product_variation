@@ -1,5 +1,23 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+
+
+
+
+use SilverStripe\ORM\DataObject;
+use Sunnysideup\Ecommerce\Pages\ProductGroup;
+use Sunnysideup\Ecommerce\Pages\Product;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Control\Director;
+use SilverStripe\ORM\DB;
+use SilverStripe\Dev\BuildTask;
+
+
+
 
 /**
  * allows the creation of variations from a CSV
@@ -62,7 +80,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
      * the original data from the CVS
      * @var Array
      */
-    protected $csv = array();
+    protected $csv = [];
 
     /**
      * Structure will be as follows:
@@ -92,13 +110,13 @@ class EcommerceTaskCSVToVariations extends BuildTask
      *
      * @var Array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * list of products without variations
      * @return Array
      */
-    protected $soleProduct = array();
+    protected $soleProduct = [];
 
     /**
      * The default page of where the products are added.
@@ -121,8 +139,8 @@ class EcommerceTaskCSVToVariations extends BuildTask
      */
     public function run($request)
     {
-        increase_time_limit_to(3600);
-        increase_memory_limit_to('512M');
+        Silverstripe\Core\Environment::increaseTimeLimitTo(3600);
+        Silverstripe\Core\Environment::increaseMemoryLimitTo('512M');
         if ($request->param("forreal") || (isset($_GET["forreal"]) && $_GET["forreal"] == 1)) {
             $this->forreal = true;
         }
@@ -204,7 +222,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
         echo "================================================ READING FILE ================================================";
         $this->alterationMessage("<h3>".$this->getDescription()."</h3>", "created");
         $rowCount = 1;
-        $rows = array();
+        $rows = [];
         $fileLocation = $this->config()->get("file_location");
         $this->alterationMessage("$fileLocation is the file we are reading", "created");
         if (($handle = fopen($fileLocation, "r")) !== false) {
@@ -218,7 +236,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
 
         $header = array_shift($rows);
 
-        $this->csv = array();
+        $this->csv = [];
         $rowCount = 1;
         foreach ($rows as $row) {
             if (count($header) != count($row)) {
@@ -249,7 +267,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
     protected function createProducts()
     {
         $this->alterationMessage("================================================ CREATING PRODUCTS ================================================", "show");
-        $productsCompleted = array();
+        $productsCompleted = [];
         foreach ($this->csv as $row) {
             if (!isset($productsCompleted[$row["ProductTitle"]])) {
                 $filterArray = array(
@@ -257,7 +275,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     "InternalItemID" => $row["ProductInternalItemID"]
                 );
                 $product = DataObject::get_one(
-                   'ProductPage',
+                    Product::class,
                     $filterArray,
                     $cacheDataObjectGetOne = false
                 );
@@ -265,13 +283,13 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     $this->defaultProductParentID = $product->ParentID;
                 } elseif (!$this->defaultProductParentID) {
                     $this->defaultProductParentID = DataObject::get_one(
-                        'ProductGroup',
+                        ProductGroup::class,
                         null,
                         $cacheDataObjectGetOne = false
                     )->ID;
                 }
                 if (!$product) {
-                    $product = ProductPage::create($filterArray);
+                    $product = Product::create($filterArray);
                     $product->MenuTitle = $row["ProductTitle"];
 
                     $this->alterationMessage("Creating Product: ".$row["ProductTitle"], "created");
@@ -305,7 +323,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
     {
         $this->alterationMessage("================================================ FINDING VARIATIONS ================================================", "show");
         foreach ($this->data as $productKey => $data) {
-            $product = $data["Product"];
+            $product = $data[Product::class];
             $title = $product->Title;
             $internalItemID = $product->InternalItemID;
             foreach ($this->csv as $key => $row) {
@@ -342,12 +360,12 @@ class EcommerceTaskCSVToVariations extends BuildTask
     {
         echo "<h2>Variation Summary</h2>";
         foreach ($this->data as $productKey => $value) {
-            if (isset($value["Product"]) && $value["Product"]) {
-                $this->data[$productKey]["Product"] = $value["Product"]->Title.", ID: ".$value["Product"]->ID;
+            if (isset($value[Product::class]) && $value[Product::class]) {
+                $this->data[$productKey][Product::class] = $value[Product::class]->Title.", ID: ".$value[Product::class]->ID;
             } else {
-                $this->data[$productKey]["Product"] = "Not found";
+                $this->data[$productKey][Product::class] = "Not found";
             }
-            $this->alterationMessage($this->data[$productKey]["Product"].", variations: ".count($this->data[$productKey]["VariationRows"]), "created");
+            $this->alterationMessage($this->data[$productKey][Product::class].", variations: ".count($this->data[$productKey]["VariationRows"]), "created");
         }
         echo "<h2>Products without variations</h2>";
         foreach ($this->soleProduct as $productKey => $value) {
@@ -368,20 +386,20 @@ class EcommerceTaskCSVToVariations extends BuildTask
     {
         $this->alterationMessage("================================================ CREATING VARIATIONS ================================================", "show");
         foreach ($this->data as $data) {
-            $types = array();
-            $values = array();
-            $product = $data["Product"];
-            $arrayForCreation = array();
-            $variationFilter = array();
+            $types = [];
+            $values = [];
+            $product = $data[Product::class];
+            $arrayForCreation = [];
+            $variationFilter = [];
             $this->alterationMessage("<h1>Working out variations for ".$product->Title."</h1>");
             //create attribute types for one product
             $this->alterationMessage("....Creating attribute types");
             foreach ($this->Config()->get("attribute_type_field_names") as $fieldKey => $fieldName) {
                 $startMessage = "........Checking field $fieldName";
-                $attributeTypeName = trim($data["Product"]->Title)."_".$fieldName;
+                $attributeTypeName = trim($data[Product::class]->Title)."_".$fieldName;
                 $filterArray = array("Name" => $attributeTypeName);
                 $type = DataObject::get_one(
-                    'ProductAttributeType',
+                    ProductAttributeType::class,
                     $filterArray,
                     $cacheDataObjectGetOne = false
                 );
@@ -415,7 +433,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     $attributeValueName = $row["Data"][$fieldName];
                     $filterArray = array("Code" => $attributeValueName, "TypeID" => $types[$fieldName]->ID);
                     $value = DataObject::get_one(
-                        'ProductAttributeValue',
+                        ProductAttributeValue::class,
                         $filterArray,
                         $cacheDataObjectGetOne = false
                     );
@@ -433,11 +451,11 @@ class EcommerceTaskCSVToVariations extends BuildTask
 
                     //add at arrays for creation...
                     if (!isset($arrayForCreation[$types[$fieldName]->ID])) {
-                        $arrayForCreation[$types[$fieldName]->ID] = array();
+                        $arrayForCreation[$types[$fieldName]->ID] = [];
                     }
                     $arrayForCreation[$types[$fieldName]->ID][] = $value->ID;
                     if (!isset($variationFilters[$key])) {
-                        $variationFilters[$key] = array();
+                        $variationFilters[$key] = [];
                     }
                     $variationFilters[$key][$types[$fieldName]->ID] = $value->ID;
                 }
@@ -452,7 +470,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
             $this->alterationMessage("....Creating Variations ///");
             //$this->alterationMessage("....Creating Variations From: ".print_r(array_walk($arrayForCreation, array($this, 'implodeWalk'))));
             //generate variations
-            $variationAttributeValuesPerVariation = array();
+            $variationAttributeValuesPerVariation = [];
             foreach ($arrayForCreation as $typeID => $variationEntry) {
                 foreach ($variationEntry as $positionOfVariation => $attributeValueID) {
                     $variationAttributeValuesPerVariation[$positionOfVariation][$typeID] = $attributeValueID;
@@ -465,7 +483,25 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     $this->alterationMessage(".... Variation " . $variation->FullName . " Already Exists ///");
                 } else {
                     //2. if not, create variation with attributes
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                     $className = $product->getClassNameOfVariations();
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                     $newVariation = new $className(
                         array(
                             'ProductID' => $product->ID,
@@ -497,7 +533,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
     {
         $this->alterationMessage("================================================ ADDING EXTRA DATA ================================================", "show");
         foreach ($this->data as $productData) {
-            $product = $productData["Product"];
+            $product = $productData[Product::class];
             $this->alterationMessage("<h1>Adding extra data for ".$product->Title." with ".(count($productData["VariationRows"]))."</h1>"." Variations");
             foreach ($productData["VariationRows"] as $key => $row) {
                 $variation = $row["Variation"];
@@ -570,26 +606,5 @@ class EcommerceTaskCSVToVariations extends BuildTask
             ob_start();
             ob_end_flush();
         }
-    }
-}
-
-
-class EcommerceTaskCSVToVariations_EXT extends Extension
-{
-    private static $allowed_actions = array(
-        "ecommercetaskcsvtovariations" => true
-    );
-
-    //NOTE THAT updateEcommerceDevMenuConfig adds to Config options
-    //but you can als have: updateEcommerceDevMenuDebugActions
-    public function updateEcommerceDevMenuRegularMaintenance($buildTasks)
-    {
-        $buildTasks[] = "ecommercetaskcsvtovariations";
-        return $buildTasks;
-    }
-
-    public function ecommercetaskcsvtovariations($request)
-    {
-        $this->owner->runTask("ecommercetaskcsvtovariations", $request);
     }
 }

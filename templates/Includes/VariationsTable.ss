@@ -17,7 +17,7 @@
 <% loop Variations %>
         <tr>
             <th scope="row" class="<% if Description %>hasDescription<% else %>noDescription<% end_if %>">
-                <% include ProductVariationImage %>
+                <% include Sunnysideup\EcommerceProductVariation\IncludesProductVariationImage %>
                 $Description &nbsp;
             </th>
     <% if AttributeValuesSorted %>
@@ -32,7 +32,7 @@
             </td>
             <td class="actionCell">
                 <div class="actionOuter">
-                    <% include ProductActions %>
+                    <% include Sunnysideup\EcommerceProductVariation\IncludesProductActions %>
                 </div>
             </td>
         </tr>

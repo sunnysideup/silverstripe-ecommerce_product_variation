@@ -1,22 +1,84 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
+
+
+
+
+
+
+
+
+
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridField;
+use Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\LabelField;
+use Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
+use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\Forms\GridField\GridFieldDetailForm;
+use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\ORM\DB;
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\Versioned\Versioned;
+use SilverStripe\ORM\DataExtension;
+
+
+
 /**
  * adds variation functionality to the product.
  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD:  extends DataExtension (ignore case)
+  * NEW:  extends DataExtension (COMPLEX)
+  * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
 class ProductWithVariationDecorator extends DataExtension
 {
     /**
      * standard SS Var.
      */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * OLD: private static $has_many = (case sensitive)
+  * NEW:
+    private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
+
+    private static $has_many = (COMPLEX)
+  * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+    private static $table_name = 'ProductWithVariationDecorator';
+
     private static $has_many = array(
-        'Variations' => 'ProductVariation',
+        'Variations' => ProductVariation::class,
     );
 
     /**
      * standard SS Var.
      */
     private static $many_many = array(
-        'VariationAttributes' => 'ProductAttributeType',
+        'VariationAttributes' => ProductAttributeType::class,
     );
 
     /**
@@ -42,7 +104,16 @@ class ProductWithVariationDecorator extends DataExtension
      *
      * @var string
      */
-    protected $classNameOfVariations = 'ProductVariation';
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+    protected $MyClassnameOfVariations = ProductVariation::class;
 
     /**
      * returns what class do we use for Variations.
@@ -52,12 +123,57 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function getClassNameOfVariations()
     {
-        if (method_exists($this->owner, 'classNameOfVariationsSetInProduct')) {
-            return $this->owner->classNameOfVariationsSetInProduct();
-        } elseif (!empty($this->owner->classNameOfVariations)) {
-            return $this->owner->classNameOfVariations;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        if (method_exists($this->owner, 'MyClassnameOfVariationsSetInProduct')) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->owner->MyClassnameOfVariationsSetInProduct();
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        } elseif (!empty($this->owner->MyClassnameOfVariations)) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->owner->MyClassnameOfVariations;
         } else {
-            return $this->classNameOfVariations;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->MyClassnameOfVariations;
         }
     }
 
@@ -68,7 +184,7 @@ class ProductWithVariationDecorator extends DataExtension
      *
      * @return bool
      */
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         if ($this->owner->Variations()->count()) {
             return false;
@@ -141,7 +257,7 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $tabName = singleton('ProductVariation')->plural_name();
+        $tabName = singleton(ProductVariation::class)->plural_name();
         $priceField = $fields->dataFieldByName("Price");
         $fields->addFieldToTab(
             'Root',
@@ -149,7 +265,7 @@ class ProductWithVariationDecorator extends DataExtension
                 $tabName,
                 new GridField(
                     'VariationAttributes',
-                    singleton('ProductAttributeType')->plural_name(),
+                    singleton(ProductAttributeType::class)->plural_name(),
                     $this->owner->VariationAttributes(),
                     $variationAttributesConfig = GridFieldConfig_RecordEditor::create()
                 ),
@@ -157,10 +273,10 @@ class ProductWithVariationDecorator extends DataExtension
                 new CreateEcommerceVariationsField('VariationMaker', '', $this->owner->ID)
             )
         );
-        $variationAttributesConfig->removeComponentsByType('GridFieldAddNewButton');
+        $variationAttributesConfig->removeComponentsByType(GridFieldAddNewButton::class);
         $variations = $this->owner->Variations();
         if ($variations && $variations->Count()) {
-            $productVariationName = singleton('ProductVariation')->plural_name();
+            $productVariationName = singleton(ProductVariation::class)->plural_name();
             $fields->addFieldToTab(
                 'Root.Details',
                 new LabelField(
@@ -190,23 +306,23 @@ class ProductWithVariationDecorator extends DataExtension
                     'ProductVariations'
                 );
             }
-            if (class_exists('DataObjectOneFieldUpdateController')) {
-                $linkForAllowSale = DataObjectOneFieldUpdateController::popup_link(
-                    'ProductVariation',
+            if (class_exists(\Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController)) {
+                $linkForAllowSale = \Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController::popup_link(
+                    ProductVariation::class,
                     'AllowPurchase',
                     "ProductID = {$this->owner->ID}",
                     '',
                     _t('ProductVariation.QUICK_UPDATE_VARIATION_ALLOW_PURCHASE', 'for sale')
                 );
-                $linkForPrice = DataObjectOneFieldUpdateController::popup_link(
-                    'ProductVariation',
+                $linkForPrice = \Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController::popup_link(
+                    ProductVariation::class,
                     'Price',
                     "ProductID = {$this->owner->ID}",
                     '',
                     _t('ProductVariation.QUICK_UPDATE_VARIATION_PRICES', 'prices')
                 );
-                $linkForProductCodes = DataObjectOneFieldUpdateController::popup_link(
-                    'ProductVariation',
+                $linkForProductCodes = \Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController::popup_link(
+                    ProductVariation::class,
                     'InternalItemID',
                     "ProductID = {$this->owner->ID}",
                     '',
@@ -236,11 +352,11 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function getVariationsTable()
     {
-        if (class_exists('GridFieldEditableColumns')) {
-            $oldSummaryFields = Config::inst()->get('ProductVariation', 'summary_fields');
+        if (class_exists(\Symbiote\GridFieldExtensions\GridFieldEditableColumns)) {
+            $oldSummaryFields = Config::inst()->get(ProductVariation::class, 'summary_fields');
             $oldSummaryFields['AllowPurchase'] = $oldSummaryFields['AllowPurchaseNice'];
             unset($oldSummaryFields['AllowPurchaseNice']);
-            Config::inst()->Update('ProductVariation', 'summary_fields', $oldSummaryFields);
+            Config::inst()->Update(ProductVariation::class, 'summary_fields', $oldSummaryFields);
             $gridFieldConfig = GridFieldConfig::create();
             $gridFieldConfig->addComponent(new GridFieldToolbarHeader());
             $gridFieldConfig->addComponent($sort = new GridFieldSortableHeader());
@@ -249,10 +365,10 @@ class ProductWithVariationDecorator extends DataExtension
             $gridFieldConfig->addComponent($pagination = new GridFieldPaginator(100));
             $gridFieldConfig->addComponent(new GridFieldDetailForm());
             //add the editable columns.
-            $gridFieldConfig->addComponent(new GridFieldEditableColumns());
+            $gridFieldConfig->addComponent(new \Symbiote\GridFieldExtensions\GridFieldEditableColumns());
         } else {
             $gridFieldConfig = GridFieldConfig_RecordEditor::create();
-            $gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
+            $gridFieldConfig->removeComponentsByType(GridFieldAddNewButton::class);
         }
         $source = $this->owner->Variations();
         $types = $this->owner->VariationAttributes();
@@ -393,12 +509,12 @@ class ProductWithVariationDecorator extends DataExtension
     {
         set_time_limit(600);
         $count = 0;
-        $valueCombos = array();
+        $valueCombos = [];
         foreach ($values as $typeID => $typeValues) {
             $typeObject = $this->owner->addAttributeType($typeID);
             //we use the copy variations to merge all of them together...
             $copyVariations = $valueCombos;
-            $valueCombos = array();
+            $valueCombos = [];
             if ($typeObject) {
                 foreach ($typeValues as $valueKey => $valueValue) {
                     $findByID = false;
@@ -439,7 +555,25 @@ class ProductWithVariationDecorator extends DataExtension
             }
             if ($add) {
                 ++$count;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                 $className = $this->owner->getClassNameOfVariations();
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                 $newVariation = $className::create(
                     array(
                         'ProductID' => $this->owner->ID,
@@ -554,7 +688,7 @@ class ProductWithVariationDecorator extends DataExtension
             "\"TypeID\" = '$attributeTypeObject->ID'"
         );
         $variations = $variations->innerJoin('ProductVariation_AttributeValues', '"ProductVariationID" = "ProductVariation"."ID"');
-        $variations = $variations->innerJoin('ProductAttributeValue', '"ProductAttributeValue"."ID" = "ProductAttributeValueID"');
+        $variations = $variations->innerJoin(ProductAttributeValue::class, '"ProductAttributeValue"."ID" = "ProductAttributeValueID"');
 
         return $variations->Count() == 0;
     }
@@ -630,7 +764,7 @@ class ProductWithVariationDecorator extends DataExtension
     public function onBeforeDelete()
     {
         parent::onBeforeDelete();
-        if (Versioned::get_by_stage('Product', 'Stage', 'Product.ID ='.$this->owner->ID)->count() == 0) {
+        if (Versioned::get_by_stage(Product::class, 'Stage', 'Product.ID ='.$this->owner->ID)->count() == 0) {
             $variations = $this->owner->Variations();
             foreach ($variations as $variation) {
                 if ($variation->canDelete()) {
@@ -665,7 +799,7 @@ class ProductWithVariationDecorator extends DataExtension
                 INNER JOIN "ProductAttributeValue"
                     ON "ProductVariation_AttributeValues"."ProductAttributeValueID" = "ProductAttributeValue"."ID"
             WHERE "ProductVariation"."ProductID" = '.$productID;
-        $arrayOfTypesToKeepForProduct = array();
+        $arrayOfTypesToKeepForProduct = [];
         $data = DB::query($sql);
         $array = $data->keyedColumn();
         if (is_array($array) && count($array)) {

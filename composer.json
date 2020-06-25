@@ -1,6 +1,6 @@
 {
     "name": "sunnysideup/ecommerce_product_variation",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "description": "create product variations within e-commerce (e.g. if you have a sock you can now sell a red XL sock or a small blue sock).",
     "keywords": [
         "Silverstripe-CMS",
@@ -26,8 +26,7 @@
     ],
     "require": {
         "sunnysideup/ecommerce": "*",
-        "silverstripe/framework": "~3.6",
-        "silverstripe/cms": "~3.6"
+        "silverstripe/recipe-cms": "^4.4"
     },
     "suggest": {
         "sunnysideup/dataobjectsorter": "dev-master",
@@ -35,6 +34,15 @@
         "sunnysideup/cms_edit_link_field": "dev-master"
     },
     "extra": {
-        "installer-name": "ecommerce_product_variation"
+        "expose": [
+            "client/javascript",
+            "client/images",
+            "client/css"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Sunnysideup\\EcommerceProductVariation\\": "src/"
+        }
     }
 }

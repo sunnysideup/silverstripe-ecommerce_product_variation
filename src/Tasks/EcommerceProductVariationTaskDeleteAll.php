@@ -1,5 +1,17 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+
+
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\ORM\DB;
+use SilverStripe\Dev\BuildTask;
+
+
+
 class EcommerceProductVariationTaskDeleteAll extends BuildTask
 {
     protected $title = "Deletes all the variations and associated data";
@@ -7,16 +19,16 @@ class EcommerceProductVariationTaskDeleteAll extends BuildTask
     protected $description = "Deletes ALL variations and all associated data, careful.";
 
     protected $tableArray = array(
-        "ProductVariation",
+        ProductVariation::class,
         "ProductVariation_AttributeValues",
         "Product_VariationAttributes",
-        "ProductAttributeType",
-        "ProductAttributeValue"
+        ProductAttributeType::class,
+        ProductAttributeValue::class
     );
 
     public function run($request)
     {
-        $productVariationArrayID = array();
+        $productVariationArrayID = [];
         if (empty($_GET["live"])) {
             $live = false;
         } else {
@@ -45,22 +57,3 @@ class EcommerceProductVariationTaskDeleteAll extends BuildTask
     }
 }
 
-class EcommerceProductVariationTaskDeleteAll_EXT extends Extension
-{
-    private static $allowed_actions = array(
-        "ecommerceproductvariationtaskdeletevariations" => true
-    );
-
-    //NOTE THAT updateEcommerceDevMenuConfig adds to Config options
-    //but you can als have: updateEcommerceDevMenuDebugActions
-    public function updateEcommerceDevMenuRegularMaintenance($buildTasks)
-    {
-        $buildTasks[] = "ecommerceproductvariationtaskdeleteall";
-        return $buildTasks;
-    }
-
-    public function ecommerceproductvariationtaskdeleteall($request)
-    {
-        $this->owner->runTask("ecommerceproductvariationtaskdeleteall", $request);
-    }
-}

@@ -1,5 +1,29 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\TypesAndValues;
+
+
+
+
+
+
+
+
+
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DB;
+use Sunnysideup\Ecommerce\Forms\Gridfield\Configs\GridFieldConfigForOrderItems;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use Sunnysideup\Ecommerce\Interfaces\EditableEcommerceObject;
+
+
+
 class ProductAttributeValue extends DataObject implements EditableEcommerceObject
 {
 
@@ -13,6 +37,20 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         )
     );
 
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * OLD: private static $db (case sensitive)
+  * NEW: 
+    private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
+
+    private static $db (COMPLEX)
+  * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+    
+    private static $table_name = 'ProductAttributeValue';
+
     private static $db = array(
         'Code' => 'Varchar(255)',
         'Value' => 'Varchar(255)',
@@ -21,12 +59,12 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     );
 
     private static $has_one = array(
-        'Type' => 'ProductAttributeType',
-        'MergeInto' => 'ProductAttributeValue'
+        'Type' => ProductAttributeType::class,
+        'MergeInto' => ProductAttributeValue::class
     );
 
     private static $belongs_many_many = array(
-        'ProductVariation' => 'ProductVariation'
+        'ProductVariation' => ProductVariation::class
     );
 
     private static $summary_fields = array(
@@ -75,7 +113,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
                 ->first();
         } else {
             $valueObj = DataObject::get_one(
-                'ProductAttributeValue',
+                ProductAttributeValue::class,
                 "(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type),
                 $cacheDataObjectGetOne = false
             );
@@ -107,7 +145,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Variation Attribute Values");
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
         if ($extended !== null) {
@@ -129,7 +167,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $variationField = $fields->dataFieldByName('ProductVariation');
+        $variationField = $fields->dataFieldByName(ProductVariation::class);
         if ($variationField) {
             $variationField->setConfig(new GridFieldConfigForOrderItems());
         }
@@ -145,7 +183,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
                         ->map('ID', 'FullTitle')->toArray()
             )
         );
-        $fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
+        $fields->AddFieldToTab("Root.Advanced", new ReadonlyField("MergeIntoNote", "Merge Results Notes"));
         return $fields;
     }
 
@@ -158,6 +196,15 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     {
         return Controller::join_links(
             Director::baseURL(),
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             "/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
             $action
         );
@@ -247,7 +294,34 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         if (!$this->Value) {
             $this->Value = $this->i18n_singular_name();
             $i = 0;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             $className = $this->ClassName;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             while (DataObject::get_one($className, array("Value" => $this->Value), $cacheDataObjectGetOne = false)) {
                 $this->Value = $this->i18n_singular_name()."_".$i;
                 $i++;
@@ -292,3 +366,4 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         }
     }
 }
+

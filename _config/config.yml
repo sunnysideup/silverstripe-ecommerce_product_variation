@@ -1,53 +1,43 @@
 ---
 Name: ecommerce_product_variation
-Before: 'mysite/*'
-After: 'framework/*','cms/*','ecommerce/*'
+Before: 'app/*'
+After: ['#coreconfig', '#cmsextensions', '#ecommerce']
 ---
-
-Product:
+Sunnysideup\Ecommerce\Pages\Product:
   extensions:
-    - ProductWithVariationDecorator
-
-Product_Controller:
+    - Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductWithVariationDecorator
+Sunnysideup\Ecommerce\Pages\ProductController:
   extensions:
-    - ProductWithVariationDecoratorController
+    - Sunnysideup\EcommerceProductVariation\Control\ProductWithVariationDecoratorController
   allowed_actions:
     - VariationForm
     - addvariation
-
-
-LeftAndMain:
+SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
     - framework/thirdparty/jquery/jquery.js
     - framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js
     - ecommerce_product_variation/javascript/CreateEcommerceVariationsField.js
     - ecommerce_product_variation/javascript/DeleteEcommerceVariations.js
   extra_requirements_themedCss:
-    CreateEcommerceVariationsField:
+    Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField:
       media: ecommerce_product_variation
-
-
-EcommerceDatabaseAdmin:
+Sunnysideup\Ecommerce\Cms\Dev\EcommerceDatabaseAdmin:
   extensions:
-    - EcommerceProductVariationTaskDeleteVariations_EXT
-    - EcommerceProductVariationTaskDeleteAll_EXT
-    - EcommerceTaskCSVToVariations_EXT
-
-ProductConfigModelAdmin:
+    - Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations_EXT
+    - Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteAll_EXT
+    - Sunnysideup\EcommerceProductVariation\Tasks\EcommerceTaskCSVToVariations_EXT
+Sunnysideup\Ecommerce\Cms\ProductConfigModelAdmin:
   managed_models:
-    - ProductVariation
-    - ProductAttributeType
-    - ProductAttributeValue
-
+    - Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation
+    - Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType
+    - Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue
 ---
 Only:
   classexists: 'DataObjectSorterDOD'
 ---
-
-ProductAttributeValue:
+Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue:
   extensions:
     - DataObjectSorterDOD
-
-ProductAttributeType:
+Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType:
   extensions:
     - DataObjectSorterDOD

@@ -1,5 +1,34 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Control;
+
+
+
+
+
+
+
+
+
+
+
+
+use SilverStripe\Versioned\Versioned;
+use Sunnysideup\Ecommerce\Model\Extensions\EcommerceRole;
+use Sunnysideup\Ecommerce\Config\EcommerceConfig;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\Security;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Convert;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\ORM\DB;
+
+
+
 /**
  * this class helps to create/edit/delete variations
  *
@@ -93,13 +122,13 @@ class CreateEcommerceVariations extends Controller
      * Type IDs that are selected in the PRODUCT
      * @var Array
      */
-    protected $_selectedtypeid = array();
+    protected $_selectedtypeid = [];
 
     /**
      * Value IDs that are selected in the PRODUCT
      * @var Array
      */
-    protected $_selectedvalueid = array();
+    protected $_selectedvalueid = [];
 
     /**
      * What is going to be sent back.
@@ -123,7 +152,7 @@ class CreateEcommerceVariations extends Controller
     {
         parent::init();
         Versioned::set_reading_mode("Stage.Stage");
-        $shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
+        $shopAdminCode = EcommerceConfig::get(EcommerceRole::class, "admin_permission_code");
         if (!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check($shopAdminCode)) {
             return Security::permissionFailure($this, _t('Security.PERMFAILURE', ' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
         }
@@ -140,10 +169,10 @@ class CreateEcommerceVariations extends Controller
             $this->_position = intval($_GET["_position"]);
         }
         if ($this->_typeorvalue == "type") {
-            $this->_classname = 'ProductAttributeType';
+            $this->_classname = ProductAttributeType::class;
             $this->_namefield = 'Name';
         } else {
-            $this->_classname = 'ProductAttributeValue';
+            $this->_classname = ProductAttributeValue::class;
             $this->_namefield = 'Value';
         }
 
@@ -185,7 +214,7 @@ class CreateEcommerceVariations extends Controller
     {
         //lazy array
         $missingTypesID = array(-1 => -1);
-        $missingTypes = array();
+        $missingTypes = [];
         foreach ($this->_selectedtypeid as $typeID) {
             if (! isset($_GET[$typeID])) {
                 $missingTypesID[$typeID] = $typeID;
@@ -193,11 +222,11 @@ class CreateEcommerceVariations extends Controller
         }
         $types = ProductAttributeType::get()->exclude(array("ID" => $missingTypesID));
         if ($types->count()) {
-            $allTypesAndValues = array();
+            $allTypesAndValues = [];
             foreach ($types as $type) {
                 if (isset($_GET[$type->ID])) {
                     $oldValuesArray = explode(',', $_GET[$type->ID]);
-                    $newValuesArray = array();
+                    $newValuesArray = [];
                     foreach ($oldValuesArray as $oldValuesArray_Key => $oldValuesArray_Value) {
                         $newValuesArray[$oldValuesArray_Value] = $oldValuesArray_Value;
                     }
@@ -281,7 +310,25 @@ class CreateEcommerceVariations extends Controller
     public function rename()
     {
         //is it Type or Value?
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $className = $this->_classname;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $obj = $className::get()->byID($this->_id);
         if ($obj) {
             $name = $obj->{$this->_namefield};
@@ -330,7 +377,25 @@ class CreateEcommerceVariations extends Controller
     public function remove()
     {
         //is it Type or Value?
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $className = $this->_classname;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $obj = $className::get()->byID($this->_id);
         if ($obj) {
             $name = $obj->{$this->_namefield};
@@ -408,3 +473,4 @@ class CreateEcommerceVariations extends Controller
         return $this->output;
     }
 }
+

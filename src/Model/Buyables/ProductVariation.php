@@ -1,5 +1,83 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use Sunnysideup\Ecommerce\Pages\Product;
+use Sunnysideup\Ecommerce\Filesystem\ProductImage;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\Core\Injector\Injector;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Core\Config\Config;
+use Sunnysideup\CmsEditLinkField\Forms\Fields\CMSEditLinkField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Assets\Image;
+use Sunnysideup\Ecommerce\Forms\Fields\ProductProductImageUploadField;
+use SilverStripe\Forms\TabSet;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ErrorPage\ErrorPage;
+use Sunnysideup\Ecommerce\Model\OrderItem;
+use Sunnysideup\Ecommerce\Api\ShoppingCart;
+use Sunnysideup\EcommerceProductVariation\Model\Process\ProductVariation_OrderItem;
+use Sunnysideup\Ecommerce\Model\Order;
+use Sunnysideup\Ecommerce\Model\OrderAttribute;
+use Sunnysideup\Ecommerce\Control\ShoppingCartController;
+use Sunnysideup\Ecommerce\Config\EcommerceConfig;
+use Sunnysideup\Ecommerce\Pages\CheckoutPage;
+use Sunnysideup\Ecommerce\Forms\Fields\EcomQuantityField;
+use Sunnysideup\Ecommerce\Config\EcommerceConfigAjax;
+use Sunnysideup\Ecommerce\Model\Config\EcommerceDBConfig;
+use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
+use SilverStripe\Security\Member;
+use SilverStripe\Versioned\Versioned;
+use Sunnysideup\Ecommerce\Interfaces\BuyableModel;
+use Sunnysideup\Ecommerce\Interfaces\EditableEcommerceObject;
+
+
+
 /**
  *
  */
@@ -27,6 +105,20 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     /**
      * Standard SS variable.
      */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * OLD: private static $db (case sensitive)
+  * NEW:
+    private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
+
+    private static $db (COMPLEX)
+  * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+    private static $table_name = 'ProductVariation';
+
     private static $db = array(
         'InternalItemID' => 'Varchar(30)',
         'Price' => 'Currency',
@@ -45,15 +137,15 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * Standard SS variable.
      */
     private static $has_one = array(
-        'Product' => 'Product',
-        'Image' => 'Product_Image',
+        'Product' => Product::class,
+        'Image' => ProductImage::class,
     );
 
     /**
      * Standard SS variable.
      */
     private static $many_many = array(
-        'AttributeValues' => 'ProductAttributeValue',
+        'AttributeValues' => ProductAttributeValue::class,
     );
 
     /**
@@ -86,7 +178,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * Standard SS variable.
      */
     private static $extensions = array(
-        "Versioned('Stage')",
+        Versioned::class . '.versioned',
     );
 
     /**
@@ -109,6 +201,15 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * Standard SS variable.
      */
     private static $summary_fields = array(
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD:  => 'Image' (case sensitive)
+  * NEW:  => 'Image' (COMPLEX)
+  * EXP: you may want to add ownership (owns)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         'CMSThumbnail' => 'Image',
         'Title' => 'Title',
         'Price' => 'Price',
@@ -159,7 +260,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     }
     public static function get_plural_name()
     {
-        $obj = Injector::inst()->get('ProductVariation');
+        $obj = Injector::inst()->get(ProductVariation::class);
 
         return $obj->i18n_plural_name();
     }
@@ -191,7 +292,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                 'BetweenTypeAndValue' => $betweenTypeAndValue,
                 'BetweenVariations' => $betweenVariations,
             );
-        Config::inst()->update('ProductVariation', 'current_style_option_code', $code);
+        Config::modify()->update(ProductVariation::class, 'current_style_option_code', $code);
     }
 
     /**
@@ -207,7 +308,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 
     public static function get_current_style_option_array()
     {
-        return self::$title_style_option[Config::inst()->get('ProductVariation', 'current_style_option_code')];
+        return self::$title_style_option[Config::inst()->get(ProductVariation::class, 'current_style_option_code')];
     }
 
     /**
@@ -222,7 +323,25 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             return parent::getCMSFields();
         }
         $product = $this->Product();
-        if (class_exists('CMSEditLinkField')) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: LinkField (case sensitive)
+  * NEW: LinkField (COMPLEX)
+  * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        if (class_exists(CMSEditLinkField::class)) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: LinkField (case sensitive)
+  * NEW: LinkField (COMPLEX)
+  * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             $productField = CMSEditLinkField::create(
                 'ProductID',
                 $this->Product()->i18n_singular_name(),
@@ -234,11 +353,11 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                 user_error('We recommend you install https://github.com/briceburg/silverstripe-pickerfield');
                 $productField = ReadonlyField::create(
                     'ProductIDTitle',
-                    _t('ProductVariation.PRODUCT', 'Product'),
+                    _t('ProductVariation.PRODUCT', Product::class),
                     $this->Product() ? $this->Product()->Title : _t('ProductVariation.NO_PRODUCT', 'none')
                 );
             } else {
-                $productField = new DropdownField('ProductID', _t('ProductVariation.PRODUCT', 'Product'), Product::get()->map('ID', 'Title')->toArray());
+                $productField = new DropdownField('ProductID', _t('ProductVariation.PRODUCT', Product::class), Product::get()->map('ID', 'Title')->toArray());
                 $productField->setEmptyString('(Select one)');
             }
         }
@@ -248,8 +367,35 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                 new Tab(
                     'Main',
                     $productField,
-                    $fullNameLinkField = ReadOnlyField::create('FullNameLink', _t('ProductVariation.FULLNAME', 'Full Name'), '<a href="'.$this->Link().'">'.$this->FullName.'</a>'),
-                    new NumericField('Price', _t('ProductVariation.PRICE', 'Price')),
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: LinkField (case sensitive)
+  * NEW: LinkField (COMPLEX)
+  * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+                    $fullNameLinkField = ReadonlyField::create('FullNameLink', _t('ProductVariation.FULLNAME', 'Full Name'), '<a href="'.$this->Link().'">'.$this->FullName.'</a>'),
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: new NumericField (case sensitive)
+  * NEW: NumericField::create (COMPLEX)
+  * EXP: check the number of decimals required and add as ->setScale(2)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: NumericField::create (case sensitive)
+  * NEW: NumericField::create (COMPLEX)
+  * EXP: check the number of decimals required and add as ->setScale(2)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+                    NumericField::create('Price', _t('ProductVariation.PRICE', 'Price')),
                     new CheckboxField('AllowPurchase', _t('ProductVariation.ALLOWPURCHASE', 'Allow Purchase ?'))
                 ),
                 new Tab(
@@ -258,14 +404,59 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                     new TextField('Description', _t('ProductVariation.DESCRIPTION', 'Description (optional)'))
                 ),
                 new Tab(
-                    'Image',
-                    new Product_ProductImageUploadField('Image')
+                    Image::class,
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: UploadField('Image (case sensitive)
+  * NEW: UploadField('Image (COMPLEX)
+  * EXP: make sure that Image does not end up as Image::class where this is not required
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+                    new ProductProductImageUploadField(Image::class)
                 )
             )
         );
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: LinkField (case sensitive)
+  * NEW: LinkField (COMPLEX)
+  * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: ->dontEscape (case sensitive)
+  * NEW: ->dontEscape (COMPLEX)
+  * EXP: dontEscape is not longer in use for form fields, please use HTMLReadonlyField (or similar) instead.
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $fullNameLinkField->dontEscape = true;
         if ($this->EcomConfig()->ProductsHaveWeight) {
-            $fields->addFieldToTab('Root.Details', new NumericField('Weight', _t('ProductVariation.WEIGHT', 'Weight')));
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: new NumericField (case sensitive)
+  * NEW: NumericField::create (COMPLEX)
+  * EXP: check the number of decimals required and add as ->setScale(2)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: NumericField::create (case sensitive)
+  * NEW: NumericField::create (COMPLEX)
+  * EXP: check the number of decimals required and add as ->setScale(2)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            $fields->addFieldToTab('Root.Details', NumericField::create('Weight', _t('ProductVariation.WEIGHT', 'Weight')));
         }
         if ($this->EcomConfig()->ProductsHaveModelNames) {
             $fields->addFieldToTab('Root.Details', new TextField('Model', _t('ProductVariation.MODEL', 'Model')));
@@ -273,7 +464,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         if ($this->EcomConfig()->ProductsHaveQuantifiers) {
             $fields->addFieldToTab('Root.Details', new TextField('Quantifier', _t('ProductVariation.QUANTIFIER', 'Quantifier (e.g. per kilo, per month, per dozen, each)')));
         }
-        $fields->addFieldToTab('Root.Details', new ReadOnlyField('FullSiteTreeSort', _t('Product.FULLSITETREESORT', 'Full sort index')));
+        $fields->addFieldToTab('Root.Details', new ReadonlyField('FullSiteTreeSort', _t('Product.FULLSITETREESORT', 'Full sort index')));
         if ($product) {
             $types = $product->VariationAttributes();
             if ($this->ID) {
@@ -305,7 +496,25 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                         $rightTitle = _t('ProductVariation.NOVALUESTOSELECT', 'No values to select');
                     }
                     if ($isReadonlyField) {
-                        if (class_exists('CMSEditLinkField')) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: LinkField (case sensitive)
+  * NEW: LinkField (COMPLEX)
+  * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+                        if (class_exists(CMSEditLinkField::class)) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: LinkField (case sensitive)
+  * NEW: LinkField (COMPLEX)
+  * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                             $field = CMSEditLinkField::create("Type{$type->ID}", $type->Name, $value)
                                 ->setDescription($rightTitle);
                         } else {
@@ -404,7 +613,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             'Price' => $this->Price,
             'WithProductTitle' => $noProductTitle ? false : true,
         );
-        $html = $this->customise($array)->renderWith('ProductVariationItem');
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: ->RenderWith( (ignore case)
+  * NEW: ->RenderWith( (COMPLEX)
+  * EXP: Check that the template location is still valid!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        $html = $this->customise($array)->RenderWith('ProductVariationItem');
         if ($withHTML) {
             return $html;
         } else {
@@ -519,7 +737,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         //clean up data???
         //todo: what is this for?
         if (isset($_POST['ProductAttributes']) && is_array($_POST['ProductAttributes']) && $this->canEdit()) {
-            $productAttributesArray = array();
+            $productAttributesArray = [];
             foreach ($_POST['ProductAttributes'] as $key => $value) {
                 $productAttributesArray[$key] = intval($value);
             }
@@ -665,7 +883,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function DummyImage()
     {
-        return new Product_Image();
+        return new ProductImage();
     }
 
     // VERSIONING
@@ -686,7 +904,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             $this->redirect($product->Link('viewversion/'.$product->ID.'/'.$version.'/'));
         } else {
             $page = DataObject::get_one(
-                'ErrorPage',
+                ErrorPage::class,
                 array('ErrorCode' => '404')
             );
             if ($page) {
@@ -718,6 +936,15 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             $version = $this->Version;
         }
 
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         return OrderItem::get_version($this->ClassName, $id, $version);
     }
 
@@ -733,7 +960,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     public function OrderItem()
     {
         //work out the filter
-        $filter = array();
+        $filter = [];
         $updatedFilters = $this->extend('updateItemFilter', $filter);
         if ($updatedFilters !== null && is_array($updatedFilters) && count($updatedFilters)) {
             foreach ($updatedFilters as $updatedFilter) {
@@ -754,7 +981,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     /**
      * @var string
      */
-    protected $defaultClassNameForOrderItem = 'ProductVariation_OrderItem';
+    protected $defaultClassNameForOrderItem = ProductVariation_OrderItem::class;
 
     /**
      * you can overwrite this function in your buyable items (such as Product).
@@ -807,11 +1034,20 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     public function getHasBeenSold()
     {
         $dataList = Order::get_datalist_of_orders_with_submit_record($onlySubmittedOrders = true, $includeCancelledOrders = false);
-        $dataList = $dataList->innerJoin('OrderAttribute', '"OrderAttribute"."OrderID" = "Order"."ID"');
-        $dataList = $dataList->innerJoin('OrderItem', '"OrderAttribute"."ID" = "OrderItem"."ID"');
+        $dataList = $dataList->innerJoin(OrderAttribute::class, '"OrderAttribute"."OrderID" = "Order"."ID"');
+        $dataList = $dataList->innerJoin(OrderItem::class, '"OrderAttribute"."ID" = "OrderItem"."ID"');
         $dataList = $dataList->filter(
             array(
                 'BuyableID' => $this->ID,
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                 'buyableClassName' => $this->ClassName
             )
         );
@@ -848,8 +1084,17 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     {
         return Controller::join_links(
              Director::baseURL(),
-             EcommerceConfig::get('ShoppingCart_Controller', 'url_segment'),
+             EcommerceConfig::get(ShoppingCartController::class, 'url_segment'),
              'submittedbuyable',
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
              $this->ClassName,
              $this->ID,
              $this->Version
@@ -863,7 +1108,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function AddLink()
     {
-        return ShoppingCart_Controller::add_item_link($this->ID, $this->ClassName, $this->linkParameters());
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::add_item_link($this->ID, $this->ClassName, $this->linkParameters());
     }
 
     /**
@@ -874,7 +1128,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     public function IncrementLink()
     {
         //we can do this, because by default add link adds one
-        return ShoppingCart_Controller::add_item_link($this->ID, $this->ClassName, $this->linkParameters());
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::add_item_link($this->ID, $this->ClassName, $this->linkParameters());
     }
 
     /**
@@ -885,7 +1148,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function DecrementLink()
     {
-        return ShoppingCart_Controller::remove_item_link($this->ID, $this->ClassName, $this->linkParameters());
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::remove_item_link($this->ID, $this->ClassName, $this->linkParameters());
     }
 
     /**
@@ -895,7 +1167,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function RemoveLink()
     {
-        return ShoppingCart_Controller::remove_item_link($this->ID, $this->ClassName, $this->linkParameters());
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::remove_item_link($this->ID, $this->ClassName, $this->linkParameters());
     }
 
     /**
@@ -905,7 +1186,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function RemoveAllLink()
     {
-        return ShoppingCart_Controller::remove_all_item_link($this->ID, $this->ClassName, $this->linkParameters());
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::remove_all_item_link($this->ID, $this->ClassName, $this->linkParameters());
     }
 
     /**
@@ -915,7 +1205,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function RemoveAllAndEditLink()
     {
-        return ShoppingCart_Controller::remove_all_item_and_edit_link($this->ID, $this->ClassName, $this->linkParameters());
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::remove_all_item_and_edit_link($this->ID, $this->ClassName, $this->linkParameters());
     }
 
     /**
@@ -927,7 +1226,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function SetSpecificQuantityItemLink($quantity)
     {
-        return ShoppingCart_Controller::set_quantity_item_link($this->ID, $this->ClassName, array_merge($this->linkParameters(), array('quantity' => $quantity)));
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::set_quantity_item_link($this->ID, $this->ClassName, array_merge($this->linkParameters(), array('quantity' => $quantity)));
     }
 
     /**
@@ -938,7 +1246,16 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         $array = $this->linkParameters();
         $array['BackURL'] = urlencode(CheckoutPage::find_link());
 
-        return ShoppingCart_Controller::add_item_link($this->ID, $this->ClassName, $array);
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        return ShoppingCartController::add_item_link($this->ID, $this->ClassName, $array);
     }
 
     /**
@@ -1095,7 +1412,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      *
      * @return bool
      */
-    public function canView($member = null)
+    public function canView($member = null, $context = [])
     {
         if ($this->ProductID && $this->Product()->exists()) {
             return $this->Product()->canEdit($member);
@@ -1109,7 +1426,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      *
      * @return bool
      */
-    public function canEdit($member = null)
+    public function canEdit($member = null, $context = [])
     {
         if (!$member) {
             $member = Member::currentUser();
@@ -1126,7 +1443,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      *
      * @return bool
      */
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
         if ($extended !== null) {
@@ -1157,7 +1474,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      *
      * @return bool
      */
-    public function canCreate($member = null)
+    public function canCreate($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
         if ($extended !== null) {
@@ -1175,10 +1492,10 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      */
     public function MostLikeMe()
     {
-        $idArray = array();
+        $idArray = [];
         foreach ($this->AttributeValues() as $excludeValue) {
             unset($getAnyArray);
-            $getAnyArray = array();
+            $getAnyArray = [];
             foreach ($this->AttributeValues() as $innerValue) {
                 if ($excludeValue->ID != $innerValue->ID) {
                     $getAnyArray[$innerValue->ID] = $innerValue->ID;

@@ -1,5 +1,38 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\TypesAndValues;
+
+
+
+
+
+
+
+
+
+
+
+
+
+use SilverStripe\CMS\Model\SiteTree;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\ORM\DataObject;
+use Sunnysideup\Ecommerce\Forms\Gridfield\Configs\GridFieldConfigForOrderItems;
+use Sunnysideup\Ecommerce\Forms\Fields\OptionalTreeDropdownField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\ORM\DB;
+use SilverStripe\Core\Injector\Injector;
+use Sunnysideup\Ecommerce\Interfaces\EditableEcommerceObject;
+
+
+
 /**
  * This class contains list items such as "size", "colour"
  * Not XL, Red, etc..., but the lists that contain the
@@ -28,6 +61,20 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     /**
      * Standard SS variable.
      */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * OLD: private static $db (case sensitive)
+  * NEW: 
+    private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
+
+    private static $db (COMPLEX)
+  * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+    
+    private static $table_name = 'ProductAttributeType';
+
     private static $db = array(
         'Name' => 'Varchar', //for back-end use
         'Label' => 'Varchar', //for front-end use
@@ -40,15 +87,15 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * Standard SS variable.
      */
     private static $has_one = array(
-        'MoreInfoLink' => 'SiteTree',
-        'MergeInto' => 'ProductAttributeType'
+        'MoreInfoLink' => SiteTree::class,
+        'MergeInto' => ProductAttributeType::class
     );
 
     /**
      * Standard SS variable.
      */
     private static $has_many = array(
-        'Values' => 'ProductAttributeValue'
+        'Values' => ProductAttributeValue::class
     );
 
     /**
@@ -70,7 +117,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      * Standard SS variable.
      */
     private static $belongs_many_many = array(
-        'Products' => 'Product'
+        'Products' => Product::class
     );
 
     /**
@@ -92,7 +139,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      */
     private static $default_sort = "\"Sort\" ASC, \"Name\"";
 
-    private static $dropdown_field_for_orderform = 'DropdownField';
+    private static $dropdown_field_for_orderform = DropdownField::class;
 
     /**
      * Standard SS variable.
@@ -113,7 +160,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     }
     public static function get_plural_name()
     {
-        $obj = Singleton("ProductAttributeType");
+        $obj = Singleton(ProductAttributeType::class);
         return $obj->i18n_plural_name();
     }
 
@@ -129,7 +176,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     {
         $name = strtolower($name);
         $type = DataObject::get_one(
-            'ProductAttributeType',
+            ProductAttributeType::class,
             'LOWER("Name") = \''.$name.'\'',
             $cacheDataObjectGetOne = false
         );
@@ -164,7 +211,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
             new OptionalTreeDropdownField(
                 "MoreInfoLinkID",
                 _t("ProductAttributeType.MORE_INFO_LINK", "More info page"),
-                "SiteTree"
+                SiteTree::class
             )
         );
         //TODO: make this a really fast editing interface. Table list field??
@@ -178,7 +225,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                     ProductAttributeType::get()->exclude(array("ID" => $this->ID))->map()->toArray()
             )
         );
-        $fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
+        $fields->AddFieldToTab("Root.Advanced", new ReadonlyField("MergeIntoNote", "Merge Results Notes"));
         return $fields;
     }
 
@@ -191,6 +238,15 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     {
         return Controller::join_links(
             Director::baseURL(),
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             "/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
             $action
         );
@@ -253,7 +309,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         return $field;
     }
 
-    private static $_drop_down_values = array();
+    private static $_drop_down_values = [];
 
     /**
      *
@@ -274,7 +330,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                     self::$_drop_down_values[$this->ID] = $values->map('ID', 'ValueForDropdown')->toArray();
                 }
             } else {
-                self::$_drop_down_values[$this->ID] = array();
+                self::$_drop_down_values[$this->ID] = [];
             }
         }
 
@@ -286,7 +342,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      *
      * @return Boolean
      */
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
         if ($extended !== null) {
@@ -311,7 +367,34 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     {
         parent::onBeforeWrite();
         $i = 0;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $className = $this->ClassName;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         while (!$this->Name || DataObject::get_one($className, 'Name = \''.$this->Name.'\' AND ID != \''.$this->ID.'\'', $cacheDataObjectGetOne = false)) {
             $this->Name = $this->i18n_singular_name();
             if ($i) {
@@ -334,9 +417,9 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                 $canDoMerge = false;
                 $this->MergeIntoNote = "NON-MATCHING VALUE COUNTS";
             } else {
-                $mergeMapArray_OLD = array();
-                $mergeMapArray_NEW = array();
-                $mergeMapArrayGO = array();
+                $mergeMapArray_OLD = [];
+                $mergeMapArray_NEW = [];
+                $mergeMapArrayGO = [];
                 foreach ($this->Values() as $value) {
                     $mergeMapArray_OLD[] = $value->ID;
                 }
@@ -440,8 +523,9 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
             $this->Name.', '.
             $this->Label.
             ' ('.
-                $this->Values()->count().' '.Injector::inst()->get('ProductAttributeValue')->i18n_plural_name().', '.
-                $this->Products()->count().' '.Injector::inst()->get('Product')->i18n_plural_name().
+                $this->Values()->count().' '.Injector::inst()->get(ProductAttributeValue::class)->i18n_plural_name().', '.
+                $this->Products()->count().' '.Injector::inst()->get(Product::class)->i18n_plural_name().
             ')';
     }
 }
+

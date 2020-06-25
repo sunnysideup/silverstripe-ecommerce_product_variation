@@ -1,5 +1,20 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+
+
+
+
+
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\ArrayList;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Dev\BuildTask;
+
+
+
 class EcommerceProductVariationTaskDeleteVariations extends BuildTask
 {
     protected $verbose = true;
@@ -22,7 +37,7 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
 
     public function run($request)
     {
-        $productVariationArrayID = array();
+        $productVariationArrayID = [];
         if (empty($_GET["silent"])) {
             $this->verbose = true;
         } else {
@@ -162,22 +177,3 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
     }
 }
 
-class EcommerceProductVariationTaskDeleteVariations_EXT extends Extension
-{
-    private static $allowed_actions = array(
-        "ecommerceproductvariationtaskdeletevariations" => true
-    );
-
-    //NOTE THAT updateEcommerceDevMenuConfig adds to Config options
-    //but you can als have: updateEcommerceDevMenuDebugActions
-    public function updateEcommerceDevMenuRegularMaintenance($buildTasks)
-    {
-        $buildTasks[] = "ecommerceproductvariationtaskdeletevariations";
-        return $buildTasks;
-    }
-
-    public function ecommerceproductvariationtaskdeletevariations($request)
-    {
-        $this->owner->runTask("EcommerceProductVariationTaskDeleteVariations", $request);
-    }
-}

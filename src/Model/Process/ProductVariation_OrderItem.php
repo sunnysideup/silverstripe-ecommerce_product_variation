@@ -1,7 +1,14 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\Process;
 
-class ProductVariation_OrderItem extends Product_OrderItem
+
+use Sunnysideup\Ecommerce\Model\ProductOrderItem;
+
+
+
+
+class ProductVariation_OrderItem extends ProductOrderItem
 {
 
     // ProductVariation Access Function
@@ -84,3 +91,4 @@ class ProductVariation_OrderItem extends Product_OrderItem
         return stripos($this->ID, 'new') === 0;
     }
 }
+
