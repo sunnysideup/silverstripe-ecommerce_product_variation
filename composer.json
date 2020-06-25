@@ -33,7 +33,5 @@
         "symbiote/silverstripe-gridfieldextensions": "dev-master",
         "sunnysideup/cms_edit_link_field": "dev-master"
     },
-    "extra": {
-        "installer-name": "ecommerce_product_variation"
-    }
+    "extra": []
 }
