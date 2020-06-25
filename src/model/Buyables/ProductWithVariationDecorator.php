@@ -3,6 +3,15 @@
 /**
  * adds variation functionality to the product.
  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD:  extends DataExtension (ignore case)
+  * NEW:  extends DataExtension (COMPLEX)
+  * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
 class ProductWithVariationDecorator extends DataExtension
 {
     /**
@@ -56,7 +65,16 @@ class ProductWithVariationDecorator extends DataExtension
      *
      * @var string
      */
-    protected $classNameOfVariations = 'ProductVariation';
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+    protected $MyClassnameOfVariations = 'ProductVariation';
 
     /**
      * returns what class do we use for Variations.
@@ -66,12 +84,57 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function getClassNameOfVariations()
     {
-        if (method_exists($this->owner, 'classNameOfVariationsSetInProduct')) {
-            return $this->owner->classNameOfVariationsSetInProduct();
-        } elseif (!empty($this->owner->classNameOfVariations)) {
-            return $this->owner->classNameOfVariations;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        if (method_exists($this->owner, 'MyClassnameOfVariationsSetInProduct')) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->owner->MyClassnameOfVariationsSetInProduct();
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+        } elseif (!empty($this->owner->MyClassnameOfVariations)) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->owner->MyClassnameOfVariations;
         } else {
-            return $this->classNameOfVariations;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: classNameOfVariations (case sensitive)
+  * NEW: MyClassnameOfVariations (COMPLEX)
+  * EXP: This has been replaced to avoid confusions with replacements of className / class
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->MyClassnameOfVariations;
         }
     }
 
@@ -82,7 +145,7 @@ class ProductWithVariationDecorator extends DataExtension
      *
      * @return bool
      */
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         if ($this->owner->Variations()->count()) {
             return false;
@@ -407,12 +470,12 @@ class ProductWithVariationDecorator extends DataExtension
     {
         set_time_limit(600);
         $count = 0;
-        $valueCombos = array();
+        $valueCombos = [];
         foreach ($values as $typeID => $typeValues) {
             $typeObject = $this->owner->addAttributeType($typeID);
             //we use the copy variations to merge all of them together...
             $copyVariations = $valueCombos;
-            $valueCombos = array();
+            $valueCombos = [];
             if ($typeObject) {
                 foreach ($typeValues as $valueKey => $valueValue) {
                     $findByID = false;
@@ -453,7 +516,25 @@ class ProductWithVariationDecorator extends DataExtension
             }
             if ($add) {
                 ++$count;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                 $className = $this->owner->getClassNameOfVariations();
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                 $newVariation = $className::create(
                     array(
                         'ProductID' => $this->owner->ID,
@@ -679,7 +760,7 @@ class ProductWithVariationDecorator extends DataExtension
                 INNER JOIN "ProductAttributeValue"
                     ON "ProductVariation_AttributeValues"."ProductAttributeValueID" = "ProductAttributeValue"."ID"
             WHERE "ProductVariation"."ProductID" = '.$productID;
-        $arrayOfTypesToKeepForProduct = array();
+        $arrayOfTypesToKeepForProduct = [];
         $data = DB::query($sql);
         $array = $data->keyedColumn();
         if (is_array($array) && count($array)) {

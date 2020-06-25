@@ -16,7 +16,7 @@ class EcommerceProductVariationTaskDeleteAll extends BuildTask
 
     public function run($request)
     {
-        $productVariationArrayID = array();
+        $productVariationArrayID = [];
         if (empty($_GET["live"])) {
             $live = false;
         } else {

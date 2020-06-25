@@ -121,7 +121,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         return _t("ProductAttributeValue.ATTRIBUTEVALUES", "Variation Attribute Values");
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
         if ($extended !== null) {
@@ -159,7 +159,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
                         ->map('ID', 'FullTitle')->toArray()
             )
         );
-        $fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
+        $fields->AddFieldToTab("Root.Advanced", new ReadonlyField("MergeIntoNote", "Merge Results Notes"));
         return $fields;
     }
 
@@ -172,6 +172,15 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     {
         return Controller::join_links(
             Director::baseURL(),
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             "/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
             $action
         );
@@ -261,7 +270,34 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
         if (!$this->Value) {
             $this->Value = $this->i18n_singular_name();
             $i = 0;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             $className = $this->ClassName;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             while (DataObject::get_one($className, array("Value" => $this->Value), $cacheDataObjectGetOne = false)) {
                 $this->Value = $this->i18n_singular_name()."_".$i;
                 $i++;

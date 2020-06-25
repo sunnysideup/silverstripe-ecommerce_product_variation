@@ -1,7 +1,7 @@
 <?php
 
 
-class ProductVariation_OrderItem extends Product_OrderItem
+class ProductVariation_OrderItem extends ProductOrderItem
 {
 
     // ProductVariation Access Function

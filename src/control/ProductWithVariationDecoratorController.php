@@ -1,6 +1,15 @@
 <?php
 
 
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD:  extends Extension (ignore case)
+  * NEW:  extends Extension (COMPLEX)
+  * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
 class ProductWithVariationDecoratorController extends Extension
 {
     /**
@@ -26,7 +35,7 @@ class ProductWithVariationDecoratorController extends Extension
      *
      * @var array
      */
-    protected $variationFilter = array();
+    protected $variationFilter = [];
 
     /**
      * return the variations and apply filter if one has been set.
@@ -52,14 +61,14 @@ class ProductWithVariationDecoratorController extends Extension
     {
         if ($this->owner->canPurchase(null, true)) {
             if ($this->owner->HasVariations()) {
-                $farray = array();
-                $requiredfields = array();
+                $farray = [];
+                $requiredfields = [];
                 $attributes = $this->owner->VariationAttributes();
                 if ($attributes) {
                     foreach ($attributes as $attribute) {
                         $options = $this->possibleValuesForAttributeType($attribute);
                         if ($options && $options->count()) {
-                            $farray[] = $attribute->getDropDownField(_t('ProductWithVariationDecorator.CHOOSE', 'choose')." $attribute->Label "._t('ProductWithVariationDecorator.DOTDOTDOT', '...'), $options);//new DropDownField("Attribute_".$attribute->ID,$attribute->Name,);
+                            $farray[] = $attribute->getDropDownField(_t('ProductWithVariationDecorator.CHOOSE', 'choose')." $attribute->Label "._t('ProductWithVariationDecorator.DOTDOTDOT', '...'), $options);//new DropdownField("Attribute_".$attribute->ID,$attribute->Name,);
                             $requiredfields[] = "ProductAttributes[$attribute->ID]";
                         }
                     }
@@ -68,7 +77,25 @@ class ProductWithVariationDecoratorController extends Extension
             } else {
                 $fields = FieldList::create();
             }
-            $fields->push(new NumericField('Quantity', 'Quantity', 1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: new NumericField (case sensitive)
+  * NEW: NumericField::create (COMPLEX)
+  * EXP: check the number of decimals required and add as ->setScale(2)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: NumericField::create (case sensitive)
+  * NEW: NumericField::create (COMPLEX)
+  * EXP: check the number of decimals required and add as ->setScale(2)
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            $fields->push(NumericField::create('Quantity', 'Quantity', 1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
             $actions = FieldList::create(
                 new FormAction(
@@ -229,7 +256,16 @@ class ProductWithVariationDecoratorController extends Extension
     public function selectvariation($request)
     {
         if (Director::is_ajax() || 1 == 1) {
-            return $this->owner->renderWith('SelectVariationFromProductGroup');
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: ->RenderWith( (ignore case)
+  * NEW: ->RenderWith( (COMPLEX)
+  * EXP: Check that the template location is still valid!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+            return $this->owner->RenderWith('SelectVariationFromProductGroup');
         } else {
             $this->owner->redirect($this->owner->Link());
         }

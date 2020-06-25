@@ -22,7 +22,7 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
 
     public function run($request)
     {
-        $productVariationArrayID = array();
+        $productVariationArrayID = [];
         if (empty($_GET["silent"])) {
             $this->verbose = true;
         } else {

@@ -1,14 +1,14 @@
 ---
 Name: ecommerce_product_variation
-Before: 'mysite/*'
-After: 'framework/*','cms/*','ecommerce/*'
+Before: 'app/*'
+After: ['#coreconfig', '#cmsextensions', '#ecommerce']
 ---
 
 Product:
   extensions:
     - ProductWithVariationDecorator
 
-Product_Controller:
+ProductController:
   extensions:
     - ProductWithVariationDecoratorController
   allowed_actions:
@@ -16,7 +16,7 @@ Product_Controller:
     - addvariation
 
 
-LeftAndMain:
+SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
     - framework/thirdparty/jquery/jquery.js
     - framework/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js

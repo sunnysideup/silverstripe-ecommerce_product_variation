@@ -192,7 +192,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                     ProductAttributeType::get()->exclude(array("ID" => $this->ID))->map()->toArray()
             )
         );
-        $fields->AddFieldToTab("Root.Advanced", new ReadOnlyField("MergeIntoNote", "Merge Results Notes"));
+        $fields->AddFieldToTab("Root.Advanced", new ReadonlyField("MergeIntoNote", "Merge Results Notes"));
         return $fields;
     }
 
@@ -205,6 +205,15 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     {
         return Controller::join_links(
             Director::baseURL(),
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
             "/admin/product-config/".$this->ClassName."/EditForm/field/".$this->ClassName."/item/".$this->ID."/",
             $action
         );
@@ -267,7 +276,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
         return $field;
     }
 
-    private static $_drop_down_values = array();
+    private static $_drop_down_values = [];
 
     /**
      *
@@ -288,7 +297,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                     self::$_drop_down_values[$this->ID] = $values->map('ID', 'ValueForDropdown')->toArray();
                 }
             } else {
-                self::$_drop_down_values[$this->ID] = array();
+                self::$_drop_down_values[$this->ID] = [];
             }
         }
 
@@ -300,7 +309,7 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
      *
      * @return Boolean
      */
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
         if ($extended !== null) {
@@ -325,7 +334,34 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
     {
         parent::onBeforeWrite();
         $i = 0;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $this->ClassName (case sensitive)
+  * NEW: $this->ClassName (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $className = $this->ClassName;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         while (!$this->Name || DataObject::get_one($className, 'Name = \''.$this->Name.'\' AND ID != \''.$this->ID.'\'', $cacheDataObjectGetOne = false)) {
             $this->Name = $this->i18n_singular_name();
             if ($i) {
@@ -348,9 +384,9 @@ class ProductAttributeType extends DataObject implements EditableEcommerceObject
                 $canDoMerge = false;
                 $this->MergeIntoNote = "NON-MATCHING VALUE COUNTS";
             } else {
-                $mergeMapArray_OLD = array();
-                $mergeMapArray_NEW = array();
-                $mergeMapArrayGO = array();
+                $mergeMapArray_OLD = [];
+                $mergeMapArray_NEW = [];
+                $mergeMapArrayGO = [];
                 foreach ($this->Values() as $value) {
                     $mergeMapArray_OLD[] = $value->ID;
                 }

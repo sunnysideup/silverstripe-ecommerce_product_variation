@@ -93,13 +93,13 @@ class CreateEcommerceVariations extends Controller
      * Type IDs that are selected in the PRODUCT
      * @var Array
      */
-    protected $_selectedtypeid = array();
+    protected $_selectedtypeid = [];
 
     /**
      * Value IDs that are selected in the PRODUCT
      * @var Array
      */
-    protected $_selectedvalueid = array();
+    protected $_selectedvalueid = [];
 
     /**
      * What is going to be sent back.
@@ -185,7 +185,7 @@ class CreateEcommerceVariations extends Controller
     {
         //lazy array
         $missingTypesID = array(-1 => -1);
-        $missingTypes = array();
+        $missingTypes = [];
         foreach ($this->_selectedtypeid as $typeID) {
             if (! isset($_GET[$typeID])) {
                 $missingTypesID[$typeID] = $typeID;
@@ -193,11 +193,11 @@ class CreateEcommerceVariations extends Controller
         }
         $types = ProductAttributeType::get()->exclude(array("ID" => $missingTypesID));
         if ($types->count()) {
-            $allTypesAndValues = array();
+            $allTypesAndValues = [];
             foreach ($types as $type) {
                 if (isset($_GET[$type->ID])) {
                     $oldValuesArray = explode(',', $_GET[$type->ID]);
-                    $newValuesArray = array();
+                    $newValuesArray = [];
                     foreach ($oldValuesArray as $oldValuesArray_Key => $oldValuesArray_Value) {
                         $newValuesArray[$oldValuesArray_Value] = $oldValuesArray_Value;
                     }
@@ -281,7 +281,25 @@ class CreateEcommerceVariations extends Controller
     public function rename()
     {
         //is it Type or Value?
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $className = $this->_classname;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $obj = $className::get()->byID($this->_id);
         if ($obj) {
             $name = $obj->{$this->_namefield};
@@ -330,7 +348,25 @@ class CreateEcommerceVariations extends Controller
     public function remove()
     {
         //is it Type or Value?
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $className = $this->_classname;
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: automated upgrade
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
         $obj = $className::get()->byID($this->_id);
         if ($obj) {
             $name = $obj->{$this->_namefield};
