@@ -72,6 +72,7 @@ use Sunnysideup\Ecommerce\Config\EcommerceConfigAjax;
 use Sunnysideup\Ecommerce\Model\Config\EcommerceDBConfig;
 use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
 use SilverStripe\Security\Member;
+use SilverStripe\Versioned\Versioned;
 use Sunnysideup\Ecommerce\Interfaces\BuyableModel;
 use Sunnysideup\Ecommerce\Interfaces\EditableEcommerceObject;
 
@@ -108,14 +109,14 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
   * OLD: private static $db (case sensitive)
-  * NEW: 
+  * NEW:
     private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
 
     private static $db (COMPLEX)
   * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-    
+
     private static $table_name = 'ProductVariation';
 
     private static $db = array(
@@ -177,7 +178,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * Standard SS variable.
      */
     private static $extensions = array(
-        "Versioned('Stage')",
+        Versioned::class . '.versioned',
     );
 
     /**
@@ -1521,4 +1522,3 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
         return ProductVariation::get()->filter(array('ID' => $idArray));
     }
 }
-
