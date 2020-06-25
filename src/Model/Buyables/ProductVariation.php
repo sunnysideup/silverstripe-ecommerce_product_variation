@@ -2,39 +2,79 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
 
-use DataObject;
-use BuyableModel;
-use EditableEcommerceObject;
-use Injector;
-use Config;
-use Product;
-use CMSEditLinkField;
-use ReadonlyField;
-use DropdownField;
-use FieldList;
-use TabSet;
-use Tab;
-use NumericField;
-use CheckboxField;
-use TextField;
-use ProductProductImageUploadField;
-use LiteralField;
-use Controller;
-use Director;
-use ArrayList;
-use Convert;
-use ProductImage;
-use OrderItem;
-use ShoppingCart;
-use Order;
-use EcommerceConfig;
-use ShoppingCartController;
-use CheckoutPage;
-use EcomQuantityField;
-use EcommerceConfigAjax;
-use EcommerceDBConfig;
-use EcommerceCurrency;
-use Member;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use Sunnysideup\Ecommerce\Pages\Product;
+use Sunnysideup\Ecommerce\Filesystem\ProductImage;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\Core\Injector\Injector;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Core\Config\Config;
+use Sunnysideup\CmsEditLinkField\Forms\Fields\CMSEditLinkField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Assets\Image;
+use Sunnysideup\Ecommerce\Forms\Fields\ProductProductImageUploadField;
+use SilverStripe\Forms\TabSet;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ErrorPage\ErrorPage;
+use Sunnysideup\Ecommerce\Model\OrderItem;
+use Sunnysideup\Ecommerce\Api\ShoppingCart;
+use Sunnysideup\EcommerceProductVariation\Model\Process\ProductVariation_OrderItem;
+use Sunnysideup\Ecommerce\Model\Order;
+use Sunnysideup\Ecommerce\Model\OrderAttribute;
+use Sunnysideup\Ecommerce\Control\ShoppingCartController;
+use Sunnysideup\Ecommerce\Config\EcommerceConfig;
+use Sunnysideup\Ecommerce\Pages\CheckoutPage;
+use Sunnysideup\Ecommerce\Forms\Fields\EcomQuantityField;
+use Sunnysideup\Ecommerce\Config\EcommerceConfigAjax;
+use Sunnysideup\Ecommerce\Model\Config\EcommerceDBConfig;
+use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
+use SilverStripe\Security\Member;
+use Sunnysideup\Ecommerce\Interfaces\BuyableModel;
+use Sunnysideup\Ecommerce\Interfaces\EditableEcommerceObject;
+
 
 
 /**
@@ -96,15 +136,15 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      * Standard SS variable.
      */
     private static $has_one = array(
-        'Product' => 'Product',
-        'Image' => 'ProductImage',
+        'Product' => Product::class,
+        'Image' => ProductImage::class,
     );
 
     /**
      * Standard SS variable.
      */
     private static $many_many = array(
-        'AttributeValues' => 'ProductAttributeValue',
+        'AttributeValues' => ProductAttributeValue::class,
     );
 
     /**
@@ -219,7 +259,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     }
     public static function get_plural_name()
     {
-        $obj = Injector::inst()->get('ProductVariation');
+        $obj = Injector::inst()->get(ProductVariation::class);
 
         return $obj->i18n_plural_name();
     }
@@ -251,7 +291,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                 'BetweenTypeAndValue' => $betweenTypeAndValue,
                 'BetweenVariations' => $betweenVariations,
             );
-        Config::modify()->update('ProductVariation', 'current_style_option_code', $code);
+        Config::modify()->update(ProductVariation::class, 'current_style_option_code', $code);
     }
 
     /**
@@ -267,7 +307,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
 
     public static function get_current_style_option_array()
     {
-        return self::$title_style_option[Config::inst()->get('ProductVariation', 'current_style_option_code')];
+        return self::$title_style_option[Config::inst()->get(ProductVariation::class, 'current_style_option_code')];
     }
 
     /**
@@ -291,7 +331,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
   * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-        if (class_exists('CMSEditLinkField')) {
+        if (class_exists(CMSEditLinkField::class)) {
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
@@ -312,11 +352,11 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                 user_error('We recommend you install https://github.com/briceburg/silverstripe-pickerfield');
                 $productField = ReadonlyField::create(
                     'ProductIDTitle',
-                    _t('ProductVariation.PRODUCT', 'Product'),
+                    _t('ProductVariation.PRODUCT', Product::class),
                     $this->Product() ? $this->Product()->Title : _t('ProductVariation.NO_PRODUCT', 'none')
                 );
             } else {
-                $productField = new DropdownField('ProductID', _t('ProductVariation.PRODUCT', 'Product'), Product::get()->map('ID', 'Title')->toArray());
+                $productField = new DropdownField('ProductID', _t('ProductVariation.PRODUCT', Product::class), Product::get()->map('ID', 'Title')->toArray());
                 $productField->setEmptyString('(Select one)');
             }
         }
@@ -363,7 +403,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
                     new TextField('Description', _t('ProductVariation.DESCRIPTION', 'Description (optional)'))
                 ),
                 new Tab(
-                    'Image',
+                    Image::class,
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
@@ -373,7 +413,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
   * EXP: make sure that Image does not end up as Image::class where this is not required
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-                    new ProductProductImageUploadField('Image')
+                    new ProductProductImageUploadField(Image::class)
                 )
             )
         );
@@ -464,7 +504,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
   * EXP: You may need to run the following class: https://github.com/sunnysideup/silverstripe-migration-task/blob/master/src/Tasks/FixSheaDawsonLink.php
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-                        if (class_exists('CMSEditLinkField')) {
+                        if (class_exists(CMSEditLinkField::class)) {
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
@@ -863,7 +903,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
             $this->redirect($product->Link('viewversion/'.$product->ID.'/'.$version.'/'));
         } else {
             $page = DataObject::get_one(
-                'ErrorPage',
+                ErrorPage::class,
                 array('ErrorCode' => '404')
             );
             if ($page) {
@@ -940,7 +980,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     /**
      * @var string
      */
-    protected $defaultClassNameForOrderItem = 'ProductVariation_OrderItem';
+    protected $defaultClassNameForOrderItem = ProductVariation_OrderItem::class;
 
     /**
      * you can overwrite this function in your buyable items (such as Product).
@@ -993,8 +1033,8 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     public function getHasBeenSold()
     {
         $dataList = Order::get_datalist_of_orders_with_submit_record($onlySubmittedOrders = true, $includeCancelledOrders = false);
-        $dataList = $dataList->innerJoin('OrderAttribute', '"OrderAttribute"."OrderID" = "Order"."ID"');
-        $dataList = $dataList->innerJoin('OrderItem', '"OrderAttribute"."ID" = "OrderItem"."ID"');
+        $dataList = $dataList->innerJoin(OrderAttribute::class, '"OrderAttribute"."OrderID" = "Order"."ID"');
+        $dataList = $dataList->innerJoin(OrderItem::class, '"OrderAttribute"."ID" = "OrderItem"."ID"');
         $dataList = $dataList->filter(
             array(
                 'BuyableID' => $this->ID,
@@ -1043,7 +1083,7 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
     {
         return Controller::join_links(
              Director::baseURL(),
-             EcommerceConfig::get('ShoppingCartController', 'url_segment'),
+             EcommerceConfig::get(ShoppingCartController::class, 'url_segment'),
              'submittedbuyable',
 
 /**

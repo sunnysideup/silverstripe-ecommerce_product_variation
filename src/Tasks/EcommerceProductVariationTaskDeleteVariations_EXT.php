@@ -2,7 +2,10 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Tasks;
 
-use Extension;
+
+use Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations;
+use SilverStripe\Core\Extension;
+
 
 
 
@@ -30,6 +33,6 @@ class EcommerceProductVariationTaskDeleteVariations_EXT extends Extension
 
     public function ecommerceproductvariationtaskdeletevariations($request)
     {
-        $this->owner->runTask("EcommerceProductVariationTaskDeleteVariations", $request);
+        $this->owner->runTask(EcommerceProductVariationTaskDeleteVariations::class, $request);
     }
 }

@@ -2,12 +2,22 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Form;
 
-use LiteralField;
-use Requirements;
-use Convert;
-use CheckboxField;
-use TextField;
+
+
+
+
+
 use DataObjectSorterController;
+use SilverStripe\View\Requirements;
+use Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Core\Convert;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\LiteralField;
+
 
 
 
@@ -25,22 +35,22 @@ class CreateEcommerceVariationsField extends LiteralField
   * EXP: Check that the template location is still valid!
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-        $additionalContent .= $this->RenderWith("CreateEcommerceVariationsField");
+        $additionalContent .= $this->RenderWith(CreateEcommerceVariationsField::class);
         parent::__construct($name, $additionalContent);
     }
 
     public function ProductVariationGetPluralName()
     {
-        return Convert::raw2att(singleton("ProductVariation")->plural_name());
+        return Convert::raw2att(singleton(ProductVariation::class)->plural_name());
     }
 
     public function ProductAttributeTypeGetPluralName()
     {
-        return Convert::raw2att(singleton("ProductAttributeType")->plural_name());
+        return Convert::raw2att(singleton(ProductAttributeType::class)->plural_name());
     }
     public function ProductAttributeValueGetPluralName()
     {
-        return Convert::raw2att(singleton("ProductAttributeValue")->plural_name());
+        return Convert::raw2att(singleton(ProductAttributeValue::class)->plural_name());
     }
 
     public function CheckboxField($name, $title)
@@ -54,7 +64,7 @@ class CreateEcommerceVariationsField extends LiteralField
 
     public function AttributeSorterLink()
     {
-        $singleton = singleton("ProductAttributeType");
+        $singleton = singleton(ProductAttributeType::class);
         if (class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
 
 /**
@@ -65,12 +75,12 @@ class CreateEcommerceVariationsField extends LiteralField
   * EXP: Check if the class name can still be used as such
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-            return DataObjectSorterController::popup_link($className = "ProductAttributeType", $filterField = "", $filterValue = "", $linkText = "Sort Types");
+            return DataObjectSorterController::popup_link($className = ProductAttributeType::class, $filterField = "", $filterValue = "", $linkText = "Sort Types");
         }
     }
     public function ValueSorterLink()
     {
-        $singleton = singleton("ProductAttributeValue");
+        $singleton = singleton(ProductAttributeValue::class);
         if (class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
 
 /**
@@ -81,7 +91,7 @@ class CreateEcommerceVariationsField extends LiteralField
   * EXP: Check if the class name can still be used as such
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-            return DataObjectSorterController::popup_link($className = "ProductAttributeValue", $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
+            return DataObjectSorterController::popup_link($className = ProductAttributeValue::class, $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
         }
     }
 }

@@ -2,31 +2,58 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
 
-use DataExtension;
-use FieldList;
-use Tab;
-use GridField;
-use GridFieldConfig_RecordEditor;
-use CreateEcommerceVariationsField;
-use LabelField;
-use EcommerceProductVariationTaskDeleteVariations;
-use LiteralField;
-use Convert;
+
+
+
+
+
+
+
+
+
+
 use DataObjectOneFieldUpdateController;
-use Config;
-use GridFieldConfig;
-use GridFieldToolbarHeader;
-use GridFieldSortableHeader;
-use GridFieldFilterHeader;
-use GridFieldEditButton;
-use GridFieldPaginator;
-use GridFieldDetailForm;
+
+
+
+
+
+
+
+
 use GridFieldEditableColumns;
-use EcommerceCurrency;
-use ProductAttributeValue;
-use DB;
-use ProductAttributeType;
-use Versioned;
+
+
+
+
+
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridField;
+use Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\LabelField;
+use Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
+use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\Forms\GridField\GridFieldDetailForm;
+use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\ORM\DB;
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\Versioned\Versioned;
+use SilverStripe\ORM\DataExtension;
+
 
 
 /**
@@ -61,14 +88,14 @@ class ProductWithVariationDecorator extends DataExtension
     private static $table_name = 'ProductWithVariationDecorator';
 
     private static $has_many = array(
-        'Variations' => 'ProductVariation',
+        'Variations' => ProductVariation::class,
     );
 
     /**
      * standard SS Var.
      */
     private static $many_many = array(
-        'VariationAttributes' => 'ProductAttributeType',
+        'VariationAttributes' => ProductAttributeType::class,
     );
 
     /**
@@ -103,7 +130,7 @@ class ProductWithVariationDecorator extends DataExtension
   * EXP: This has been replaced to avoid confusions with replacements of className / class
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-    protected $MyClassnameOfVariations = 'ProductVariation';
+    protected $MyClassnameOfVariations = ProductVariation::class;
 
     /**
      * returns what class do we use for Variations.
@@ -247,7 +274,7 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $tabName = singleton('ProductVariation')->plural_name();
+        $tabName = singleton(ProductVariation::class)->plural_name();
         $priceField = $fields->dataFieldByName("Price");
         $fields->addFieldToTab(
             'Root',
@@ -255,7 +282,7 @@ class ProductWithVariationDecorator extends DataExtension
                 $tabName,
                 new GridField(
                     'VariationAttributes',
-                    singleton('ProductAttributeType')->plural_name(),
+                    singleton(ProductAttributeType::class)->plural_name(),
                     $this->owner->VariationAttributes(),
                     $variationAttributesConfig = GridFieldConfig_RecordEditor::create()
                 ),
@@ -263,10 +290,10 @@ class ProductWithVariationDecorator extends DataExtension
                 new CreateEcommerceVariationsField('VariationMaker', '', $this->owner->ID)
             )
         );
-        $variationAttributesConfig->removeComponentsByType('GridFieldAddNewButton');
+        $variationAttributesConfig->removeComponentsByType(GridFieldAddNewButton::class);
         $variations = $this->owner->Variations();
         if ($variations && $variations->Count()) {
-            $productVariationName = singleton('ProductVariation')->plural_name();
+            $productVariationName = singleton(ProductVariation::class)->plural_name();
             $fields->addFieldToTab(
                 'Root.Details',
                 new LabelField(
@@ -298,21 +325,21 @@ class ProductWithVariationDecorator extends DataExtension
             }
             if (class_exists('DataObjectOneFieldUpdateController')) {
                 $linkForAllowSale = DataObjectOneFieldUpdateController::popup_link(
-                    'ProductVariation',
+                    ProductVariation::class,
                     'AllowPurchase',
                     "ProductID = {$this->owner->ID}",
                     '',
                     _t('ProductVariation.QUICK_UPDATE_VARIATION_ALLOW_PURCHASE', 'for sale')
                 );
                 $linkForPrice = DataObjectOneFieldUpdateController::popup_link(
-                    'ProductVariation',
+                    ProductVariation::class,
                     'Price',
                     "ProductID = {$this->owner->ID}",
                     '',
                     _t('ProductVariation.QUICK_UPDATE_VARIATION_PRICES', 'prices')
                 );
                 $linkForProductCodes = DataObjectOneFieldUpdateController::popup_link(
-                    'ProductVariation',
+                    ProductVariation::class,
                     'InternalItemID',
                     "ProductID = {$this->owner->ID}",
                     '',
@@ -343,10 +370,10 @@ class ProductWithVariationDecorator extends DataExtension
     public function getVariationsTable()
     {
         if (class_exists('GridFieldEditableColumns')) {
-            $oldSummaryFields = Config::inst()->get('ProductVariation', 'summary_fields');
+            $oldSummaryFields = Config::inst()->get(ProductVariation::class, 'summary_fields');
             $oldSummaryFields['AllowPurchase'] = $oldSummaryFields['AllowPurchaseNice'];
             unset($oldSummaryFields['AllowPurchaseNice']);
-            Config::inst()->Update('ProductVariation', 'summary_fields', $oldSummaryFields);
+            Config::inst()->Update(ProductVariation::class, 'summary_fields', $oldSummaryFields);
             $gridFieldConfig = GridFieldConfig::create();
             $gridFieldConfig->addComponent(new GridFieldToolbarHeader());
             $gridFieldConfig->addComponent($sort = new GridFieldSortableHeader());
@@ -358,7 +385,7 @@ class ProductWithVariationDecorator extends DataExtension
             $gridFieldConfig->addComponent(new GridFieldEditableColumns());
         } else {
             $gridFieldConfig = GridFieldConfig_RecordEditor::create();
-            $gridFieldConfig->removeComponentsByType('GridFieldAddNewButton');
+            $gridFieldConfig->removeComponentsByType(GridFieldAddNewButton::class);
         }
         $source = $this->owner->Variations();
         $types = $this->owner->VariationAttributes();
@@ -678,7 +705,7 @@ class ProductWithVariationDecorator extends DataExtension
             "\"TypeID\" = '$attributeTypeObject->ID'"
         );
         $variations = $variations->innerJoin('ProductVariation_AttributeValues', '"ProductVariationID" = "ProductVariation"."ID"');
-        $variations = $variations->innerJoin('ProductAttributeValue', '"ProductAttributeValue"."ID" = "ProductAttributeValueID"');
+        $variations = $variations->innerJoin(ProductAttributeValue::class, '"ProductAttributeValue"."ID" = "ProductAttributeValueID"');
 
         return $variations->Count() == 0;
     }
@@ -754,7 +781,7 @@ class ProductWithVariationDecorator extends DataExtension
     public function onBeforeDelete()
     {
         parent::onBeforeDelete();
-        if (Versioned::get_by_stage('Product', 'Stage', 'Product.ID ='.$this->owner->ID)->count() == 0) {
+        if (Versioned::get_by_stage(Product::class, 'Stage', 'Product.ID ='.$this->owner->ID)->count() == 0) {
             $variations = $this->owner->Variations();
             foreach ($variations as $variation) {
                 if ($variation->canDelete()) {

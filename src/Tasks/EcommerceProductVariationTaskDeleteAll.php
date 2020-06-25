@@ -2,8 +2,14 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Tasks;
 
-use BuildTask;
-use DB;
+
+
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use SilverStripe\ORM\DB;
+use SilverStripe\Dev\BuildTask;
+
 
 
 class EcommerceProductVariationTaskDeleteAll extends BuildTask
@@ -13,11 +19,11 @@ class EcommerceProductVariationTaskDeleteAll extends BuildTask
     protected $description = "Deletes ALL variations and all associated data, careful.";
 
     protected $tableArray = array(
-        "ProductVariation",
+        ProductVariation::class,
         "ProductVariation_AttributeValues",
         "Product_VariationAttributes",
-        "ProductAttributeType",
-        "ProductAttributeValue"
+        ProductAttributeType::class,
+        ProductAttributeValue::class
     );
 
     public function run($request)

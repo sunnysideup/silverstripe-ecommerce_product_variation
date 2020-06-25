@@ -2,17 +2,31 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Control;
 
-use Controller;
-use Versioned;
-use EcommerceConfig;
-use Permission;
-use Security;
-use Product;
-use Director;
-use ProductAttributeType;
-use Convert;
-use ProductVariation;
-use DB;
+
+
+
+
+
+
+
+
+
+
+
+use SilverStripe\Versioned\Versioned;
+use Sunnysideup\Ecommerce\Model\Extensions\EcommerceRole;
+use Sunnysideup\Ecommerce\Config\EcommerceConfig;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\Security;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Convert;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\ORM\DB;
+
 
 
 /**
@@ -138,7 +152,7 @@ class CreateEcommerceVariations extends Controller
     {
         parent::init();
         Versioned::set_reading_mode("Stage.Stage");
-        $shopAdminCode = EcommerceConfig::get("EcommerceRole", "admin_permission_code");
+        $shopAdminCode = EcommerceConfig::get(EcommerceRole::class, "admin_permission_code");
         if (!Permission::check("CMS_ACCESS_CMSMain") && !Permission::check($shopAdminCode)) {
             return Security::permissionFailure($this, _t('Security.PERMFAILURE', ' This page is secured and you need CMS rights to access it. Enter your credentials below and we will send you right along.'));
         }
@@ -155,10 +169,10 @@ class CreateEcommerceVariations extends Controller
             $this->_position = intval($_GET["_position"]);
         }
         if ($this->_typeorvalue == "type") {
-            $this->_classname = 'ProductAttributeType';
+            $this->_classname = ProductAttributeType::class;
             $this->_namefield = 'Name';
         } else {
-            $this->_classname = 'ProductAttributeValue';
+            $this->_classname = ProductAttributeValue::class;
             $this->_namefield = 'Value';
         }
 

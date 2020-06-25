@@ -2,14 +2,26 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Model\TypesAndValues;
 
-use DataObject;
-use EditableEcommerceObject;
-use DB;
-use GridFieldConfigForOrderItems;
-use DropdownField;
-use ReadonlyField;
-use Controller;
-use Director;
+
+
+
+
+
+
+
+
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DB;
+use Sunnysideup\Ecommerce\Forms\Gridfield\Configs\GridFieldConfigForOrderItems;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Controller;
+use Sunnysideup\Ecommerce\Interfaces\EditableEcommerceObject;
+
 
 
 class ProductAttributeValue extends DataObject implements EditableEcommerceObject
@@ -47,12 +59,12 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     );
 
     private static $has_one = array(
-        'Type' => 'ProductAttributeType',
-        'MergeInto' => 'ProductAttributeValue'
+        'Type' => ProductAttributeType::class,
+        'MergeInto' => ProductAttributeValue::class
     );
 
     private static $belongs_many_many = array(
-        'ProductVariation' => 'ProductVariation'
+        'ProductVariation' => ProductVariation::class
     );
 
     private static $summary_fields = array(
@@ -101,7 +113,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
                 ->first();
         } else {
             $valueObj = DataObject::get_one(
-                'ProductAttributeValue',
+                ProductAttributeValue::class,
                 "(LOWER(\"Code\") = '$cleanedValue' OR LOWER(\"Value\") = '$cleanedValue') AND TypeID = ".intval($type),
                 $cacheDataObjectGetOne = false
             );
@@ -155,7 +167,7 @@ class ProductAttributeValue extends DataObject implements EditableEcommerceObjec
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $variationField = $fields->dataFieldByName('ProductVariation');
+        $variationField = $fields->dataFieldByName(ProductVariation::class);
         if ($variationField) {
             $variationField->setConfig(new GridFieldConfigForOrderItems());
         }

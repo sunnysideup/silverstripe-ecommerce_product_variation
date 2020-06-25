@@ -2,7 +2,9 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Tasks;
 
-use Extension;
+
+use SilverStripe\Core\Extension;
+
 
 
 

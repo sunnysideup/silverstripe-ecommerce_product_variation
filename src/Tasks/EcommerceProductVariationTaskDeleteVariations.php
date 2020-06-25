@@ -2,11 +2,17 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Tasks;
 
-use BuildTask;
-use Product;
-use DB;
-use ArrayList;
-use ProductVariation;
+
+
+
+
+
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\ArrayList;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Dev\BuildTask;
+
 
 
 class EcommerceProductVariationTaskDeleteVariations extends BuildTask

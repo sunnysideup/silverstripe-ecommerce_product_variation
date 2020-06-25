@@ -2,19 +2,36 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Control;
 
-use Extension;
-use FieldList;
-use NumericField;
-use FormAction;
-use Form;
-use Requirements;
-use Config;
-use Convert;
-use ShoppingCart;
-use Director;
-use ArrayList;
-use ProductAttributeType;
-use ProductAttributeValue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\Form;
+use SilverStripe\View\Requirements;
+use SilverStripe\Core\Config\Config;
+use Sunnysideup\EcommerceProductVariation\Control\ProductWithVariationDecoratorController;
+use SilverStripe\Core\Convert;
+use Sunnysideup\Ecommerce\Api\ShoppingCart;
+use SilverStripe\Control\Director;
+use SilverStripe\ORM\ArrayList;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Core\Extension;
+
 
 
 
@@ -121,7 +138,7 @@ class ProductWithVariationDecoratorController extends Extension
                 )
             );
             $requiredfields[] = 'Quantity';
-            $requiredFieldsClass = 'RequiredFields';
+            $requiredFieldsClass = RequiredFields::class;
             $validator = $requiredFieldsClass::create($requiredfields);
             $form = Form::create(
                 $this->owner,
@@ -133,7 +150,7 @@ class ProductWithVariationDecoratorController extends Extension
             Requirements::themedCSS('sunnysideup/ecommerce_product_variation: variationsform', 'ecommerce_product_variation');
             //variation options json generation
             if (
-                Config::inst()->get('ProductWithVariationDecoratorController', 'use_js_validation')
+                Config::inst()->get(ProductWithVariationDecoratorController::class, 'use_js_validation')
                 && $this->owner->HasVariations()
             ) {
                 Requirements::javascript('sunnysideup/ecommerce_product_variation: ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
@@ -254,7 +271,7 @@ class ProductWithVariationDecoratorController extends Extension
                 '"ProductAttributeValue"."ID" = "ProductVariation_AttributeValues"."ProductAttributeValueID"'
             )
             ->innerJoin(
-                'ProductVariation',
+                ProductVariation::class,
                 '"ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"'
             );
         if ($this->variationFilter) {

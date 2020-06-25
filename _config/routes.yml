@@ -4,5 +4,5 @@ After: framework/routes#coreroutes
 ---
 SilverStripe\Control\Director:
   rules:
-    'createecommercevariations//$Action/$ProductID' : 'CreateEcommerceVariations'
-    'createecommercevariationsbatch//$Action' : 'CreateEcommerceVariations_Batch'
+    createecommercevariations//$Action/$ProductID: Sunnysideup\EcommerceProductVariation\Control\CreateEcommerceVariations
+    createecommercevariationsbatch//$Action: CreateEcommerceVariations_Batch

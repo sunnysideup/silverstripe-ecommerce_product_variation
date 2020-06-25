@@ -2,10 +2,16 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Reports;
 
-use SS_Report;
-use Versioned;
-use Product;
-use FieldList;
+
+
+
+
+use Sunnysideup\Ecommerce\Pages\Product;
+use SilverStripe\Versioned\Versioned;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Reports\Report;
+
 
 
 
@@ -17,13 +23,13 @@ use FieldList;
  * @sub-package: reports
  * @inspiration: Silverstripe Ltd, Jeremy
  **/
-class EcommerceSideReport_ProductsWithVariations extends SS_Report
+class EcommerceSideReport_ProductsWithVariations extends Report
 {
     /**
      * The class of object being managed by this report.
      * Set by overriding in your subclass.
      */
-    protected $dataClass = 'Product';
+    protected $dataClass = Product::class;
 
     /**
      * @return string
@@ -63,11 +69,11 @@ class EcommerceSideReport_ProductsWithVariations extends SS_Report
         if (Versioned::current_stage() == 'Live') {
             $stage = '_Live';
         }
-        if (class_exists('ProductVariation')) {
+        if (class_exists(ProductVariation::class)) {
             return Product::get()
                 ->where('"ProductVariation"."ID" IS NULL ')
                 ->sort('FullSiteTreeSort')
-                ->leftJoin('ProductVariation', '"ProductVariation"."ProductID" = "Product'.$stage.'"."ID"');
+                ->leftJoin(ProductVariation::class, '"ProductVariation"."ProductID" = "Product'.$stage.'"."ID"');
         } else {
             return Product::get();
         }
