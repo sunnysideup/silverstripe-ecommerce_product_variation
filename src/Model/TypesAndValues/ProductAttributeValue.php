@@ -1,5 +1,17 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\TypesAndValues;
+
+use DataObject;
+use EditableEcommerceObject;
+use DB;
+use GridFieldConfigForOrderItems;
+use DropdownField;
+use ReadonlyField;
+use Controller;
+use Director;
+
+
 class ProductAttributeValue extends DataObject implements EditableEcommerceObject
 {
 

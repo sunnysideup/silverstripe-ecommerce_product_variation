@@ -1,5 +1,42 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
+
+use DataObject;
+use BuyableModel;
+use EditableEcommerceObject;
+use Injector;
+use Config;
+use Product;
+use CMSEditLinkField;
+use ReadonlyField;
+use DropdownField;
+use FieldList;
+use TabSet;
+use Tab;
+use NumericField;
+use CheckboxField;
+use TextField;
+use ProductProductImageUploadField;
+use LiteralField;
+use Controller;
+use Director;
+use ArrayList;
+use Convert;
+use ProductImage;
+use OrderItem;
+use ShoppingCart;
+use Order;
+use EcommerceConfig;
+use ShoppingCartController;
+use CheckoutPage;
+use EcomQuantityField;
+use EcommerceConfigAjax;
+use EcommerceDBConfig;
+use EcommerceCurrency;
+use Member;
+
+
 /**
  *
  */

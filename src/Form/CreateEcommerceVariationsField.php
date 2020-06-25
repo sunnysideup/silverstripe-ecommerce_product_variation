@@ -1,5 +1,15 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Form;
+
+use LiteralField;
+use Requirements;
+use Convert;
+use CheckboxField;
+use TextField;
+use DataObjectSorterController;
+
+
 
 class CreateEcommerceVariationsField extends LiteralField
 {

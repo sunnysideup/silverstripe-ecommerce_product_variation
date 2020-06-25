@@ -1,5 +1,11 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+use BuildTask;
+use DB;
+
+
 class EcommerceProductVariationTaskDeleteAll extends BuildTask
 {
     protected $title = "Deletes all the variations and associated data";

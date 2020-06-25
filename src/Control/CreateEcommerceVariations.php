@@ -1,5 +1,20 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Control;
+
+use Controller;
+use Versioned;
+use EcommerceConfig;
+use Permission;
+use Security;
+use Product;
+use Director;
+use ProductAttributeType;
+use Convert;
+use ProductVariation;
+use DB;
+
+
 /**
  * this class helps to create/edit/delete variations
  *

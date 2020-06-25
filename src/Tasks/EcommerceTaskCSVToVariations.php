@@ -1,5 +1,17 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+use BuildTask;
+use DataObject;
+use ProductPage;
+use ProductAttributeType;
+use ProductAttributeValue;
+use ProductVariation;
+use Director;
+use DB;
+
+
 
 /**
  * allows the creation of variations from a CSV

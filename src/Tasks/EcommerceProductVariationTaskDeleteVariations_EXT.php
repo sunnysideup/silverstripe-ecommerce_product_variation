@@ -1,5 +1,10 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+use Extension;
+
+
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###

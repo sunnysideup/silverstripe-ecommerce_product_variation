@@ -1,5 +1,34 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
+
+use DataExtension;
+use FieldList;
+use Tab;
+use GridField;
+use GridFieldConfig_RecordEditor;
+use CreateEcommerceVariationsField;
+use LabelField;
+use EcommerceProductVariationTaskDeleteVariations;
+use LiteralField;
+use Convert;
+use DataObjectOneFieldUpdateController;
+use Config;
+use GridFieldConfig;
+use GridFieldToolbarHeader;
+use GridFieldSortableHeader;
+use GridFieldFilterHeader;
+use GridFieldEditButton;
+use GridFieldPaginator;
+use GridFieldDetailForm;
+use GridFieldEditableColumns;
+use EcommerceCurrency;
+use ProductAttributeValue;
+use DB;
+use ProductAttributeType;
+use Versioned;
+
+
 /**
  * adds variation functionality to the product.
  */

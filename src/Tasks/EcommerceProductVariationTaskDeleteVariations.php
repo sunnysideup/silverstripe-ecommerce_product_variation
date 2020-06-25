@@ -1,5 +1,14 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Tasks;
+
+use BuildTask;
+use Product;
+use DB;
+use ArrayList;
+use ProductVariation;
+
+
 class EcommerceProductVariationTaskDeleteVariations extends BuildTask
 {
     protected $verbose = true;

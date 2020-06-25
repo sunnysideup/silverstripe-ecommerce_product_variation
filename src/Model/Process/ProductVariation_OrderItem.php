@@ -1,5 +1,10 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\Process;
+
+use ProductOrderItem;
+
+
 
 class ProductVariation_OrderItem extends ProductOrderItem
 {

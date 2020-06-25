@@ -1,5 +1,21 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Model\TypesAndValues;
+
+use DataObject;
+use EditableEcommerceObject;
+use GridFieldConfigForOrderItems;
+use OptionalTreeDropdownField;
+use DropdownField;
+use ReadonlyField;
+use Controller;
+use Director;
+use ArrayList;
+use HiddenField;
+use DB;
+use Injector;
+
+
 /**
  * This class contains list items such as "size", "colour"
  * Not XL, Red, etc..., but the lists that contain the

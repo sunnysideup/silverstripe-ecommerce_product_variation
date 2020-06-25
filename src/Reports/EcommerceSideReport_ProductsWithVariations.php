@@ -1,5 +1,13 @@
 <?php
 
+namespace Sunnysideup\EcommerceProductVariation\Reports;
+
+use SS_Report;
+use Versioned;
+use Product;
+use FieldList;
+
+
 
 /**
  * Products without variations.
