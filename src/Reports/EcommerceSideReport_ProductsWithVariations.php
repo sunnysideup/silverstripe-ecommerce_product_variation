@@ -66,7 +66,7 @@ class EcommerceSideReport_ProductsWithVariations extends Report
     public function sourceRecords($params = null)
     {
         $stage = '';
-        if (Versioned::current_stage() == 'Live') {
+        if (Versioned::get_stage() == 'Live') {
             $stage = '_Live';
         }
         if (class_exists(ProductVariation::class)) {
