@@ -5,7 +5,7 @@ class CreateEcommerceVariationsField extends LiteralField
 {
     public function __construct($name, $additionalContent = '', $productID)
     {
-        Requirements::themedCSS("CreateEcommerceVariationsField", "ecommerce_product_variation");
+        Requirements::themedCSS("sunnysideup/ecommerce_product_variation: CreateEcommerceVariationsField", "ecommerce_product_variation");
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###

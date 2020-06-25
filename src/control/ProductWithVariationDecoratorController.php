@@ -113,13 +113,13 @@ class ProductWithVariationDecoratorController extends Extension
                 $actions,
                 $validator
             );
-            Requirements::themedCSS('variationsform', 'ecommerce_product_variation');
+            Requirements::themedCSS('sunnysideup/ecommerce_product_variation: variationsform', 'ecommerce_product_variation');
             //variation options json generation
             if (
                 Config::inst()->get('ProductWithVariationDecoratorController', 'use_js_validation')
                 && $this->owner->HasVariations()
             ) {
-                Requirements::javascript('ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
+                Requirements::javascript('sunnysideup/ecommerce_product_variation: ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
                 $jsObjectName = $form->FormName().'Object';
                 Requirements::customScript(
                     '
