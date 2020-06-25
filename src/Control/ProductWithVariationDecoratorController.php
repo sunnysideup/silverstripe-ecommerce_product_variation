@@ -283,7 +283,6 @@ class ProductWithVariationDecoratorController extends Extension
         }
         $this->owner->redirect($this->owner->Link());
 
-
         return [];
     }
 

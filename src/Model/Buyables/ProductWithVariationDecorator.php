@@ -604,10 +604,10 @@ class ProductWithVariationDecorator extends DataExtension
                 "\"${alias}\".\"ProductAttributeValueID\" = ${valueid}"
             )
                 ->innerJoin(
-                'ProductVariation_AttributeValues',
-                "\"ProductVariation\".\"ID\" = \"${alias}\".\"ProductVariationID\"",
-                $alias
-            );
+                    'ProductVariation_AttributeValues',
+                    "\"ProductVariation\".\"ID\" = \"${alias}\".\"ProductVariationID\"",
+                    $alias
+                );
         }
         if ($searchAllProducts) {
             return $variations;
