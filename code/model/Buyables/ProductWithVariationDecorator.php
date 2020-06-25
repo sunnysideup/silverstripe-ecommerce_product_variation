@@ -8,6 +8,20 @@ class ProductWithVariationDecorator extends DataExtension
     /**
      * standard SS Var.
      */
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * OLD: private static $has_many = (case sensitive)
+  * NEW: 
+    private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
+
+    private static $has_many = (COMPLEX)
+  * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
+    
+    private static $table_name = 'ProductWithVariationDecorator';
+
     private static $has_many = array(
         'Variations' => 'ProductVariation',
     );
