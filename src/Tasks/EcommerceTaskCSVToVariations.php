@@ -4,10 +4,6 @@ namespace Sunnysideup\EcommerceProductVariation\Tasks;
 
 
 
-use ProductPage;
-
-
-
 
 
 use SilverStripe\ORM\DataObject;
@@ -279,7 +275,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     "InternalItemID" => $row["ProductInternalItemID"]
                 );
                 $product = DataObject::get_one(
-                   'ProductPage',
+                    Product::class,
                     $filterArray,
                     $cacheDataObjectGetOne = false
                 );
@@ -293,7 +289,7 @@ class EcommerceTaskCSVToVariations extends BuildTask
                     )->ID;
                 }
                 if (!$product) {
-                    $product = ProductPage::create($filterArray);
+                    $product = Product::create($filterArray);
                     $product->MenuTitle = $row["ProductTitle"];
 
                     $this->alterationMessage("Creating Product: ".$row["ProductTitle"], "created");
@@ -612,4 +608,3 @@ class EcommerceTaskCSVToVariations extends BuildTask
         }
     }
 }
-

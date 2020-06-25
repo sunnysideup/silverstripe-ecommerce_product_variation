@@ -7,7 +7,6 @@ namespace Sunnysideup\EcommerceProductVariation\Form;
 
 
 
-use DataObjectSorterController;
 use SilverStripe\View\Requirements;
 use Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField;
 use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
@@ -65,7 +64,7 @@ class CreateEcommerceVariationsField extends LiteralField
     public function AttributeSorterLink()
     {
         $singleton = singleton(ProductAttributeType::class);
-        if (class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
+        if (class_exists(\Sunnysideup\DataobjectSorter\DataObjectSorterController) && $singleton->hasExtension("DataObjectSorterDOD")) {
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
@@ -75,13 +74,13 @@ class CreateEcommerceVariationsField extends LiteralField
   * EXP: Check if the class name can still be used as such
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-            return DataObjectSorterController::popup_link($className = ProductAttributeType::class, $filterField = "", $filterValue = "", $linkText = "Sort Types");
+            return \Sunnysideup\DataobjectSorter\DataObjectSorterController::popup_link($className = ProductAttributeType::class, $filterField = "", $filterValue = "", $linkText = "Sort Types");
         }
     }
     public function ValueSorterLink()
     {
         $singleton = singleton(ProductAttributeValue::class);
-        if (class_exists("DataObjectSorterController") && $singleton->hasExtension("DataObjectSorterDOD")) {
+        if (class_exists(\Sunnysideup\DataobjectSorter\DataObjectSorterController) && $singleton->hasExtension("DataObjectSorterDOD")) {
 
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
@@ -91,8 +90,7 @@ class CreateEcommerceVariationsField extends LiteralField
   * EXP: Check if the class name can still be used as such
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-            return DataObjectSorterController::popup_link($className = ProductAttributeValue::class, $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
+            return \Sunnysideup\DataobjectSorter\DataObjectSorterController::popup_link($className = ProductAttributeValue::class, $filterField = "TypeChangeToId", $filterValue = "ID", $linkText = "Sort Values");
         }
     }
 }
-

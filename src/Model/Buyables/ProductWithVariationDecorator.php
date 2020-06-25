@@ -10,23 +10,6 @@ namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
 
 
 
-
-
-use DataObjectOneFieldUpdateController;
-
-
-
-
-
-
-
-
-use GridFieldEditableColumns;
-
-
-
-
-
 use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
 use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
 use SilverStripe\Forms\FieldList;
@@ -77,14 +60,14 @@ class ProductWithVariationDecorator extends DataExtension
 /**
   * ### @@@@ START REPLACEMENT @@@@ ###
   * OLD: private static $has_many = (case sensitive)
-  * NEW: 
+  * NEW:
     private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
 
     private static $has_many = (COMPLEX)
   * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
   * ### @@@@ STOP REPLACEMENT @@@@ ###
   */
-    
+
     private static $table_name = 'ProductWithVariationDecorator';
 
     private static $has_many = array(
@@ -323,22 +306,22 @@ class ProductWithVariationDecorator extends DataExtension
                     'ProductVariations'
                 );
             }
-            if (class_exists('DataObjectOneFieldUpdateController')) {
-                $linkForAllowSale = DataObjectOneFieldUpdateController::popup_link(
+            if (class_exists(\Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController)) {
+                $linkForAllowSale = \Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController::popup_link(
                     ProductVariation::class,
                     'AllowPurchase',
                     "ProductID = {$this->owner->ID}",
                     '',
                     _t('ProductVariation.QUICK_UPDATE_VARIATION_ALLOW_PURCHASE', 'for sale')
                 );
-                $linkForPrice = DataObjectOneFieldUpdateController::popup_link(
+                $linkForPrice = \Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController::popup_link(
                     ProductVariation::class,
                     'Price',
                     "ProductID = {$this->owner->ID}",
                     '',
                     _t('ProductVariation.QUICK_UPDATE_VARIATION_PRICES', 'prices')
                 );
-                $linkForProductCodes = DataObjectOneFieldUpdateController::popup_link(
+                $linkForProductCodes = \Sunnysideup\DataobjectSorter\DataObjectOneFieldUpdateController::popup_link(
                     ProductVariation::class,
                     'InternalItemID',
                     "ProductID = {$this->owner->ID}",
@@ -369,7 +352,7 @@ class ProductWithVariationDecorator extends DataExtension
      */
     public function getVariationsTable()
     {
-        if (class_exists('GridFieldEditableColumns')) {
+        if (class_exists(\Symbiote\GridFieldExtensions\GridFieldEditableColumns)) {
             $oldSummaryFields = Config::inst()->get(ProductVariation::class, 'summary_fields');
             $oldSummaryFields['AllowPurchase'] = $oldSummaryFields['AllowPurchaseNice'];
             unset($oldSummaryFields['AllowPurchaseNice']);
@@ -382,7 +365,7 @@ class ProductWithVariationDecorator extends DataExtension
             $gridFieldConfig->addComponent($pagination = new GridFieldPaginator(100));
             $gridFieldConfig->addComponent(new GridFieldDetailForm());
             //add the editable columns.
-            $gridFieldConfig->addComponent(new GridFieldEditableColumns());
+            $gridFieldConfig->addComponent(new \Symbiote\GridFieldExtensions\GridFieldEditableColumns());
         } else {
             $gridFieldConfig = GridFieldConfig_RecordEditor::create();
             $gridFieldConfig->removeComponentsByType(GridFieldAddNewButton::class);
@@ -889,4 +872,3 @@ class ProductWithVariationDecorator extends DataExtension
         return $changes;
     }
 }
-
