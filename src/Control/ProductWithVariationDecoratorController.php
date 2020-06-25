@@ -2,58 +2,48 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Control;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\NumericField;
-use SilverStripe\Forms\FormAction;
-use SilverStripe\Forms\RequiredFields;
-use SilverStripe\Forms\Form;
-use SilverStripe\View\Requirements;
-use SilverStripe\Core\Config\Config;
-use Sunnysideup\EcommerceProductVariation\Control\ProductWithVariationDecoratorController;
-use SilverStripe\Core\Convert;
-use Sunnysideup\Ecommerce\Api\ShoppingCart;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Convert;
+use SilverStripe\Core\Extension;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\Requirements;
+use Sunnysideup\Ecommerce\Api\ShoppingCart;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
 use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
 use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
-use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
-use SilverStripe\Core\Extension;
-
-
-
-
 
 /**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD:  extends Extension (ignore case)
-  * NEW:  extends Extension (COMPLEX)
-  * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+ * ### @@@@ START REPLACEMENT @@@@ ###
+ * WHY: automated upgrade
+ * OLD:  extends Extension (ignore case)
+ * NEW:  extends Extension (COMPLEX)
+ * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
+ * ### @@@@ STOP REPLACEMENT @@@@ ###
+ */
 class ProductWithVariationDecoratorController extends Extension
 {
     /**
+     * array of IDs of variations that should be shown
+     * if count(array) == 0 then all of them will be shown.
+     *
+     * @var array
+     */
+    protected $variationFilter = [];
+
+    /**
      * standard SS Var.
      */
-    private static $allowed_actions = array(
+    private static $allowed_actions = [
         'selectvariation',
         'VariationForm',
         'filterforvariations',
-    );
+    ];
 
     /**
      * tells us if Javascript should be used in validating
@@ -64,14 +54,6 @@ class ProductWithVariationDecoratorController extends Extension
     private static $use_js_validation = true;
 
     /**
-     * array of IDs of variations that should be shown
-     * if count(array) == 0 then all of them will be shown.
-     *
-     * @var array
-     */
-    protected $variationFilter = [];
-
-    /**
      * return the variations and apply filter if one has been set.
      *
      * @return DataList
@@ -80,7 +62,7 @@ class ProductWithVariationDecoratorController extends Extension
     {
         $variations = $this->owner->dataRecord->Variations();
         if ($this->variationFilter && count($this->variationFilter)) {
-            $variations = $variations->filter(array('ID' => $this->variationFilter));
+            $variations = $variations->filter(['ID' => $this->variationFilter]);
         }
 
         return $variations;
@@ -102,8 +84,8 @@ class ProductWithVariationDecoratorController extends Extension
                     foreach ($attributes as $attribute) {
                         $options = $this->possibleValuesForAttributeType($attribute);
                         if ($options && $options->count()) {
-                            $farray[] = $attribute->getDropDownField(_t('ProductWithVariationDecorator.CHOOSE', 'choose')." $attribute->Label "._t('ProductWithVariationDecorator.DOTDOTDOT', '...'), $options);//new DropdownField("Attribute_".$attribute->ID,$attribute->Name,);
-                            $requiredfields[] = "ProductAttributes[$attribute->ID]";
+                            $farray[] = $attribute->getDropDownField(_t('ProductWithVariationDecorator.CHOOSE', 'choose') . " {$attribute->Label} " . _t('ProductWithVariationDecorator.DOTDOTDOT', '...'), $options); //new DropdownField("Attribute_".$attribute->ID,$attribute->Name,);
+                            $requiredfields[] = "ProductAttributes[{$attribute->ID}]";
                         }
                     }
                 }
@@ -112,23 +94,23 @@ class ProductWithVariationDecoratorController extends Extension
                 $fields = FieldList::create();
             }
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: new NumericField (case sensitive)
-  * NEW: NumericField::create (COMPLEX)
-  * EXP: check the number of decimals required and add as ->setScale(2)
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+            /**
+             * ### @@@@ START REPLACEMENT @@@@ ###
+             * WHY: automated upgrade
+             * OLD: new NumericField (case sensitive)
+             * NEW: NumericField::create (COMPLEX)
+             * EXP: check the number of decimals required and add as ->setScale(2)
+             * ### @@@@ STOP REPLACEMENT @@@@ ###
+             */
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: NumericField::create (case sensitive)
-  * NEW: NumericField::create (COMPLEX)
-  * EXP: check the number of decimals required and add as ->setScale(2)
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+            /**
+             * ### @@@@ START REPLACEMENT @@@@ ###
+             * WHY: automated upgrade
+             * OLD: NumericField::create (case sensitive)
+             * NEW: NumericField::create (COMPLEX)
+             * EXP: check the number of decimals required and add as ->setScale(2)
+             * ### @@@@ STOP REPLACEMENT @@@@ ###
+             */
             $fields->push(NumericField::create('Quantity', 'Quantity', 1)); //TODO: perhaps use a dropdown instead (elimiates need to use keyboard)
 
             $actions = FieldList::create(
@@ -149,16 +131,15 @@ class ProductWithVariationDecoratorController extends Extension
             );
             Requirements::themedCSS('sunnysideup/ecommerce_product_variation: variationsform', 'ecommerce_product_variation');
             //variation options json generation
-            if (
-                Config::inst()->get(ProductWithVariationDecoratorController::class, 'use_js_validation')
+            if (Config::inst()->get(ProductWithVariationDecoratorController::class, 'use_js_validation')
                 && $this->owner->HasVariations()
             ) {
                 Requirements::javascript('sunnysideup/ecommerce_product_variation: ecommerce_product_variation/javascript/SelectEcommerceProductVariations.js');
-                $jsObjectName = $form->FormName().'Object';
+                $jsObjectName = $form->FormName() . 'Object';
                 Requirements::customScript(
                     '
                     var SelectEcommerceProductVariationsOptions = {};
-                    SelectEcommerceProductVariationsOptions[\''.$form->FormName().'\'] = '.$this->owner->VariationsForSaleJSON().';'
+                    SelectEcommerceProductVariationsOptions[\'' . $form->FormName() . '\'] = ' . $this->owner->VariationsForSaleJSON() . ';'
                 );
             }
 
@@ -174,7 +155,7 @@ class ProductWithVariationDecoratorController extends Extension
             if ($variation) {
                 if ($variation->canPurchase()) {
                     $quantity = round($data['Quantity'], $variation->QuantityDecimals());
-                    if (!$quantity) {
+                    if (! $quantity) {
                         $quantity = 1;
                     }
                     ShoppingCart::singleton()->addBuyable($variation, $quantity);
@@ -195,7 +176,7 @@ class ProductWithVariationDecoratorController extends Extension
             }
         } elseif (! $this->owner->HasVariations()) {
             $quantity = round($data['Quantity'], $this->owner->QuantityDecimals());
-            if (!$quantity) {
+            if (! $quantity) {
                 $quantity = 1;
             }
             ShoppingCart::singleton()->addBuyable($this->owner->dataRecord, $quantity);
@@ -212,10 +193,9 @@ class ProductWithVariationDecoratorController extends Extension
         }
         if (Director::is_ajax()) {
             return ShoppingCart::singleton()->setMessageAndReturn($msg, $status);
-        } else {
-            ShoppingCart::singleton()->setMessageAndReturn($msg, $status, $form);
-            $this->owner->redirectBack();
         }
+        ShoppingCart::singleton()->setMessageAndReturn($msg, $status, $form);
+        $this->owner->redirectBack();
     }
 
     /**
@@ -259,12 +239,12 @@ class ProductWithVariationDecoratorController extends Extension
         }
         $vals = ProductAttributeValue::get()
             ->where(
-                "\"TypeID\" = $typeID AND \"ProductVariation\".\"ProductID\" = ".$this->owner->ID.'  AND "ProductVariation"."AllowPurchase" = 1'
+                "\"TypeID\" = ${typeID} AND \"ProductVariation\".\"ProductID\" = " . $this->owner->ID . '  AND "ProductVariation"."AllowPurchase" = 1'
             )
             ->sort(
-                array(
+                [
                     'ProductAttributeValue.Sort' => 'ASC',
-                )
+                ]
             )
             ->innerJoin(
                 'ProductVariation_AttributeValues',
@@ -275,7 +255,7 @@ class ProductWithVariationDecoratorController extends Extension
                 '"ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"'
             );
         if ($this->variationFilter) {
-            $vals = $vals->filter(array('ProductVariation.ID' => $this->variationFilter));
+            $vals = $vals->filter(['ProductVariation.ID' => $this->variationFilter]);
         }
 
         return $vals;
@@ -289,22 +269,22 @@ class ProductWithVariationDecoratorController extends Extension
      */
     public function selectvariation($request)
     {
-        if (Director::is_ajax() || 1 == 1) {
+        if (Director::is_ajax() || 1 === 1) {
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: ->RenderWith( (ignore case)
-  * NEW: ->RenderWith( (COMPLEX)
-  * EXP: Check that the template location is still valid!
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+            /**
+             * ### @@@@ START REPLACEMENT @@@@ ###
+             * WHY: automated upgrade
+             * OLD: ->RenderWith( (ignore case)
+             * NEW: ->RenderWith( (COMPLEX)
+             * EXP: Check that the template location is still valid!
+             * ### @@@@ STOP REPLACEMENT @@@@ ###
+             */
             return $this->owner->RenderWith('SelectVariationFromProductGroup');
-        } else {
-            $this->owner->redirect($this->owner->Link());
         }
+        $this->owner->redirect($this->owner->Link());
 
-        return array();
+
+        return [];
     }
 
     /**
@@ -319,7 +299,7 @@ class ProductWithVariationDecoratorController extends Extension
             $this->variationFilter = array_map('intval', $array);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -330,4 +310,3 @@ class ProductWithVariationDecoratorController extends Extension
         return $this->variationFilter && count($this->variationFilter) ? true : false;
     }
 }
-

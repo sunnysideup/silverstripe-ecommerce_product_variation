@@ -2,15 +2,10 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Model\Process;
 
-
 use Sunnysideup\Ecommerce\Model\ProductOrderItem;
-
-
-
 
 class ProductVariation_OrderItem extends ProductOrderItem
 {
-
     // ProductVariation Access Function
     public function ProductVariation($current = false)
     {
@@ -21,15 +16,16 @@ class ProductVariation_OrderItem extends ProductOrderItem
      * @decription: we return the product name here -
      * leaving the Table Sub Title for the name of the variation
      *
-     * @return String - title in cart.
+     * @return string - title in cart.
      */
     public function TableTitle()
     {
         return $this->getTableTitle();
     }
+
     public function getTableTitle()
     {
-        $tableTitle = _t("Product.UNKNOWN", "Unknown Product");
+        $tableTitle = _t('Product.UNKNOWN', 'Unknown Product');
         if ($variation = $this->ProductVariation()) {
             if ($product = $variation->Product()) {
                 $tableTitle = $product->Title;
@@ -37,7 +33,7 @@ class ProductVariation_OrderItem extends ProductOrderItem
         }
         $extendedTitle = $this->extend('updateTableTitle', $tableTitle);
         if ($extendedTitle !== null && is_array($extendedTitle) && count($extendedTitle)) {
-            return implode("", $extendedTitle);
+            return implode('', $extendedTitle);
         }
 
         return $tableTitle;
@@ -46,15 +42,16 @@ class ProductVariation_OrderItem extends ProductOrderItem
     /**
      * we return the product variation name here
      * the Table Title will return the name of the Product.
-     * @return String - sub title in cart.
+     * @return string - sub title in cart.
      **/
     public function TableSubTitle()
     {
         return $this->getTableSubTitle();
     }
+
     public function getTableSubTitle()
     {
-        $tableSubTitle = _t("Product.VARIATIONNOTFOUND", "Variation Not Found");
+        $tableSubTitle = _t('Product.VARIATIONNOTFOUND', 'Variation Not Found');
         if ($variation = $this->ProductVariation()) {
             if ($variation->exists()) {
                 $tableSubTitle = $variation->getTitle(true, true);
@@ -62,11 +59,10 @@ class ProductVariation_OrderItem extends ProductOrderItem
         }
         $extendedSubTitle = $this->extend('updateTableSubTitle', $tableSubTitle);
         if ($extendedSubTitle !== null && is_array($extendedSubTitle) && count($extendedSubTitle)) {
-            return implode("", $extendedSubTitle);
+            return implode('', $extendedSubTitle);
         }
         return $tableSubTitle;
     }
-
 
     /**
      * Check if this variation is new - that is, if it has yet to have been written
@@ -91,4 +87,3 @@ class ProductVariation_OrderItem extends ProductOrderItem
         return stripos($this->ID, 'new') === 0;
     }
 }
-

@@ -2,18 +2,11 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Reports;
 
-
-
-
-
-use Sunnysideup\Ecommerce\Pages\Product;
-use SilverStripe\Versioned\Versioned;
-use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Reports\Report;
-
-
-
+use SilverStripe\Versioned\Versioned;
+use Sunnysideup\Ecommerce\Pages\Product;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
 
 /**
  * Products without variations.
@@ -36,8 +29,8 @@ class EcommerceSideReport_ProductsWithVariations extends Report
      */
     public function title()
     {
-        return _t('EcommerceSideReport.PRODUCTSWITHVARIATIONS', 'E-commerce: Products without variations').
-        ' ('.$this->sourceRecords()->count().')';
+        return _t('EcommerceSideReport.PRODUCTSWITHVARIATIONS', 'E-commerce: Products without variations') .
+        ' (' . $this->sourceRecords()->count() . ')';
     }
 
     /**
@@ -66,17 +59,16 @@ class EcommerceSideReport_ProductsWithVariations extends Report
     public function sourceRecords($params = null)
     {
         $stage = '';
-        if (Versioned::get_stage() == 'Live') {
+        if (Versioned::get_stage() === 'Live') {
             $stage = '_Live';
         }
         if (class_exists(ProductVariation::class)) {
             return Product::get()
                 ->where('"ProductVariation"."ID" IS NULL ')
                 ->sort('FullSiteTreeSort')
-                ->leftJoin(ProductVariation::class, '"ProductVariation"."ProductID" = "Product'.$stage.'"."ID"');
-        } else {
-            return Product::get();
+                ->leftJoin(ProductVariation::class, '"ProductVariation"."ProductID" = "Product' . $stage . '"."ID"');
         }
+        return Product::get();
     }
 
     /**
@@ -84,12 +76,12 @@ class EcommerceSideReport_ProductsWithVariations extends Report
      */
     public function columns()
     {
-        return array(
-            'Title' => array(
+        return [
+            'Title' => [
                 'title' => 'FullName',
                 'link' => true,
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -100,4 +92,3 @@ class EcommerceSideReport_ProductsWithVariations extends Report
         return new FieldList();
     }
 }
-

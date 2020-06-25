@@ -2,102 +2,46 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Model\Buyables;
 
-
-
-
-
-
-
-
-
-use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
-use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Forms\GridField\GridField;
-use Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField;
-use SilverStripe\Forms\Tab;
-use SilverStripe\Forms\GridField\GridFieldAddNewButton;
-use SilverStripe\Forms\LabelField;
-use Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations;
-use SilverStripe\Core\Convert;
-use SilverStripe\Forms\LiteralField;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use SilverStripe\Forms\GridField\GridFieldConfig;
-use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
-use SilverStripe\Forms\GridField\GridFieldSortableHeader;
-use SilverStripe\Forms\GridField\GridFieldFilterHeader;
-use SilverStripe\Forms\GridField\GridFieldEditButton;
-use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
-use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
-use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
-use SilverStripe\ORM\DB;
-use Sunnysideup\Ecommerce\Pages\Product;
-use SilverStripe\Versioned\Versioned;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
+use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
+use SilverStripe\Forms\LabelField;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
-
-
+use SilverStripe\ORM\DB;
+use SilverStripe\Versioned\Versioned;
+use Sunnysideup\Ecommerce\Model\Money\EcommerceCurrency;
+use Sunnysideup\Ecommerce\Pages\Product;
+use Sunnysideup\EcommerceProductVariation\Form\CreateEcommerceVariationsField;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeType;
+use Sunnysideup\EcommerceProductVariation\Model\TypesAndValues\ProductAttributeValue;
+use Sunnysideup\EcommerceProductVariation\Tasks\EcommerceProductVariationTaskDeleteVariations;
 
 /**
  * adds variation functionality to the product.
  */
 
 /**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD:  extends DataExtension (ignore case)
-  * NEW:  extends DataExtension (COMPLEX)
-  * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+ * ### @@@@ START REPLACEMENT @@@@ ###
+ * WHY: automated upgrade
+ * OLD:  extends DataExtension (ignore case)
+ * NEW:  extends DataExtension (COMPLEX)
+ * EXP: Check for use of $this->anyVar and replace with $this->anyVar[$this->owner->ID] or consider turning the class into a trait
+ * ### @@@@ STOP REPLACEMENT @@@@ ###
+ */
 class ProductWithVariationDecorator extends DataExtension
 {
-    /**
-     * standard SS Var.
-     */
-
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * OLD: private static $has_many = (case sensitive)
-  * NEW:
-    private static $table_name = '[SEARCH_REPLACE_CLASS_NAME_GOES_HERE]';
-
-    private static $has_many = (COMPLEX)
-  * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
-
-    private static $table_name = 'ProductWithVariationDecorator';
-
-    private static $has_many = array(
-        'Variations' => ProductVariation::class,
-    );
-
-    /**
-     * standard SS Var.
-     */
-    private static $many_many = array(
-        'VariationAttributes' => ProductAttributeType::class,
-    );
-
-    /**
-     * standard SS Var.
-     */
-    private static $many_many_extraFields = array(
-        'VariationAttributes' => array(
-            'Notes' => 'Varchar(200)',
-        ),
-    );
-
-    /**
-     * standard SS Var.
-     */
-    private static $casting = array(
-        'LowestVariationPrice' => 'Currency',
-        'LowestVariationPriceAsMoney' => 'Money',
-    );
-
     /**
      * what class do we use for Variations.
      * This class has to extend ProductVariation.
@@ -105,15 +49,57 @@ class ProductWithVariationDecorator extends DataExtension
      * @var string
      */
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: classNameOfVariations (case sensitive)
-  * NEW: MyClassnameOfVariations (COMPLEX)
-  * EXP: This has been replaced to avoid confusions with replacements of className / class
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+    /**
+     * ### @@@@ START REPLACEMENT @@@@ ###
+     * WHY: automated upgrade
+     * OLD: classNameOfVariations (case sensitive)
+     * NEW: MyClassnameOfVariations (COMPLEX)
+     * EXP: This has been replaced to avoid confusions with replacements of className / class
+     * ### @@@@ STOP REPLACEMENT @@@@ ###
+     */
     protected $MyClassnameOfVariations = ProductVariation::class;
+
+    /**
+     * standard SS Var.
+     */
+
+    /**
+     * ### @@@@ START REPLACEMENT @@@@ ###
+     * OLD: private static $has_many = (case sensitive)
+     * NEW:
+    private static $has_many = (COMPLEX)
+     * EXP: Check that is class indeed extends DataObject and that it is not a data-extension!
+     * ### @@@@ STOP REPLACEMENT @@@@ ###
+     */
+    private static $table_name = 'ProductWithVariationDecorator';
+
+    private static $has_many = [
+        'Variations' => ProductVariation::class,
+    ];
+
+    /**
+     * standard SS Var.
+     */
+    private static $many_many = [
+        'VariationAttributes' => ProductAttributeType::class,
+    ];
+
+    /**
+     * standard SS Var.
+     */
+    private static $many_many_extraFields = [
+        'VariationAttributes' => [
+            'Notes' => 'Varchar(200)',
+        ],
+    ];
+
+    /**
+     * standard SS Var.
+     */
+    private static $casting = [
+        'LowestVariationPrice' => 'Currency',
+        'LowestVariationPriceAsMoney' => 'Money',
+    ];
 
     /**
      * returns what class do we use for Variations.
@@ -124,57 +110,56 @@ class ProductWithVariationDecorator extends DataExtension
     public function getClassNameOfVariations()
     {
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: classNameOfVariations (case sensitive)
-  * NEW: MyClassnameOfVariations (COMPLEX)
-  * EXP: This has been replaced to avoid confusions with replacements of className / class
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+        /**
+         * ### @@@@ START REPLACEMENT @@@@ ###
+         * WHY: automated upgrade
+         * OLD: classNameOfVariations (case sensitive)
+         * NEW: MyClassnameOfVariations (COMPLEX)
+         * EXP: This has been replaced to avoid confusions with replacements of className / class
+         * ### @@@@ STOP REPLACEMENT @@@@ ###
+         */
         if (method_exists($this->owner, 'MyClassnameOfVariationsSetInProduct')) {
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: classNameOfVariations (case sensitive)
-  * NEW: MyClassnameOfVariations (COMPLEX)
-  * EXP: This has been replaced to avoid confusions with replacements of className / class
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+            /**
+             * ### @@@@ START REPLACEMENT @@@@ ###
+             * WHY: automated upgrade
+             * OLD: classNameOfVariations (case sensitive)
+             * NEW: MyClassnameOfVariations (COMPLEX)
+             * EXP: This has been replaced to avoid confusions with replacements of className / class
+             * ### @@@@ STOP REPLACEMENT @@@@ ###
+             */
             return $this->owner->MyClassnameOfVariationsSetInProduct();
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: classNameOfVariations (case sensitive)
-  * NEW: MyClassnameOfVariations (COMPLEX)
-  * EXP: This has been replaced to avoid confusions with replacements of className / class
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
-        } elseif (!empty($this->owner->MyClassnameOfVariations)) {
+        /**
+          * ### @@@@ START REPLACEMENT @@@@ ###
+          * WHY: automated upgrade
+          * OLD: classNameOfVariations (case sensitive)
+          * NEW: MyClassnameOfVariations (COMPLEX)
+          * EXP: This has been replaced to avoid confusions with replacements of className / class
+          * ### @@@@ STOP REPLACEMENT @@@@ ###
+          */
+        } elseif (! empty($this->owner->MyClassnameOfVariations)) {
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: classNameOfVariations (case sensitive)
-  * NEW: MyClassnameOfVariations (COMPLEX)
-  * EXP: This has been replaced to avoid confusions with replacements of className / class
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+            /**
+             * ### @@@@ START REPLACEMENT @@@@ ###
+             * WHY: automated upgrade
+             * OLD: classNameOfVariations (case sensitive)
+             * NEW: MyClassnameOfVariations (COMPLEX)
+             * EXP: This has been replaced to avoid confusions with replacements of className / class
+             * ### @@@@ STOP REPLACEMENT @@@@ ###
+             */
             return $this->owner->MyClassnameOfVariations;
-        } else {
-
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: classNameOfVariations (case sensitive)
-  * NEW: MyClassnameOfVariations (COMPLEX)
-  * EXP: This has been replaced to avoid confusions with replacements of className / class
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
-            return $this->MyClassnameOfVariations;
         }
+
+        /**
+         * ### @@@@ START REPLACEMENT @@@@ ###
+         * WHY: automated upgrade
+         * OLD: classNameOfVariations (case sensitive)
+         * NEW: MyClassnameOfVariations (COMPLEX)
+         * EXP: This has been replaced to avoid confusions with replacements of className / class
+         * ### @@@@ STOP REPLACEMENT @@@@ ###
+         */
+        return $this->MyClassnameOfVariations;
     }
 
     /**
@@ -210,9 +195,8 @@ class ProductWithVariationDecorator extends DataExtension
             }
 
             return $count;
-        } else {
-            return $this->owner->Variations()->count();
         }
+        return $this->owner->Variations()->count();
     }
 
     /**
@@ -258,7 +242,7 @@ class ProductWithVariationDecorator extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $tabName = singleton(ProductVariation::class)->plural_name();
-        $priceField = $fields->dataFieldByName("Price");
+        $priceField = $fields->dataFieldByName('Price');
         $fields->addFieldToTab(
             'Root',
             $tab = new Tab(
@@ -292,15 +276,15 @@ class ProductWithVariationDecorator extends DataExtension
                 $tab->insertAfter(
                     new LiteralField(
                         'DeleteVariations',
-                        "<p class=\"bad message\"><a href=\"$link\"  class=\"action ss-ui-button\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"".
+                        "<p class=\"bad message\"><a href=\"${link}\"  class=\"action ss-ui-button\" id=\"DeleteEcommerceVariationsInner\" data-confirm=\"" .
                                 Convert::raw2att(
                                     _t(
                                         'Product.ARE_YOU_SURE_YOU_WANT_TO_DELETE_ALL_VARIATIONS',
-                                    'are you sure you want to delete all variations from this product? '
+                                        'are you sure you want to delete all variations from this product? '
                                     )
-                                ).
+                                ) .
                             '">'
-                            ._t('Product.DELETE_ALL_VARIATIONS_FROM', 'Delete all variations from <i>').$this->owner->Title.'</i>'.
+                            . _t('Product.DELETE_ALL_VARIATIONS_FROM', 'Delete all variations from <i>') . $this->owner->Title . '</i>' .
                         '</a></p>'
                     ),
                     'ProductVariations'
@@ -332,12 +316,12 @@ class ProductWithVariationDecorator extends DataExtension
                     new LiteralField(
                         'QuickActions',
                         '<p class="message good">'
-                            ._t('ProductVariation.QUICK_UPDATE', 'Quick update')
-                            .': '
-                            ."<span class=\"action ss-ui-button\">$linkForAllowSale</span> "
-                            ."<span class=\"action ss-ui-button\">$linkForPrice</span>"
-                            ."<span class=\"action ss-ui-button\">$linkForProductCodes</span>"
-                            .'</p>'
+                            . _t('ProductVariation.QUICK_UPDATE', 'Quick update')
+                            . ': '
+                            . "<span class=\"action ss-ui-button\">${linkForAllowSale}</span> "
+                            . "<span class=\"action ss-ui-button\">${linkForPrice}</span>"
+                            . "<span class=\"action ss-ui-button\">${linkForProductCodes}</span>"
+                            . '</p>'
                     ),
                     'ProductVariations'
                 );
@@ -373,15 +357,13 @@ class ProductWithVariationDecorator extends DataExtension
         $source = $this->owner->Variations();
         $types = $this->owner->VariationAttributes();
         if ($types && $types->count()) {
-            $title = _t('ProductVariation.PLURALNAME', 'Product Variations').
-                    ' '._t('ProductVariation.by', 'by').': '.
-                    implode(' '._t('ProductVariation.TIMES', '/').' ', $types->map('ID', 'Title')->toArray());
+            $title = _t('ProductVariation.PLURALNAME', 'Product Variations') .
+                    ' ' . _t('ProductVariation.by', 'by') . ': ' .
+                    implode(' ' . _t('ProductVariation.TIMES', '/') . ' ', $types->map('ID', 'Title')->toArray());
         } else {
             $title = _t('ProductVariation.PLURALNAME', 'Product Variations');
         }
-        $gridField = new GridField('ProductVariations', $title, $source, $gridFieldConfig);
-
-        return $gridField;
+        return new GridField('ProductVariations', $title, $source, $gridFieldConfig);
     }
 
     /**
@@ -465,7 +447,7 @@ class ProductWithVariationDecorator extends DataExtension
     public function VariationsForSaleJSON($showCanNotPurchaseAsWell = false)
     {
         //todo: change JS so that we dont have to add this default array element (-1 => -1)
-        $varArray = array(-1 => -1);
+        $varArray = [-1 => -1];
         if ($variations = $this->owner->Variations()) {
             foreach ($variations as $variation) {
                 if ($showCanNotPurchaseAsWell || $variation->canPurchase()) {
@@ -473,9 +455,7 @@ class ProductWithVariationDecorator extends DataExtension
                 }
             }
         }
-        $json = json_encode($varArray);
-
-        return $json;
+        return json_encode($varArray);
     }
 
     /**
@@ -518,7 +498,7 @@ class ProductWithVariationDecorator extends DataExtension
             if ($typeObject) {
                 foreach ($typeValues as $valueKey => $valueValue) {
                     $findByID = false;
-                    if (strlen($valueKey) == strlen($valueValue) && intval($valueKey) == intval($valueValue)) {
+                    if (strlen($valueKey) === strlen($valueValue) && intval($valueKey) === intval($valueValue)) {
                         $findByID = true;
                     }
                     $obj = ProductAttributeValue::find_or_make(
@@ -529,7 +509,7 @@ class ProductWithVariationDecorator extends DataExtension
                     );
                     $valueID = $obj->write();
                     if ($valueID = intval($valueID)) {
-                        $valueID = array($valueID);
+                        $valueID = [$valueID];
                         if (count($copyVariations) > 0) {
                             foreach ($copyVariations as $copyVariation) {
                                 $valueCombos[] = array_merge($copyVariation, $valueID);
@@ -548,37 +528,37 @@ class ProductWithVariationDecorator extends DataExtension
             $productVariationIDs = DB::query("SELECT \"ID\" FROM \"ProductVariation\" WHERE \"ProductID\" = '{$this->owner->ID}'")->column();
             if (count($productVariationIDs) > 0) {
                 $productVariationIDs = implode(',', $productVariationIDs);
-                $variationValues = DB::query("SELECT GROUP_CONCAT(\"ProductAttributeValueID\" ORDER BY \"ProductAttributeValueID\" SEPARATOR ',') FROM \"ProductVariation_AttributeValues\" WHERE \"ProductVariationID\" IN ($productVariationIDs) GROUP BY \"ProductVariationID\"")->column();
-                if (in_array($str, $variationValues)) {
+                $variationValues = DB::query("SELECT GROUP_CONCAT(\"ProductAttributeValueID\" ORDER BY \"ProductAttributeValueID\" SEPARATOR ',') FROM \"ProductVariation_AttributeValues\" WHERE \"ProductVariationID\" IN (${productVariationIDs}) GROUP BY \"ProductVariationID\"")->column();
+                if (in_array($str, $variationValues, true)) {
                     $add = false;
                 }
             }
             if ($add) {
                 ++$count;
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: $className (case sensitive)
-  * NEW: $className (COMPLEX)
-  * EXP: Check if the class name can still be used as such
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+                /**
+                 * ### @@@@ START REPLACEMENT @@@@ ###
+                 * WHY: automated upgrade
+                 * OLD: $className (case sensitive)
+                 * NEW: $className (COMPLEX)
+                 * EXP: Check if the class name can still be used as such
+                 * ### @@@@ STOP REPLACEMENT @@@@ ###
+                 */
                 $className = $this->owner->getClassNameOfVariations();
 
-/**
-  * ### @@@@ START REPLACEMENT @@@@ ###
-  * WHY: automated upgrade
-  * OLD: $className (case sensitive)
-  * NEW: $className (COMPLEX)
-  * EXP: Check if the class name can still be used as such
-  * ### @@@@ STOP REPLACEMENT @@@@ ###
-  */
+                /**
+                 * ### @@@@ START REPLACEMENT @@@@ ###
+                 * WHY: automated upgrade
+                 * OLD: $className (case sensitive)
+                 * NEW: $className (COMPLEX)
+                 * EXP: Check if the class name can still be used as such
+                 * ### @@@@ STOP REPLACEMENT @@@@ ###
+                 */
                 $newVariation = $className::create(
-                    array(
+                    [
                         'ProductID' => $this->owner->ID,
                         'Price' => $this->owner->Price,
-                    )
+                    ]
                 );
                 $newVariation->setSaveParentProduct(false);
                 $newVariation->write();
@@ -596,11 +576,11 @@ class ProductWithVariationDecorator extends DataExtension
      * @param bool         $searchAllProducts - show results from any variation matching the combination
      *                                          this will return a DataList
      *
-     * @return ProductVariation | null | Datalist
+     * @return ProductVariation|Datalist|null
      */
     public function getVariationByAttributes(array $attributes, $searchAllProducts = false)
     {
-        if (!is_array($attributes) || !count($attributes)) {
+        if (! is_array($attributes) || ! count($attributes)) {
             user_error('attributes must be provided as an array of numeric keys and values IDs...', E_USER_NOTICE);
 
             return;
@@ -610,23 +590,23 @@ class ProductWithVariationDecorator extends DataExtension
         } else {
             $variations = ProductVariation::get()
                 ->filter(
-                    array('ProductID' => $this->owner->ID)
+                    ['ProductID' => $this->owner->ID]
                 );
         }
         foreach ($attributes as $typeid => $valueid) {
-            if (!is_numeric($typeid) || !is_numeric($valueid)) {
+            if (! is_numeric($typeid) || ! is_numeric($valueid)) {
                 user_error('key and value ID must be numeric', E_USER_NOTICE);
 
                 return;
             }
-            $alias = "Alias$typeid";
+            $alias = "Alias${typeid}";
             $variations = $variations->where(
-                "\"$alias\".\"ProductAttributeValueID\" = $valueid"
+                "\"${alias}\".\"ProductAttributeValueID\" = ${valueid}"
             )
-            ->innerJoin(
+                ->innerJoin(
                 'ProductVariation_AttributeValues',
-                "\"ProductVariation\".\"ID\" = \"$alias\".\"ProductVariationID\"",
-                 $alias
+                "\"ProductVariation\".\"ID\" = \"${alias}\".\"ProductVariationID\"",
+                $alias
             );
         }
         if ($searchAllProducts) {
@@ -671,9 +651,8 @@ class ProductWithVariationDecorator extends DataExtension
             $existingTypes->add($attributeTypeObject);
 
             return $attributeTypeObject;
-        } else {
-            user_error($attributeTypeObject.' is broken');
         }
+        user_error($attributeTypeObject . ' is broken');
     }
 
     /**
@@ -685,12 +664,12 @@ class ProductWithVariationDecorator extends DataExtension
     {
         $variations = $this->owner->getComponents(
             'Variations',
-            "\"TypeID\" = '$attributeTypeObject->ID'"
+            "\"TypeID\" = '{$attributeTypeObject->ID}'"
         );
         $variations = $variations->innerJoin('ProductVariation_AttributeValues', '"ProductVariationID" = "ProductVariation"."ID"');
         $variations = $variations->innerJoin(ProductAttributeValue::class, '"ProductAttributeValue"."ID" = "ProductAttributeValueID"');
 
-        return $variations->Count() == 0;
+        return $variations->Count() === 0;
     }
 
     /**
@@ -714,11 +693,9 @@ class ProductWithVariationDecorator extends DataExtension
         $sql = '
             Select "ProductAttributeTypeID"
             FROM "Product_VariationAttributes"
-            WHERE "ProductID" = '.$this->owner->ID;
+            WHERE "ProductID" = ' . $this->owner->ID;
         $data = DB::query($sql);
-        $array = $data->keyedColumn();
-
-        return $array;
+        return $data->keyedColumn();
     }
 
     /**
@@ -733,11 +710,9 @@ class ProductWithVariationDecorator extends DataExtension
             FROM "ProductVariation"
                 INNER JOIN "ProductVariation_AttributeValues"
                     ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
-            WHERE "ProductVariation"."ProductID" = '.$this->owner->ID;
+            WHERE "ProductVariation"."ProductID" = ' . $this->owner->ID;
         $data = DB::query($sql);
-        $array = $data->keyedColumn();
-
-        return $array;
+        return $data->keyedColumn();
     }
 
     /**
@@ -748,7 +723,7 @@ class ProductWithVariationDecorator extends DataExtension
         return;
         if ($this->owner->HasVariations()) {
             $price = $this->owner->getCalculatedPrice();
-            if ($price == 0) {
+            if ($price === 0) {
                 $this->owner->Price = $this->owner->LowestVariationPrice();
             }
         }
@@ -764,7 +739,7 @@ class ProductWithVariationDecorator extends DataExtension
     public function onBeforeDelete()
     {
         parent::onBeforeDelete();
-        if (Versioned::get_by_stage(Product::class, 'Stage', 'Product.ID ='.$this->owner->ID)->count() == 0) {
+        if (Versioned::get_by_stage(Product::class, 'Stage', 'Product.ID =' . $this->owner->ID)->count() === 0) {
             $variations = $this->owner->Variations();
             foreach ($variations as $variation) {
                 if ($variation->canDelete()) {
@@ -798,7 +773,7 @@ class ProductWithVariationDecorator extends DataExtension
                     ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
                 INNER JOIN "ProductAttributeValue"
                     ON "ProductVariation_AttributeValues"."ProductAttributeValueID" = "ProductAttributeValue"."ID"
-            WHERE "ProductVariation"."ProductID" = '.$productID;
+            WHERE "ProductVariation"."ProductID" = ' . $productID;
         $arrayOfTypesToKeepForProduct = [];
         $data = DB::query($sql);
         $array = $data->keyedColumn();
@@ -812,19 +787,19 @@ class ProductWithVariationDecorator extends DataExtension
                 SELECT COUNT(ID)
                 FROM "Product_VariationAttributes"
                 WHERE
-                    "ProductAttributeTypeID" NOT IN ('.implode(',', $arrayOfTypesToKeepForProduct).")
-                    AND \"ProductID\" = '$productID'
+                    "ProductAttributeTypeID" NOT IN (' . implode(',', $arrayOfTypesToKeepForProduct) . ")
+                    AND \"ProductID\" = '${productID}'
             ");
             if ($deleteCounter->value()) {
                 $changes = true;
                 if ($verbose) {
-                    DB::alteration_message('DELETING Attribute Type From '.$this->owner->Title, 'deleted');
+                    DB::alteration_message('DELETING Attribute Type From ' . $this->owner->Title, 'deleted');
                 }
                 DB::query('
                     DELETE FROM "Product_VariationAttributes"
                     WHERE
-                        "ProductAttributeTypeID" NOT IN ('.implode(',', $arrayOfTypesToKeepForProduct).")
-                        AND \"ProductID\" = '$productID'
+                        "ProductAttributeTypeID" NOT IN (' . implode(',', $arrayOfTypesToKeepForProduct) . ")
+                        AND \"ProductID\" = '${productID}'
                 ");
             }
             foreach ($arrayOfTypesToKeepForProduct as $productAttributeTypeID) {
@@ -832,13 +807,13 @@ class ProductWithVariationDecorator extends DataExtension
                     SELECT COUNT(ID)
                     FROM \"Product_VariationAttributes\"
                     WHERE
-                        \"ProductAttributeTypeID\" = '$productAttributeTypeID'
-                        AND \"ProductID\" = $productID
+                        \"ProductAttributeTypeID\" = '${productAttributeTypeID}'
+                        AND \"ProductID\" = ${productID}
                 ");
-                if (!$addCounter->value()) {
+                if (! $addCounter->value()) {
                     $changes = true;
                     if ($verbose) {
-                        DB::alteration_message('ADDING Attribute Type From '.$this->owner->Title, 'created');
+                        DB::alteration_message('ADDING Attribute Type From ' . $this->owner->Title, 'created');
                     }
                     DB::query("
                         INSERT INTO \"Product_VariationAttributes\" (
@@ -846,7 +821,7 @@ class ProductWithVariationDecorator extends DataExtension
                             \"ProductAttributeTypeID\"
                         )
                         VALUES (
-                            '$productID', '$productAttributeTypeID'
+                            '${productID}', '${productAttributeTypeID}'
                         )
                     ");
                 }
@@ -855,16 +830,16 @@ class ProductWithVariationDecorator extends DataExtension
             $deleteAllCounter = DB::query("
                 SELECT COUNT(ID)
                 FROM \"Product_VariationAttributes\"
-                WHERE \"ProductID\" = '$productID'
+                WHERE \"ProductID\" = '${productID}'
             ");
             if ($deleteAllCounter->value()) {
                 $changes = true;
                 if ($verbose) {
-                    DB::alteration_message('DELETING ALL Attribute Types From '.$this->owner->Title, 'deleted');
+                    DB::alteration_message('DELETING ALL Attribute Types From ' . $this->owner->Title, 'deleted');
                 }
                 DB::query("
                     DELETE FROM \"Product_VariationAttributes\"
-                    WHERE \"ProductID\" = '$productID'
+                    WHERE \"ProductID\" = '${productID}'
                 ");
             }
         }

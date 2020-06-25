@@ -2,22 +2,19 @@
 
 namespace Sunnysideup\EcommerceProductVariation\Tasks;
 
-
-
-
-
-
-use Sunnysideup\Ecommerce\Pages\Product;
-use SilverStripe\ORM\DB;
-use SilverStripe\ORM\ArrayList;
-use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
 use SilverStripe\Dev\BuildTask;
-
-
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DB;
+use Sunnysideup\Ecommerce\Pages\Product;
+use Sunnysideup\EcommerceProductVariation\Model\Buyables\ProductVariation;
 
 class EcommerceProductVariationTaskDeleteVariations extends BuildTask
 {
     protected $verbose = true;
+
+    protected $title = 'Deletes all the variations and associated data from a product';
+
+    protected $description = 'CAREFUL: the developer will need to supply the ID as a get variable (?productid=XXX) as well as a test / live flag (?live=1, default is test) for the product and variations will be deleted without keeping a history.';
 
     public static function create_link($product)
     {
@@ -27,50 +24,46 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
             //do nothing
         }
         if ($product) {
-            return "dev/tasks/EcommerceProductVariationTaskDeleteVariations/?productid=".$product->ID."&live=1&silent=1";
+            return 'dev/tasks/EcommerceProductVariationTaskDeleteVariations/?productid=' . $product->ID . '&live=1&silent=1';
         }
     }
-
-    protected $title = "Deletes all the variations and associated data from a product";
-
-    protected $description = "CAREFUL: the developer will need to supply the ID as a get variable (?productid=XXX) as well as a test / live flag (?live=1, default is test) for the product and variations will be deleted without keeping a history.";
 
     public function run($request)
     {
         $productVariationArrayID = [];
-        if (empty($_GET["silent"])) {
+        if (empty($_GET['silent'])) {
             $this->verbose = true;
         } else {
-            $this->verbose = intval($_GET["silent"]) == 1 ? false : true;
+            $this->verbose = intval($_GET['silent']) === 1 ? false : true;
         }
-        if (empty($_GET["productid"])) {
+        if (empty($_GET['productid'])) {
             $productID = 0;
-        } elseif ($_GET["productid"] == 'all') {
+        } elseif ($_GET['productid'] === 'all') {
             $productID = -1;
         } else {
-            $productID = intval($_GET["productid"]);
+            $productID = intval($_GET['productid']);
         }
-        if (empty($_GET["live"])) {
+        if (empty($_GET['live'])) {
             $live = false;
         } else {
-            $live = intval($_GET["live"]) == 1 ? true : false;
+            $live = intval($_GET['live']) === 1 ? true : false;
         }
         if ($live) {
             if ($this->verbose) {
-                DB::alteration_message("this is a live task", "deleted");
+                DB::alteration_message('this is a live task', 'deleted');
             }
         } else {
             if ($this->verbose) {
-                DB::alteration_message("this is a test only. If you add a live=1 get variable then you can make it for real ;-)", "created");
+                DB::alteration_message('this is a test only. If you add a live=1 get variable then you can make it for real ;-)', 'created');
             }
         }
-        if ($productID == -1) {
+        if ($productID === -1) {
             $products = Product::get();
         } else {
             $products = null;
             $product = Product::get()->byID($productID);
             if ($product) {
-                $products= new ArrayList();
+                $products = new ArrayList();
                 $products->push($product);
             }
         }
@@ -79,101 +72,100 @@ class EcommerceProductVariationTaskDeleteVariations extends BuildTask
                 $productID = $product->ID;
                 if ($products->count()) {
                     if ($this->verbose) {
-                        DB::alteration_message("Deleting variations for ".$product->Title, "deleted");
+                        DB::alteration_message('Deleting variations for ' . $product->Title, 'deleted');
                     }
-                    $variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
+                    $variations = ProductVariation::get()->filter(['ProductID' => $productID])->limit(100);
                     if ($variations->count()) {
                         if ($this->verbose) {
-                            DB::alteration_message("PRE DELETE COUNT: ".$variations->count());
+                            DB::alteration_message('PRE DELETE COUNT: ' . $variations->count());
                         }
                         foreach ($variations as $variation) {
                             if ($this->verbose) {
-                                DB::alteration_message("&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Deleting Variation: ".$variation->Title(), "deleted");
+                                DB::alteration_message('&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Deleting Variation: ' . $variation->Title(), 'deleted');
                             }
                             if ($live) {
                                 $variation->delete();
                             }
                             $productVariationArrayID[$variation->ID] = $variation->ID;
                         }
-                        $variations = ProductVariation::get()->filter(array("ProductID" => $productID))->limit(100);
+                        $variations = ProductVariation::get()->filter(['ProductID' => $productID])->limit(100);
                         if ($live) {
                             if ($variations->count()) {
                                 if ($this->verbose) {
-                                    DB::alteration_message("POST DELETE COUNT: ".$variations->count());
+                                    DB::alteration_message('POST DELETE COUNT: ' . $variations->count());
                                 }
                             } else {
                                 if ($this->verbose) {
-                                    DB::alteration_message("All variations have been deleted: ", "created");
+                                    DB::alteration_message('All variations have been deleted: ', 'created');
                                 }
                             }
                         } else {
                             if ($this->verbose) {
-                                DB::alteration_message("This was a test only", "created");
+                                DB::alteration_message('This was a test only', 'created');
                             }
                         }
                     } else {
                         if ($this->verbose) {
-                            DB::alteration_message("There are no variations to delete", "created");
+                            DB::alteration_message('There are no variations to delete', 'created');
                         }
                     }
                     if ($this->verbose) {
-                        DB::alteration_message("Starting cleanup", "created");
+                        DB::alteration_message('Starting cleanup', 'created');
                     }
                     if ($live) {
-                        $sql = "
+                        $sql = '
                                     DELETE
-                                    FROM \"Product_VariationAttributes\"
-                                    WHERE \"ProductID\" = ".$productID;
+                                    FROM "Product_VariationAttributes"
+                                    WHERE "ProductID" = ' . $productID;
                         if ($this->verbose) {
-                            DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+                            DB::alteration_message('<pre>RUNNING<br />' . $sql . '</pre>');
                         }
                         DB::query($sql);
-                        $sql = "
-                                    DELETE \"ProductVariation_AttributeValues\"
-                                    FROM \"ProductVariation_AttributeValues\"
-                                        LEFT JOIN \"ProductVariation\"
-                                            ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
-                                    WHERE \"ProductVariation\".\"ID\" IS NULL";
+                        $sql = '
+                                    DELETE "ProductVariation_AttributeValues"
+                                    FROM "ProductVariation_AttributeValues"
+                                        LEFT JOIN "ProductVariation"
+                                            ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
+                                    WHERE "ProductVariation"."ID" IS NULL';
                         if ($this->verbose) {
-                            DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+                            DB::alteration_message('<pre>RUNNING<br />' . $sql . '</pre>');
                         }
                         DB::query($sql);
                     } else {
-                        $sql = "
+                        $sql = '
                                     SELECT COUNT(Product_VariationAttributes.ID)
-                                    FROM \"Product_VariationAttributes\"
-                                    WHERE \"ProductID\" = ".$productID;
+                                    FROM "Product_VariationAttributes"
+                                    WHERE "ProductID" = ' . $productID;
                         if ($this->verbose) {
-                            DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+                            DB::alteration_message('<pre>RUNNING<br />' . $sql . '</pre>');
                         }
                         $result = DB::query($sql);
                         if ($this->verbose) {
-                            DB::alteration_message("Would have deleted ".$result->value()." rows");
+                            DB::alteration_message('Would have deleted ' . $result->value() . ' rows');
                         }
-                        $sql = "
-                                    SELECT COUNT (\"ProductVariation_AttributeValues\".\"ID\")
-                                    FROM \"ProductVariation_AttributeValues\"
-                                        LEFT JOIN \"ProductVariation\"
-                                            ON \"ProductVariation_AttributeValues\".\"ProductVariationID\" = \"ProductVariation\".\"ID\"
+                        $sql = '
+                                    SELECT COUNT ("ProductVariation_AttributeValues"."ID")
+                                    FROM "ProductVariation_AttributeValues"
+                                        LEFT JOIN "ProductVariation"
+                                            ON "ProductVariation_AttributeValues"."ProductVariationID" = "ProductVariation"."ID"
                                     WHERE
-                                        \"ProductVariation\".\"ID\" IS NULL OR
-                                        \"ProductVariation\".\"ID\" IN(".implode(",", $productVariationArrayID).") ";
+                                        "ProductVariation"."ID" IS NULL OR
+                                        "ProductVariation"."ID" IN(' . implode(',', $productVariationArrayID) . ') ';
                         if ($this->verbose) {
-                            DB::alteration_message("<pre>RUNNING<br />".$sql."</pre>");
+                            DB::alteration_message('<pre>RUNNING<br />' . $sql . '</pre>');
                         }
                         $result = DB::query($sql);
                         if ($this->verbose) {
-                            DB::alteration_message("Would have deleted ".$result->value()." rows");
+                            DB::alteration_message('Would have deleted ' . $result->value() . ' rows');
                         }
                     }
                 }
             }
         } else {
             if ($this->verbose) {
-                DB::alteration_message("Product does not exist. You can set the product by adding it productid=XXX as a GET variable.  You can also add <i>all</i> to delete ALL product Variations.", "deleted");
+                DB::alteration_message('Product does not exist. You can set the product by adding it productid=XXX as a GET variable.  You can also add <i>all</i> to delete ALL product Variations.', 'deleted');
             }
         }
-        DB::alteration_message("Completed", "created");
+        DB::alteration_message('Completed', 'created');
     }
 }
-
