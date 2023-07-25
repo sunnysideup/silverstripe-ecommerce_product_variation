@@ -30,7 +30,7 @@
     },
     "suggest": {
         "sunnysideup/dataobjectsorter": "dev-master",
-        "symbiote/silverstripe-gridfieldextensions": "dev-master",
+        "symbiote/silverstripe-gridfieldextensions": "*",
         "sunnysideup/cms_edit_link_field": "dev-master"
     },
     "extra": {
