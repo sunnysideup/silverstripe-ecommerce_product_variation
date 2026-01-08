@@ -986,12 +986,12 @@ class ProductVariation extends DataObject implements BuyableModel, EditableEcomm
      *
      * @return int
      */
-    public function HasBeenSold()
+    public function HasBeenSold() : bool
     {
         return $this->getHasBeenSold();
     }
 
-    public function getHasBeenSold()
+    public function getHasBeenSold() : bool
     {
         $dataList = Order::get_datalist_of_orders_with_submit_record($onlySubmittedOrders = true, $includeCancelledOrders = false);
         $dataList = $dataList->innerJoin(OrderAttribute::class, '"OrderAttribute"."OrderID" = "Order"."ID"');
