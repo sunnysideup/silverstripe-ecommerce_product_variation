@@ -26,11 +26,11 @@
     ],
     "require": {
         "sunnysideup/ecommerce": "*",
-        "silverstripe/recipe-cms": "^4.4"
+        "silverstripe/recipe-cms": "^4.0 || ^5.0"
     },
     "suggest": {
         "sunnysideup/dataobjectsorter": "dev-master",
-        "symbiote/silverstripe-gridfieldextensions": "dev-master",
+        "symbiote/silverstripe-gridfieldextensions": "*",
         "sunnysideup/cms_edit_link_field": "dev-master"
     },
     "extra": {
